@@ -65,8 +65,12 @@ object JsonRpcIdSerializer : KSerializer<JsonRpcId> {
         val primitive = element as? JsonPrimitive
             ?: throw SerializationException("JSON-RPC id must be a string or number")
 
-        return primitive.longOrNull?.let(JsonRpcId::Number)
-            ?: JsonRpcId.StringId(primitive.content)
+        return if (primitive.toString().startsWith("\"")) {
+            JsonRpcId.StringId(primitive.content)
+        } else {
+            primitive.longOrNull?.let(JsonRpcId::Number)
+                ?: throw SerializationException("JSON-RPC numeric id must fit in Long")
+        }
     }
 
     override fun serialize(encoder: Encoder, value: JsonRpcId) {
