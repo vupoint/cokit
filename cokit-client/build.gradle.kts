@@ -18,5 +18,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(project(":cokit-testing"))
         }
+        jvmTest.dependencies {
+            implementation(project(":cokit-transport-stdio"))
+        }
     }
 }
