@@ -50,7 +50,9 @@ boundaries over fast one-file implementations.
 
 ## Documentation
 
-- Planning documents live under `docs/`.
+- Draft planning documents live under `.draft/docs/` until they are ready to be
+  published. The `.draft/` directory is intentionally ignored by Git.
+- Public documentation lives under `docs/` when it is ready to be versioned.
 - When protocol assumptions change, update both the specification and the
   implementation plan before changing library code.
 - Public documentation should distinguish supported, experimental, and deferred

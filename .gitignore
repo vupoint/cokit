@@ -1,2 +1,33 @@
 .DS_Store
+
+# Draft planning artifacts
 .draft/
+
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Kotlin
+.kotlin/
+**/.kotlin/
+kotlin-js-store/
+
+# Kotlin/Native
+.konan/
+**/.konan/
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Local environment
+.env
+.env.*
+local.properties
+
+# Logs
+*.log
