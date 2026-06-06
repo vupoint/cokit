@@ -15,3 +15,9 @@ data class InitializeCapabilities(
     val optOutNotificationMethods: List<String> = emptyList(),
     val requestAttestation: Boolean = false,
 )
+
+@Serializable
+data class InitializeParams(
+    val clientInfo: ClientInfo,
+    val capabilities: InitializeCapabilities? = null,
+)
