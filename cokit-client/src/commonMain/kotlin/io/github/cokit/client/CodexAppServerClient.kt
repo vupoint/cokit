@@ -1,7 +1,6 @@
 package io.github.cokit.client
 
 import io.github.cokit.protocol.CodexProtocolJson
-import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.rpc.JsonRpcSession
 import io.github.cokit.rpc.JsonRpcTransport
@@ -53,16 +52,4 @@ class CodexAppServerClient private constructor(
 
 sealed interface CodexEvent {
     data class RawNotification(val notification: JsonRpcNotification) : CodexEvent
-}
-
-class ThreadsApi internal constructor(
-    private val rpc: JsonRpcSession,
-) {
-    suspend fun start(): JsonRpcId = rpc.sendRequest("thread/start")
-}
-
-class TurnsApi internal constructor(
-    private val rpc: JsonRpcSession,
-) {
-    suspend fun start(): JsonRpcId = rpc.sendRequest("turn/start")
 }
