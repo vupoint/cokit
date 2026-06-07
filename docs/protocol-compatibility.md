@@ -30,6 +30,11 @@ Raw `JsonElement` fields are acceptable for protocol areas that are not yet
 modeled, but those fields should be named after the upstream protocol member and
 kept at the boundary of a typed request or response model.
 
+Turn input is a public client surface and should use `TurnInput` variants such
+as `Text`, `Image`, `LocalImage`, `Skill`, and `Mention` instead of exposing raw
+JSON as the primary API. Use `TurnInput.Raw` as an explicit compatibility escape
+hatch for upstream variants that CoKit has not modeled yet.
+
 ## Schema Generation
 
 Run:

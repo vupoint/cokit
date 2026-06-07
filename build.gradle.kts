@@ -2,6 +2,7 @@ import org.gradle.api.artifacts.ProjectDependency
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.kover)
 }
@@ -24,11 +25,9 @@ dependencies {
 tasks.register("test") {
     group = "verification"
     description = "Runs all JVM unit tests in CoKit modules."
-    dependsOn(
-        subprojects.map { project ->
-            "${project.path}:jvmTest"
-        },
-    )
+    subprojects.forEach { project ->
+        dependsOn(project.tasks.matching { task -> task.name == "jvmTest" || task.name == "test" })
+    }
 }
 
 tasks.register("coverage") {
@@ -44,6 +43,18 @@ val allowedMainProjectDependencies = mapOf(
     ":cokit-transport-stdio" to setOf(":cokit-rpc"),
     ":cokit-transport-websocket" to setOf(":cokit-rpc"),
     ":cokit-testing" to setOf(":cokit-protocol", ":cokit-rpc"),
+    ":cokit-sample-cli" to setOf(":cokit-client", ":cokit-transport-stdio"),
+)
+
+val productionDependencyConfigurations = setOf(
+    "api",
+    "implementation",
+    "compileOnly",
+    "runtimeOnly",
+    "commonMainApi",
+    "commonMainImplementation",
+    "jvmMainApi",
+    "jvmMainImplementation",
 )
 
 tasks.register("validateModuleBoundaries") {
@@ -56,7 +67,7 @@ tasks.register("validateModuleBoundaries") {
                 ?: error("No module boundary rule registered for ${module.path}")
             val actual = module.configurations
                 .filter { configuration ->
-                    "Main" in configuration.name && "Test" !in configuration.name
+                    configuration.name in productionDependencyConfigurations
                 }
                 .flatMap { configuration ->
                     configuration.dependencies

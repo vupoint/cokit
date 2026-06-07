@@ -13,6 +13,30 @@ dependencies {
 
 Future published artifacts are expected to use the `io.github.cokit` group.
 
+## Run The Sample CLI
+
+The repository includes a small JVM CLI sample in `:cokit-sample-cli`.
+
+```bash
+./gradlew :cokit-sample-cli:run --args="--help"
+```
+
+When `codex` is installed locally, the sample can start a real app-server thread
+and turn over stdio without requiring arguments:
+
+```bash
+./gradlew :cokit-sample-cli:run
+```
+
+Optional `--cwd` and `--message` flags can override the defaults:
+
+```bash
+./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
+```
+
+The sample defaults to `codex app-server --stdio`. Use `COKIT_CODEX_COMMAND` to
+point it at another local command during development.
+
 ## Connect To app-server
 
 ```kotlin
@@ -50,16 +74,17 @@ val thread = client.threads.start(
 val turn = client.turns.start(
     StartTurnRequest(
         threadId = thread.id,
-        input = emptyList(),
+        input = listOf(TurnInput.Text("Summarize this repository")),
     ),
 )
 ```
 
 Thread and turn APIs return typed models when app-server responds with typed
 payloads. Identifiers and common options use lightweight SDK value types such as
-`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`, and
-`ModelName` so application code is explicit without losing protocol
-forward-compatibility.
+`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`,
+`ModelName`, and `TurnInput` so application code is explicit without losing
+protocol forward-compatibility. Use `TurnInput.Raw` only when upstream has added
+an input variant that CoKit has not modeled yet.
 
 ## Observe Notifications
 

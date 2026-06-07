@@ -31,6 +31,8 @@ CoKit is in early development. The current codebase includes:
 - `cokit-transport-websocket`: experimental WebSocket transport placeholder.
 - `cokit-testing`: fake transports and protocol test helpers for consumers and
   CoKit module tests.
+- `cokit-sample-cli`: small JVM command-line sample that exercises the public
+  client and stdio transport APIs.
 
 ## Basic Example
 
@@ -55,9 +57,37 @@ val thread = client.threads.start(
     StartThreadRequest(cwd = CodexHostPath("/path/to/project")),
 )
 val turn = client.turns.start(
-    StartTurnRequest(threadId = thread.id),
+    StartTurnRequest(
+        threadId = thread.id,
+        input = listOf(TurnInput.Text("Summarize this repository")),
+    ),
 )
 ```
+
+## Sample CLI
+
+Show the included sample CLI help:
+
+```bash
+./gradlew :cokit-sample-cli:run --args="--help"
+```
+
+Start a real app-server thread and turn with default values when `codex` is
+installed locally:
+
+```bash
+./gradlew :cokit-sample-cli:run
+```
+
+Override the default app-server host path or message when needed:
+
+```bash
+./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
+```
+
+The sample uses `codex app-server --stdio` by default. Set
+`COKIT_CODEX_COMMAND` to a whitespace-separated command when testing a different
+local app-server executable.
 
 ## Upstream Protocol
 

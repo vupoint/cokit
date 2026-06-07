@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -66,7 +67,7 @@ class ThreadTurnApiTest {
             fixture.client.turns.start(
                 StartTurnRequest(
                     threadId = ThreadId("thr_123"),
-                    input = listOf(buildJsonObject { put("text", "Run tests") }),
+                    input = listOf(TurnInput.Text("Run tests")),
                     approvalPolicy = ApprovalPolicy.OnFailure,
                     sandboxPolicy = SandboxPolicy.WorkspaceWrite,
                     outputSchema = buildJsonObject {
@@ -84,7 +85,59 @@ class ThreadTurnApiTest {
         assertEquals("on-failure", params["approvalPolicy"]?.jsonPrimitive?.contentOrNull)
         assertEquals("workspace-write", params["sandboxPolicy"]?.jsonPrimitive?.contentOrNull)
         assertTrue(params.containsKey("input"))
+        val inputItem = params["input"]
+            ?.jsonArray
+            ?.first()
+            ?.jsonObject
+        assertEquals("text", inputItem?.get("type")?.jsonPrimitive?.contentOrNull)
+        assertEquals("Run tests", inputItem?.get("text")?.jsonPrimitive?.contentOrNull)
         assertEquals("object", params["outputSchema"]?.jsonObject?.get("type")?.jsonPrimitive?.contentOrNull)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("turn", buildJsonObject {
+                        put("id", "turn_123")
+                        put("status", "running")
+                    })
+                },
+            ),
+        )
+
+        assertEquals(TurnId("turn_123"), deferred.await().id)
+    }
+
+    @Test
+    fun rawTurnInputRequiresExplicitEscapeHatch() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+
+        val deferred = async {
+            fixture.client.turns.start(
+                StartTurnRequest(
+                    threadId = ThreadId("thr_123"),
+                    input = listOf(
+                        TurnInput.Raw(
+                            buildJsonObject {
+                                put("type", "experimentalInput")
+                                put("value", "kept")
+                            },
+                        ),
+                    ),
+                ),
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        val inputItem = request.params!!
+            .jsonObject["input"]!!
+            .jsonArray
+            .single()
+            .jsonObject
+
+        assertEquals("experimentalInput", inputItem["type"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("kept", inputItem["value"]?.jsonPrimitive?.contentOrNull)
 
         fixture.transport.receive(
             JsonRpcResponse(

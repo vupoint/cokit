@@ -20,7 +20,7 @@ data class Turn(
 data class StartTurnRequest(
     val threadId: ThreadId,
     @EncodeDefault(EncodeDefault.Mode.ALWAYS)
-    val input: List<JsonElement> = emptyList(),
+    val input: List<TurnInput> = emptyList(),
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val sandboxPolicy: SandboxPolicy? = null,
@@ -34,7 +34,7 @@ data class StartTurnRequest(
 data class SteerTurnRequest(
     val threadId: ThreadId,
     val expectedTurnId: TurnId,
-    val input: List<JsonElement>,
+    val input: List<TurnInput>,
     val clientUserMessageId: String? = null,
 )
 
