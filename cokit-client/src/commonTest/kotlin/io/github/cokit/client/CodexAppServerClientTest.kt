@@ -21,9 +21,11 @@ class CodexAppServerClientTest {
 
         val client = async {
             CodexAppServerClient.connect(
-                transport = transport,
-                clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
-                scope = backgroundScope,
+                CodexClientOptions(
+                    transport = transport,
+                    clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
+                    scope = backgroundScope,
+                ),
             )
         }
         runCurrent()

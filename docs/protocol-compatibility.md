@@ -18,6 +18,18 @@ capabilities where upstream requires them.
 The WebSocket transport is currently marked experimental because upstream marks
 that transport as experimental.
 
+## Public Client Model Policy
+
+High-level client APIs should accept request objects instead of long parameter
+lists. Identifiers and common options should use small value classes such as
+`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`, and
+`ModelName`. Prefer value classes with documented constants over closed enums
+when upstream may add new string values.
+
+Raw `JsonElement` fields are acceptable for protocol areas that are not yet
+modeled, but those fields should be named after the upstream protocol member and
+kept at the boundary of a typed request or response model.
+
 ## Schema Generation
 
 Run:

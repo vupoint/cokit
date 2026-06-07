@@ -21,13 +21,15 @@ val transport = StdioCodexTransport(
 )
 
 val client = CodexAppServerClient.connect(
-    transport = transport,
-    clientInfo = ClientInfo(
-        name = "my_kotlin_client",
-        title = "My Kotlin Client",
-        version = "0.1.0",
+    CodexClientOptions(
+        transport = transport,
+        clientInfo = ClientInfo(
+            name = "my_kotlin_client",
+            title = "My Kotlin Client",
+            version = "0.1.0",
+        ),
+        scope = scope,
     ),
-    scope = scope,
 )
 ```
 
@@ -37,16 +39,27 @@ val client = CodexAppServerClient.connect(
 ## Start A Thread And Turn
 
 ```kotlin
-val thread = client.threads.start(cwd = "/path/to/project")
+val thread = client.threads.start(
+    StartThreadRequest(
+        cwd = CodexHostPath("/path/to/project"),
+        approvalPolicy = ApprovalPolicy.OnRequest,
+        sandbox = SandboxPolicy.WorkspaceWrite,
+    ),
+)
 
 val turn = client.turns.start(
-    threadId = thread.id,
-    input = emptyList(),
+    StartTurnRequest(
+        threadId = thread.id,
+        input = emptyList(),
+    ),
 )
 ```
 
 Thread and turn APIs return typed models when app-server responds with typed
-payloads.
+payloads. Identifiers and common options use lightweight SDK value types such as
+`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`, and
+`ModelName` so application code is explicit without losing protocol
+forward-compatibility.
 
 ## Observe Notifications
 

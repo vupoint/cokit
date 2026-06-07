@@ -16,9 +16,11 @@ class CodexAppServerIntegrationTest {
             command = listOf("codex", "app-server", "--stdio"),
         ).use { transport ->
             val client = CodexAppServerClient.connect(
-                transport = transport,
-                clientInfo = ClientInfo("cokit_integration", "CoKit Integration", "0.1.0"),
-                scope = backgroundScope,
+                CodexClientOptions(
+                    transport = transport,
+                    clientInfo = ClientInfo("cokit_integration", "CoKit Integration", "0.1.0"),
+                    scope = backgroundScope,
+                ),
             )
 
             assertTrue(client.isInitialized)

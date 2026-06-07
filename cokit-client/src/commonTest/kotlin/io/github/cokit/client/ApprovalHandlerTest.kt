@@ -1,5 +1,6 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.approvals.CommandApprovalRequest
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -18,6 +19,21 @@ import kotlinx.serialization.json.put
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ApprovalHandlerTest {
+    @Test
+    fun commandApprovalRequestUsesSdkValueTypes() {
+        val request = CommandApprovalRequest(
+            threadId = ThreadId("thr_123"),
+            turnId = TurnId("turn_123"),
+            itemId = "item_123",
+            command = "git status",
+            cwd = CodexHostPath("/path/to/project"),
+        )
+
+        assertEquals(ThreadId("thr_123"), request.threadId)
+        assertEquals(TurnId("turn_123"), request.turnId)
+        assertEquals(CodexHostPath("/path/to/project"), request.cwd)
+    }
+
     @Test
     fun commandApprovalDeclinesWhenNoHandlerIsRegistered() = runTest {
         val fixture = connectedClientFixture(backgroundScope)
@@ -48,9 +64,11 @@ class ApprovalHandlerTest {
         val transport = FakeJsonRpcTransport()
         val client = async {
             CodexAppServerClient.connect(
-                transport = transport,
-                clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
-                scope = scope,
+                CodexClientOptions(
+                    transport = transport,
+                    clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
+                    scope = scope,
+                ),
             )
         }
         runCurrent()

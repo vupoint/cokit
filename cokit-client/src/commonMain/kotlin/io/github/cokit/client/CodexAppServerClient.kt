@@ -6,7 +6,6 @@ import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
 import io.github.cokit.rpc.JsonRpcSession
-import io.github.cokit.rpc.JsonRpcTransport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +19,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 
 class CodexAppServerClient private constructor(
-    val rpc: JsonRpcSession,
+    private val rpc: JsonRpcSession,
     scope: CoroutineScope,
 ) : AutoCloseable {
     private val serverRequestHandlers =
@@ -95,24 +94,19 @@ class CodexAppServerClient private constructor(
     }
 
     companion object {
-        suspend fun connect(
-            transport: JsonRpcTransport,
-            clientInfo: ClientInfo,
-            scope: CoroutineScope,
-            capabilities: InitializeCapabilities? = null,
-        ): CodexAppServerClient {
-            val session = JsonRpcSession(transport, scope)
+        suspend fun connect(options: CodexClientOptions): CodexAppServerClient {
+            val session = JsonRpcSession(options.transport, options.scope)
             return try {
                 val params = InitializeParams(
-                    clientInfo = clientInfo,
-                    capabilities = capabilities,
+                    clientInfo = options.clientInfo,
+                    capabilities = options.capabilities,
                 )
                 session.request(
                     method = "initialize",
                     params = CodexProtocolJson.encodeToJsonElement(InitializeParams.serializer(), params),
                 )
                 session.notify("initialized")
-                CodexAppServerClient(session, scope)
+                CodexAppServerClient(session, options.scope)
             } catch (error: Throwable) {
                 session.close()
                 throw error

@@ -1,14 +1,17 @@
 package io.github.cokit.client.approvals
 
+import io.github.cokit.client.CodexHostPath
+import io.github.cokit.client.ThreadId
+import io.github.cokit.client.TurnId
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CommandApprovalRequest(
-    val threadId: String,
-    val turnId: String,
+    val threadId: ThreadId,
+    val turnId: TurnId,
     val itemId: String,
     val command: String,
-    val cwd: String? = null,
+    val cwd: CodexHostPath? = null,
 )
 
 fun interface CommandApprovalHandler {

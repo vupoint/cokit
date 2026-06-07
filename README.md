@@ -21,12 +21,16 @@ CoKit is in early development. The current codebase includes:
 
 ## Modules
 
-- `cokit-protocol`: JSON-RPC messages, protocol serializers, and schema metadata.
-- `cokit-rpc`: request correlation, notification routing, and server request flow.
-- `cokit-client`: high-level Codex app-server client APIs.
+- `cokit-protocol`: JSON-RPC messages, protocol serializers, and schema
+  metadata. This module does not depend on client, runtime, or transport code.
+- `cokit-rpc`: request correlation, notification routing, and server request
+  flow. This module depends on protocol types only.
+- `cokit-client`: high-level Codex app-server client APIs. Public operations use
+  typed option and request models while the raw JSON-RPC session stays internal.
 - `cokit-transport-stdio`: JVM stdio transport for `codex app-server --stdio`.
 - `cokit-transport-websocket`: experimental WebSocket transport placeholder.
-- `cokit-testing`: fake transports and protocol test helpers.
+- `cokit-testing`: fake transports and protocol test helpers for consumers and
+  CoKit module tests.
 
 ## Basic Example
 
@@ -36,17 +40,23 @@ val transport = StdioCodexTransport(
 )
 
 val client = CodexAppServerClient.connect(
-    transport = transport,
-    clientInfo = ClientInfo(
-        name = "cokit_sample",
-        title = "CoKit Sample",
-        version = "0.1.0",
+    CodexClientOptions(
+        transport = transport,
+        clientInfo = ClientInfo(
+            name = "cokit_sample",
+            title = "CoKit Sample",
+            version = "0.1.0",
+        ),
+        scope = scope,
     ),
-    scope = scope,
 )
 
-val thread = client.threads.start(cwd = "/path/to/project")
-val turn = client.turns.start(threadId = thread.id)
+val thread = client.threads.start(
+    StartThreadRequest(cwd = CodexHostPath("/path/to/project")),
+)
+val turn = client.turns.start(
+    StartTurnRequest(threadId = thread.id),
+)
 ```
 
 ## Upstream Protocol
@@ -65,6 +75,10 @@ Run:
 ```bash
 ./gradlew check
 ```
+
+`check` includes unit tests, coverage verification, and
+`validateModuleBoundaries`, which fails if production modules depend on
+forbidden project modules.
 
 Run JVM unit tests only:
 
