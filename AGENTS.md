@@ -48,6 +48,55 @@ boundaries over fast one-file implementations.
 - Do not commit generated schema artifacts without recording the Codex version or
   command that produced them.
 
+## Security Review
+
+- Treat this repository as public by default. Before publishing, releasing, or
+  committing generated artifacts, scan tracked files for credentials, tokens,
+  private keys, auth URLs, private account data, private local paths, and machine
+  specific configuration.
+- Keep `.draft/`, `.env*`, `local.properties`, IDE files, build outputs, and logs
+  out of Git. If a local-only file must be inspected during a review, verify that
+  it is ignored and not listed by `git ls-files`.
+- Use `git ls-files` as the source of truth for public exposure reviews. Include
+  source, tests, fixtures, docs, Gradle wrapper files, generated metadata, issue
+  templates, and sample code in the review.
+- Re-run a security pass whenever code changes JSON-RPC parsing, request
+  correlation, notification buffering, server-initiated requests, approval
+  defaults, process launch, environment handling, filesystem/path parameters,
+  sandbox or permission pass-through, generated schema handling, or experimental
+  transports.
+- Approval-like app-server requests must remain deny-by-default unless an
+  application registers an explicit handler. New handlers must avoid accepting
+  command execution, file changes, permission grants, tool calls, elicitation,
+  attestation, or user input by default.
+- Do not add unbounded parsing, buffering, request queues, or retry loops without
+  tests and documentation that cover malformed, oversized, missing-response, and
+  high-rate app-server behavior.
+- Stdio process launch must avoid shell interpolation. Changes that touch
+  command resolution, `PATH`, inherited environment variables, stderr handling,
+  or process shutdown require a security review.
+- Experimental protocol and transport surfaces must keep explicit opt-in gates
+  and must document trust boundaries, authentication assumptions, and local-only
+  limitations before becoming usable.
+- Generated protocol artifacts must record enough provenance for public audit:
+  generation command, Codex version or upstream commit when available, stable vs
+  experimental mode, and any schema digest or fixture source used for validation.
+- Gradle wrapper and dependency changes should be reviewed for supply-chain
+  hardening. Prefer checksum-pinned wrapper distributions and avoid unexplained
+  repository or plugin additions.
+- Public examples, tests, fixtures, and docs must use placeholders such as
+  `/path/to/project` and local loopback addresses only when they are clearly test
+  values. Do not include real user names, home directories, workspace paths,
+  tokens, auth URLs, account identifiers, or private service endpoints.
+- Suggested recurring checks:
+  - `git status --short`
+  - `git ls-files`
+  - `git grep -n -I -E '(api[_-]?key|secret|token|password|passwd|credential|private[_-]?key|authorization|bearer|sk-[A-Za-z0-9]|xox[baprs]-|ghp_|github_pat_|BEGIN (RSA|OPENSSH|EC|PRIVATE) KEY|auth[_-]?url)' -- .`
+  - `git grep -n -I -E '(/Users/|/home/|C:\\Users\\|localhost:[0-9]+|127\.0\.0\.1:[0-9]+)' -- .`
+  - `./gradlew check`
+- When a security assumption changes, update `docs/security.md` and any protocol
+  compatibility documentation before or alongside the implementation change.
+
 ## Documentation
 
 - Draft planning documents live under `.draft/docs/` until they are ready to be
