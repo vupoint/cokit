@@ -51,26 +51,28 @@ class TurnInputTest {
     }
 
     @Test
-    fun deserializesUnknownTurnInputAsRaw() {
+    fun deserializesUnknownTurnInputAsCustomPayload() {
         val element = CodexProtocolJson.decodeFromString<JsonObject>(
             """{"type":"futureInput","value":"kept"}""",
         )
 
         val input = CodexProtocolJson.decodeFromJsonElement<TurnInput>(element)
 
-        val raw = assertIs<TurnInput.Raw>(input)
-        assertEquals(element, raw.value)
+        val custom = assertIs<TurnInput.Custom>(input)
+        assertEquals("""{"type":"futureInput","value":"kept"}""", custom.payload.toJsonString())
     }
 
     @Test
-    fun rawTurnInputPreservesOriginalJson() {
+    fun customTurnInputPreservesOriginalJson() {
         val element = CodexProtocolJson.decodeFromString<JsonObject>(
             """{"type":"futureInput","value":"kept"}""",
         )
 
         val encoded = CodexProtocolJson.encodeToJsonElement(
             TurnInput.serializer(),
-            TurnInput.Raw(element),
+            TurnInput.Custom(
+                CodexJsonPayload.parse("""{"type":"futureInput","value":"kept"}"""),
+            ),
         )
 
         assertEquals(element, encoded)

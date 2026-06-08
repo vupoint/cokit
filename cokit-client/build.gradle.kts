@@ -8,8 +8,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":cokit-protocol"))
             api(project(":cokit-rpc"))
+            implementation(project(":cokit-protocol"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
         }

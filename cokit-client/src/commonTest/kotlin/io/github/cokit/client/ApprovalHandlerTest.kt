@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -56,6 +57,53 @@ class ApprovalHandlerTest {
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
         assertTrue(response.result.toString().contains("decline"))
+    }
+
+    @Test
+    fun serverRequestHandlersUseSdkRequestAndResponseTypes() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+        fixture.client.registerServerRequestHandler("custom/request") { request ->
+            assertEquals("custom/request", request.method)
+            assertEquals("""{"value":"kept"}""", request.params?.toJsonString())
+            CodexServerResponse.Result(CodexJsonPayload.parse("""{"decision":"decline"}"""))
+        }
+
+        fixture.transport.receive(
+            JsonRpcRequest(
+                id = JsonRpcId.Number(99),
+                method = "custom/request",
+                params = buildJsonObject {
+                    put("value", "kept")
+                },
+            ),
+        )
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertTrue(response.result.toString().contains("decline"))
+    }
+
+    @Test
+    fun eventsExposeTypedNotificationEnvelope() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+        val event = async {
+            fixture.client.events.first()
+        }
+
+        fixture.transport.receive(
+            io.github.cokit.protocol.JsonRpcNotification(
+                method = "thread/started",
+                params = buildJsonObject {
+                    put("threadId", "thr_123")
+                },
+            ),
+        )
+        runCurrent()
+
+        val notification = event.await() as CodexEvent.Notification
+        assertEquals("thread/started", notification.method)
+        assertEquals("""{"threadId":"thr_123"}""", notification.params?.toJsonString())
     }
 
     private suspend fun TestScope.connectedClientFixture(

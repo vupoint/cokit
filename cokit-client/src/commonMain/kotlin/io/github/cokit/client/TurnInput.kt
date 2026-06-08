@@ -33,7 +33,7 @@ sealed interface TurnInput {
         val path: String,
     ) : TurnInput
 
-    data class Raw(val value: JsonElement) : TurnInput
+    data class Custom(val payload: CodexJsonPayload) : TurnInput
 }
 
 object TurnInputSerializer : KSerializer<TurnInput> {
@@ -43,25 +43,25 @@ object TurnInputSerializer : KSerializer<TurnInput> {
         val jsonDecoder = decoder as? JsonDecoder
             ?: throw SerializationException("TurnInput requires JSON decoding")
         val element = jsonDecoder.decodeJsonElement()
-        val obj = element as? JsonObject ?: return TurnInput.Raw(element)
+        val obj = element as? JsonObject ?: return TurnInput.Custom(element.toCodexPayload())
 
         return when (obj["type"]?.jsonPrimitive?.contentOrNull) {
             "text" -> obj["text"]?.jsonPrimitive?.contentOrNull
                 ?.let(TurnInput::Text)
-                ?: TurnInput.Raw(element)
+                ?: TurnInput.Custom(element.toCodexPayload())
             "image" -> obj["url"]?.jsonPrimitive?.contentOrNull
                 ?.let(TurnInput::Image)
-                ?: TurnInput.Raw(element)
+                ?: TurnInput.Custom(element.toCodexPayload())
             "localImage" -> obj["path"]?.jsonPrimitive?.contentOrNull
                 ?.let(TurnInput::LocalImage)
-                ?: TurnInput.Raw(element)
+                ?: TurnInput.Custom(element.toCodexPayload())
             "skill" -> {
                 val name = obj["name"]?.jsonPrimitive?.contentOrNull
                 val path = obj["path"]?.jsonPrimitive?.contentOrNull
                 if (name != null && path != null) {
                     TurnInput.Skill(name = name, path = path)
                 } else {
-                    TurnInput.Raw(element)
+                    TurnInput.Custom(element.toCodexPayload())
                 }
             }
             "mention" -> {
@@ -70,10 +70,10 @@ object TurnInputSerializer : KSerializer<TurnInput> {
                 if (name != null && path != null) {
                     TurnInput.Mention(name = name, path = path)
                 } else {
-                    TurnInput.Raw(element)
+                    TurnInput.Custom(element.toCodexPayload())
                 }
             }
-            else -> TurnInput.Raw(element)
+            else -> TurnInput.Custom(element.toCodexPayload())
         }
     }
 
@@ -103,7 +103,7 @@ object TurnInputSerializer : KSerializer<TurnInput> {
                 put("name", value.name)
                 put("path", value.path)
             }
-            is TurnInput.Raw -> value.value
+            is TurnInput.Custom -> value.payload.element
         }
 
         jsonEncoder.encodeJsonElement(element)

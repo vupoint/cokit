@@ -83,34 +83,34 @@ Thread and turn APIs return typed models when app-server responds with typed
 payloads. Identifiers and common options use lightweight SDK value types such as
 `ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`,
 `ModelName`, and `TurnInput` so application code is explicit without losing
-protocol forward-compatibility. Use `TurnInput.Raw` only when upstream has added
-an input variant that CoKit has not modeled yet.
+protocol forward-compatibility. Use `TurnInput.Custom` with `CodexJsonPayload`
+only when upstream has added an input variant that CoKit has not modeled yet.
 
 ## Observe Notifications
 
 ```kotlin
-client.rawEvents.collect { notification ->
-    println(notification.method)
-}
-```
-
-`rawEvents` exposes app-server notifications directly. `events` wraps those
-notifications in CoKit event types and will become the typed event surface as the
-client evolves.
-
-## Handle Server Requests
-
-CoKit defaults approval-like requests to safe responses when no handler is
-registered. Consumers can register raw handlers for methods that need custom
-decisions:
-
-```kotlin
-client.registerServerRequestHandler("item/commandExecution/requestApproval") {
-    buildJsonObject {
-        put("decision", "decline")
+client.events.collect { event ->
+    when (event) {
+        is CodexEvent.Notification -> println(event.method)
     }
 }
 ```
 
-Typed approval helpers will grow from this raw hook as the protocol surface is
-filled in.
+`events` exposes CoKit event types. Unknown notification payloads are preserved
+as `CodexJsonPayload` so applications can keep compatibility with new upstream
+members without taking a dependency on JSON-RPC envelope types.
+
+## Handle Server Requests
+
+CoKit defaults approval-like requests to safe responses when no handler is
+registered. Consumers can register handlers for methods that need custom
+decisions:
+
+```kotlin
+client.registerServerRequestHandler("item/commandExecution/requestApproval") { _ ->
+    CodexServerResponse.Result(CodexJsonPayload.parse("""{"decision":"decline"}"""))
+}
+```
+
+Typed approval helpers will grow from this compatibility hook as the protocol
+surface is filled in.

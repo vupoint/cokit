@@ -1,7 +1,6 @@
 package io.github.cokit.client
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 @JvmInline
@@ -26,7 +25,7 @@ data class StartThreadRequest(
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val sandbox: SandboxPolicy? = null,
-    val permissions: JsonElement? = null,
+    val permissions: CodexJsonPayload? = null,
     val model: ModelName? = null,
     val effort: ReasoningEffort? = null,
     val personality: String? = null,
@@ -36,7 +35,7 @@ data class StartThreadRequest(
 data class ResumeThreadRequest(
     val threadId: ThreadId,
     val excludeTurns: List<TurnId> = emptyList(),
-    val initialTurnsPage: JsonElement? = null,
+    val initialTurnsPage: CodexJsonPayload? = null,
 )
 
 @Serializable

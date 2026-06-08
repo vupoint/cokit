@@ -70,9 +70,7 @@ class ThreadTurnApiTest {
                     input = listOf(TurnInput.Text("Run tests")),
                     approvalPolicy = ApprovalPolicy.OnFailure,
                     sandboxPolicy = SandboxPolicy.WorkspaceWrite,
-                    outputSchema = buildJsonObject {
-                        put("type", "object")
-                    },
+                    outputSchema = CodexJsonPayload.parse("""{"type":"object"}"""),
                 ),
             )
         }
@@ -109,7 +107,7 @@ class ThreadTurnApiTest {
     }
 
     @Test
-    fun rawTurnInputRequiresExplicitEscapeHatch() = runTest {
+    fun customTurnInputRequiresExplicitEscapeHatch() = runTest {
         val fixture = connectedClientFixture(backgroundScope)
 
         val deferred = async {
@@ -117,11 +115,8 @@ class ThreadTurnApiTest {
                 StartTurnRequest(
                     threadId = ThreadId("thr_123"),
                     input = listOf(
-                        TurnInput.Raw(
-                            buildJsonObject {
-                                put("type", "experimentalInput")
-                                put("value", "kept")
-                            },
+                        TurnInput.Custom(
+                            CodexJsonPayload.parse("""{"type":"experimentalInput","value":"kept"}"""),
                         ),
                     ),
                 ),
@@ -152,6 +147,35 @@ class ThreadTurnApiTest {
         )
 
         assertEquals(TurnId("turn_123"), deferred.await().id)
+    }
+
+    @Test
+    fun clientModelsUseSdkPayloadWrappersForUnmodeledProtocolMembers() {
+        val payload = CodexJsonPayload.parse("""{"value":"kept"}""")
+
+        val turn = Turn(
+            id = TurnId("turn_123"),
+            status = "running",
+            items = listOf(payload),
+            error = payload,
+        )
+        val startThread = StartThreadRequest(permissions = payload)
+        val resumeThread = ResumeThreadRequest(
+            threadId = ThreadId("thr_123"),
+            initialTurnsPage = payload,
+        )
+        val startTurn = StartTurnRequest(
+            threadId = ThreadId("thr_123"),
+            permissions = payload,
+            outputSchema = payload,
+        )
+
+        assertEquals(payload, turn.items.single())
+        assertEquals(payload, turn.error)
+        assertEquals(payload, startThread.permissions)
+        assertEquals(payload, resumeThread.initialTurnsPage)
+        assertEquals(payload, startTurn.permissions)
+        assertEquals(payload, startTurn.outputSchema)
     }
 
     private suspend fun TestScope.connectedClientFixture(

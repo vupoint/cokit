@@ -26,14 +26,17 @@ lists. Identifiers and common options should use small value classes such as
 `ModelName`. Prefer value classes with documented constants over closed enums
 when upstream may add new string values.
 
-Raw `JsonElement` fields are acceptable for protocol areas that are not yet
-modeled, but those fields should be named after the upstream protocol member and
-kept at the boundary of a typed request or response model.
+High-level client models should not expose `JsonElement`, JSON-RPC envelope
+types, or other raw protocol payloads directly. Protocol areas that are not yet
+modeled should use SDK wrapper types such as `CodexJsonPayload`, named after the
+upstream protocol member and kept at the boundary of a typed request or response
+model.
 
 Turn input is a public client surface and should use `TurnInput` variants such
 as `Text`, `Image`, `LocalImage`, `Skill`, and `Mention` instead of exposing raw
-JSON as the primary API. Use `TurnInput.Raw` as an explicit compatibility escape
-hatch for upstream variants that CoKit has not modeled yet.
+JSON as the primary API. Use `TurnInput.Custom` with `CodexJsonPayload` as an
+explicit compatibility escape hatch for upstream variants that CoKit has not
+modeled yet.
 
 ## Schema Generation
 
