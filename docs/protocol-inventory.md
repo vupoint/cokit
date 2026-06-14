@@ -55,9 +55,9 @@ modeled coverage. They are compatibility behavior only.
 
 | Group | Status | Upstream notifications | CoKit coverage |
 | --- | --- | --- | --- |
-| Thread lifecycle | partial | `thread/started`, `thread/archived`, `thread/unarchived`, `thread/closed`, `thread/deleted`, `thread/name/updated`, `thread/status/changed`, `thread/tokenUsage/updated` | `CodexNotification.ThreadStarted` is typed. Other thread notifications currently map to `CodexNotification.Unknown`. |
+| Thread lifecycle | partial | `thread/started`, `thread/archived`, `thread/unarchived`, `thread/closed`, `thread/deleted`, `thread/name/updated`, `thread/status/changed`, `thread/tokenUsage/updated` | `CodexNotification.ThreadStarted` and `ThreadStatusChanged` are typed. Other thread notifications currently map to `CodexNotification.Unknown`. |
 | Thread goal and settings | experimental | `thread/goal/updated`, `thread/goal/cleared`, `thread/settings/updated` | Deferred. Settings updates are experimental upstream. |
-| Turn lifecycle | deferred | `turn/started`, `turn/completed`, `turn/diff/updated`, `turn/plan/updated`, `turn/moderationMetadata` | No typed notifications yet. |
+| Turn lifecycle | partial | `turn/started`, `turn/completed`, `turn/diff/updated`, `turn/plan/updated`, `turn/moderationMetadata` | `CodexNotification.TurnStarted`, `TurnCompleted`, and `TurnFailed` are typed. `TurnFailed` is decoded from `turn/completed` when `turn.status` is `failed`. Other turn notifications currently map to `CodexNotification.Unknown`. |
 | Model routing and verification | deferred | `model/rerouted`, `model/verification` | No typed notifications yet. |
 | Item lifecycle | deferred | `item/started`, `item/completed` | No typed item notifications yet. |
 | Temporary auto-approval review | experimental | `item/autoApprovalReview/started`, `item/autoApprovalReview/completed` | Deferred. Upstream marks the shape unstable. |

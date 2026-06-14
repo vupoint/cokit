@@ -97,6 +97,10 @@ the upstream wire shape.
 client.notifications.collect { notification ->
     when (notification) {
         is CodexNotification.ThreadStarted -> println(notification.threadId.value)
+        is CodexNotification.ThreadStatusChanged -> println(notification.status.value)
+        is CodexNotification.TurnStarted -> println(notification.turn.id.value)
+        is CodexNotification.TurnCompleted -> println(notification.turn.status.value)
+        is CodexNotification.TurnFailed -> println(notification.turn.error?.message)
         is CodexNotification.Unknown -> println(notification.method)
     }
 }
@@ -104,6 +108,8 @@ client.notifications.collect { notification ->
 
 `notifications` exposes typed CoKit notification models. Unknown notifications
 keep the method name but do not expose raw JSON through the primary API.
+Turn failures are decoded from upstream `turn/completed` notifications whose
+turn status is `failed`.
 
 ## Handle Server Requests
 

@@ -47,7 +47,14 @@ data class Turn(
     val status: TurnStatus,
     val itemsView: TurnItemsView? = null,
     val items: List<CodexJsonPayload> = emptyList(),
-    val error: CodexJsonPayload? = null,
+    val error: TurnError? = null,
+)
+
+@Serializable
+data class TurnError(
+    val message: String,
+    val codexErrorInfo: CodexJsonPayload? = null,
+    val additionalDetails: String? = null,
 )
 
 @Serializable

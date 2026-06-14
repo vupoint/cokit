@@ -157,7 +157,7 @@ class ThreadTurnApiTest {
             id = TurnId("turn_123"),
             status = TurnStatus("running"),
             items = listOf(payload),
-            error = payload,
+            error = TurnError("failed"),
         )
         val startThread = StartThreadRequest(permissions = payload)
         val resumeThread = ResumeThreadRequest(
@@ -171,7 +171,7 @@ class ThreadTurnApiTest {
         )
 
         assertEquals(payload, turn.items.single())
-        assertEquals(payload, turn.error)
+        assertEquals("failed", turn.error?.message)
         assertEquals(payload, startThread.permissions)
         assertEquals(payload, resumeThread.initialTurnsPage)
         assertEquals(payload, startTurn.permissions)
