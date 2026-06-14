@@ -83,6 +83,18 @@ turn request methods:
 `CodexRpcClient.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
 
+The following summary is checked by `CodexRpcCoverageTest`. Inventory group
+counts are derived from `docs/protocol-inventory.md`; the public `CodexRpc`
+request descriptor count is exact.
+
+<!-- codex-rpc-coverage:start -->
+| Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Request groups | 0 | 3 | 13 | 6 | 12 public `CodexRpc` request descriptors |
+| Notification groups | 0 | 1 | 16 | 7 | Not counted by this helper |
+| Server-request groups | 0 | 4 | 1 | 2 | Not counted by this helper |
+<!-- codex-rpc-coverage:end -->
+
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
 together. On that basis, CoKit's typed request descriptor coverage is about 12%
