@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
@@ -236,6 +237,65 @@ class CodexRpcClientTest {
             ),
             deferred.await().thread.gitInfo,
         )
+    }
+
+    @OptIn(ExperimentalCodexApi::class)
+    @Test
+    fun threadTurnsListDescriptorSendsPagingParamsAndDecodesPage() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val deferred = async {
+            fixture.client.request(
+                CodexRpc.Thread.ListTurns,
+                ThreadTurnsListParams(
+                    threadId = ThreadId("thr_123"),
+                    cursor = CodexCursor("cursor_older"),
+                    limit = 50,
+                    sortDirection = SortDirection.Desc,
+                    itemsView = TurnItemsView.Summary,
+                ),
+            )
+        }
+        runCurrent()
+
+        val sent = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("thread/turns/list", sent.method)
+        val params = sent.params!!.jsonObject
+        assertEquals("thr_123", params["threadId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("cursor_older", params["cursor"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("50", params["limit"]?.jsonPrimitive.toString())
+        assertEquals("desc", params["sortDirection"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("summary", params["itemsView"]?.jsonPrimitive?.contentOrNull)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                sent.id,
+                result = buildJsonObject {
+                    put(
+                        "data",
+                        buildJsonArray {
+                            add(
+                                buildJsonObject {
+                                    put("id", "turn_123")
+                                    put("status", "completed")
+                                    put("itemsView", "summary")
+                                    put("items", buildJsonArray { })
+                                },
+                            )
+                        },
+                    )
+                    put("nextCursor", "cursor_next")
+                    put("backwardsCursor", "cursor_back")
+                },
+            ),
+        )
+
+        val page = deferred.await()
+        assertEquals(TurnId("turn_123"), page.data.single().id)
+        assertEquals(TurnStatus.Completed, page.data.single().status)
+        assertEquals(TurnItemsView.Summary, page.data.single().itemsView)
+        assertEquals(CodexCursor("cursor_next"), page.nextCursor)
+        assertEquals(CodexCursor("cursor_back"), page.backwardsCursor)
     }
 
     @Test

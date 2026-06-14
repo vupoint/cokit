@@ -1,7 +1,7 @@
 package io.github.cokit.client
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.Serializable
 
 @Serializable
 @JvmInline
@@ -10,6 +10,25 @@ value class TurnId(val value: String)
 @Serializable
 @JvmInline
 value class ClientMessageId(val value: String)
+
+@Serializable
+@JvmInline
+value class SortDirection(val value: String) {
+    companion object {
+        val Asc = SortDirection("asc")
+        val Desc = SortDirection("desc")
+    }
+}
+
+@Serializable
+@JvmInline
+value class TurnItemsView(val value: String) {
+    companion object {
+        val NotLoaded = TurnItemsView("notLoaded")
+        val Summary = TurnItemsView("summary")
+        val Full = TurnItemsView("full")
+    }
+}
 
 @Serializable
 @JvmInline
@@ -26,6 +45,7 @@ value class TurnStatus(val value: String) {
 data class Turn(
     val id: TurnId,
     val status: TurnStatus,
+    val itemsView: TurnItemsView? = null,
     val items: List<CodexJsonPayload> = emptyList(),
     val error: CodexJsonPayload? = null,
 )

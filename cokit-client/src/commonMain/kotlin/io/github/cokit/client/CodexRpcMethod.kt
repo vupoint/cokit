@@ -74,6 +74,13 @@ object CodexRpc {
             paramsSerializer = ThreadMetadataUpdateParams.serializer(),
             resultSerializer = ThreadMetadataUpdateResult.serializer(),
         )
+
+        @ExperimentalCodexApi
+        val ListTurns: CodexRpcMethod<ThreadTurnsListParams, ThreadTurnsListResult> = CodexRpcMethod(
+            method = "thread/turns/list",
+            paramsSerializer = ThreadTurnsListParams.serializer(),
+            resultSerializer = ThreadTurnsListResult.serializer(),
+        )
     }
 
     object Turn {

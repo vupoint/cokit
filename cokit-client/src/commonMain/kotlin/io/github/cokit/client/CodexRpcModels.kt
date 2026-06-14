@@ -102,6 +102,24 @@ data class ThreadMetadataUpdateResult(
     val thread: Thread,
 )
 
+@ExperimentalCodexApi
+@Serializable
+data class ThreadTurnsListParams(
+    val threadId: ThreadId,
+    val cursor: CodexCursor? = null,
+    val limit: Int? = null,
+    val sortDirection: SortDirection? = null,
+    val itemsView: TurnItemsView? = null,
+)
+
+@ExperimentalCodexApi
+@Serializable
+data class ThreadTurnsListResult(
+    val data: List<Turn> = emptyList(),
+    val nextCursor: CodexCursor? = null,
+    val backwardsCursor: CodexCursor? = null,
+)
+
 @Serializable
 data class TurnStartParams(
     val threadId: ThreadId,
