@@ -284,6 +284,12 @@ Exit criteria:
 
 ## Schema Generation
 
+Schema provenance is recorded in
+`cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
+The file records the Codex CLI version, upstream Codex commit, stable schema
+command, experimental schema command, and the timestamp for the provenance
+snapshot.
+
 Run:
 
 ```bash
@@ -297,7 +303,19 @@ codex app-server generate-json-schema --out build/generated/codex-schema/stable
 codex app-server generate-json-schema --out build/generated/codex-schema/experimental --experimental
 ```
 
-The command requires a local `codex` executable.
+The command requires a local `codex` executable. Before refreshing generated
+schema fixtures or generated DTOs, update the provenance file with:
+
+```bash
+codex --version
+git ls-remote https://github.com/openai/codex.git refs/heads/main
+```
+
+Then update `generatedAt` to the refresh timestamp. The Gradle schema generation
+tasks validate that the provenance file exists, includes every required key, and
+records the stable or experimental command for the generation mode being run.
+Do not commit generated schema outputs unless the provenance file is updated in
+the same change.
 
 ## Fixture Policy
 
