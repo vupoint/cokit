@@ -38,8 +38,11 @@ method strings.
 Client APIs should accept request objects instead of long parameter lists.
 Identifiers and common options should use small value classes such as
 `ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`, and
-`ModelName`. Prefer value classes with documented constants over closed enums
-when upstream may add new string values.
+`ModelName`. Thread, turn, item, pagination, and client-message scalar fields
+should likewise use wrappers such as `CodexCursor`, `CodexTimestamp`,
+`ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`, and `ItemStatus`.
+Prefer value classes with documented constants over closed enums when upstream
+may add new string values.
 
 Primary client models should not expose `JsonElement`, JSON-RPC envelope types,
 or other raw protocol payloads directly. Protocol areas that are not yet modeled

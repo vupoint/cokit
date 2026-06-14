@@ -8,9 +8,24 @@ import kotlinx.serialization.EncodeDefault
 value class TurnId(val value: String)
 
 @Serializable
+@JvmInline
+value class ClientMessageId(val value: String)
+
+@Serializable
+@JvmInline
+value class TurnStatus(val value: String) {
+    companion object {
+        val InProgress = TurnStatus("inProgress")
+        val Completed = TurnStatus("completed")
+        val Interrupted = TurnStatus("interrupted")
+        val Failed = TurnStatus("failed")
+    }
+}
+
+@Serializable
 data class Turn(
     val id: TurnId,
-    val status: String,
+    val status: TurnStatus,
     val items: List<CodexJsonPayload> = emptyList(),
     val error: CodexJsonPayload? = null,
 )
@@ -34,7 +49,7 @@ data class SteerTurnRequest(
     val threadId: ThreadId,
     val expectedTurnId: TurnId,
     val input: List<TurnInput>,
-    val clientUserMessageId: String? = null,
+    val clientUserMessageId: ClientMessageId? = null,
 )
 
 @Serializable

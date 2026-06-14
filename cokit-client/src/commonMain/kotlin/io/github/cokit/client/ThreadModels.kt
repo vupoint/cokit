@@ -7,17 +7,34 @@ import kotlinx.serialization.Serializable
 value class ThreadId(val value: String)
 
 @Serializable
+@JvmInline
+value class CodexCursor(val value: String)
+
+@Serializable
+@JvmInline
+value class CodexTimestamp(val epochSeconds: Long)
+
+@Serializable
+@JvmInline
+value class ThreadStatusType(val value: String) {
+    companion object {
+        val NotLoaded = ThreadStatusType("notLoaded")
+    }
+}
+
+@Serializable
 data class Thread(
     val id: ThreadId,
     val preview: String? = null,
     val modelProvider: String? = null,
-    val createdAt: Long? = null,
+    val createdAt: CodexTimestamp? = null,
+    val updatedAt: CodexTimestamp? = null,
 )
 
 @Serializable
 data class ThreadList(
     val threads: List<Thread> = emptyList(),
-    val cursor: String? = null,
+    val cursor: CodexCursor? = null,
 )
 
 @Serializable
@@ -47,7 +64,7 @@ data class ForkThreadRequest(
 
 @Serializable
 data class ListThreadsRequest(
-    val cursor: String? = null,
+    val cursor: CodexCursor? = null,
     val limit: Int? = null,
     val cwd: CodexHostPath? = null,
     val archived: Boolean? = null,

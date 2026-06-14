@@ -46,7 +46,7 @@ data class ThreadForkResult(
 
 @Serializable
 data class ThreadListParams(
-    val cursor: String? = null,
+    val cursor: CodexCursor? = null,
     val limit: Int? = null,
     val cwd: CodexHostPath? = null,
     val archived: Boolean? = null,
@@ -56,7 +56,7 @@ data class ThreadListParams(
 @Serializable
 data class ThreadListResult(
     val threads: List<Thread> = emptyList(),
-    val cursor: String? = null,
+    val cursor: CodexCursor? = null,
 )
 
 @Serializable
@@ -116,7 +116,7 @@ data class TurnSteerParams(
     val threadId: ThreadId,
     val expectedTurnId: TurnId,
     val input: List<TurnInput>,
-    val clientUserMessageId: String? = null,
+    val clientUserMessageId: ClientMessageId? = null,
 )
 
 @Serializable

@@ -155,7 +155,7 @@ class ThreadTurnApiTest {
 
         val turn = Turn(
             id = TurnId("turn_123"),
-            status = "running",
+            status = TurnStatus("running"),
             items = listOf(payload),
             error = payload,
         )

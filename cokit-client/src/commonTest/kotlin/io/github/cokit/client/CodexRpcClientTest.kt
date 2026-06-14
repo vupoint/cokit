@@ -121,7 +121,7 @@ class CodexRpcClientTest {
             fixture.requestThreadListResult(
                 this,
                 ThreadListParams(
-                    cursor = "cursor_1",
+                    cursor = CodexCursor("cursor_1"),
                     limit = 10,
                     cwd = CodexHostPath("/path/to/project"),
                     archived = false,
@@ -197,7 +197,7 @@ class CodexRpcClientTest {
                     threadId = ThreadId("thr_123"),
                     expectedTurnId = TurnId("turn_123"),
                     input = listOf(TurnInput.Text("Keep going")),
-                    clientUserMessageId = "msg_123",
+                    clientUserMessageId = ClientMessageId("msg_123"),
                 ),
                 "turn/steer",
             ),
