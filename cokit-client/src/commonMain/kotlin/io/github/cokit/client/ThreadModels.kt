@@ -38,6 +38,17 @@ value class ThreadStatusType(val value: String) {
 }
 
 @Serializable
+@JvmInline
+value class ThreadGoalStatus(val value: String) {
+    companion object {
+        val Active = ThreadGoalStatus("active")
+        val Blocked = ThreadGoalStatus("blocked")
+        val BudgetLimited = ThreadGoalStatus("budgetLimited")
+        val UsageLimited = ThreadGoalStatus("usageLimited")
+    }
+}
+
+@Serializable
 data class Thread(
     val id: ThreadId,
     val preview: String? = null,
@@ -45,6 +56,18 @@ data class Thread(
     val createdAt: CodexTimestamp? = null,
     val updatedAt: CodexTimestamp? = null,
     val gitInfo: ThreadGitInfo? = null,
+)
+
+@Serializable
+data class ThreadGoal(
+    val threadId: ThreadId,
+    val objective: String,
+    val status: ThreadGoalStatus,
+    val tokenBudget: Long? = null,
+    val tokensUsed: Long = 0,
+    val timeUsedSeconds: Long = 0,
+    val createdAt: CodexTimestamp? = null,
+    val updatedAt: CodexTimestamp? = null,
 )
 
 @Serializable

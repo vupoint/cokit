@@ -86,6 +86,11 @@ turn request methods:
 - `thread/name/set`
 - `thread/metadata/update`
 - `thread/turns/list`
+- `thread/delete`
+- `thread/goal/set`
+- `thread/goal/get`
+- `thread/goal/clear`
+- `thread/compact/start`
 - `turn/start`
 - `turn/steer`
 - `turn/interrupt`
@@ -100,15 +105,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 0 | 4 | 12 | 6 | 14 public `CodexRpc` request descriptors |
+| Request groups | 0 | 4 | 12 | 6 | 19 public `CodexRpc` request descriptors |
 | Notification groups | 0 | 1 | 16 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 4 | 1 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 14%
-of the full upstream request surface, or about 15% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 19%
+of the full upstream request surface, or about 20% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -122,9 +127,9 @@ upstream surface today:
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
-- Advanced thread APIs: loaded-thread listing, settings, memory mode, goals,
-  delete, compaction, shell command, background terminals, rollback, realtime,
-  and raw item injection.
+- Advanced thread APIs: loaded-thread listing, turn-item hydration, settings,
+  memory mode, shell command, background terminals, rollback, realtime, and raw
+  item injection.
 - Review and execution APIs: review start, sandboxed command execution,
   standalone process lifecycle, and filesystem utilities.
 - Catalog and configuration APIs: model, model-provider capabilities,

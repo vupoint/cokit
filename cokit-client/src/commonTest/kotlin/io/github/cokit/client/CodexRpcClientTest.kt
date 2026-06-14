@@ -8,6 +8,7 @@ import io.github.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -299,6 +300,131 @@ class CodexRpcClientTest {
     }
 
     @Test
+    fun threadDeleteDescriptorSendsThreadIdAndDecodesEmptyResult() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        assertEquals(
+            CodexRpcUnit,
+            fixture.requestUnitResult(
+                this,
+                CodexRpc.Thread.Delete,
+                ThreadDeleteParams(ThreadId("thr_123")),
+                "thread/delete",
+            ),
+        )
+    }
+
+    @Test
+    fun threadGoalSetDescriptorSendsPartialUpdateAndDecodesGoal() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val deferred = async {
+            fixture.client.request(
+                CodexRpc.Thread.SetGoal,
+                ThreadGoalSetParams(
+                    threadId = ThreadId("thr_123"),
+                    objective = "Keep improving latency",
+                    tokenBudget = 200_000,
+                ),
+            )
+        }
+        runCurrent()
+
+        val sent = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("thread/goal/set", sent.method)
+        val params = sent.params!!.jsonObject
+        assertEquals("thr_123", params["threadId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("Keep improving latency", params["objective"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("200000", params["tokenBudget"]?.jsonPrimitive.toString())
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                sent.id,
+                result = buildJsonObject {
+                    put("goal", threadGoalPayload(status = "active"))
+                },
+            ),
+        )
+
+        val goal = assertNotNull(deferred.await().goal)
+        assertEquals(ThreadId("thr_123"), goal.threadId)
+        assertEquals("Keep improving latency", goal.objective)
+        assertEquals(ThreadGoalStatus.Active, goal.status)
+        assertEquals(200_000, goal.tokenBudget)
+        assertEquals(10_000, goal.tokensUsed)
+        assertEquals(60, goal.timeUsedSeconds)
+        assertEquals(CodexTimestamp(1776272400), goal.createdAt)
+        assertEquals(CodexTimestamp(1776272460), goal.updatedAt)
+    }
+
+    @Test
+    fun threadGoalGetDescriptorSendsThreadIdAndDecodesMissingGoal() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val deferred = async {
+            fixture.client.request(
+                CodexRpc.Thread.GetGoal,
+                ThreadGoalGetParams(ThreadId("thr_123")),
+            )
+        }
+        runCurrent()
+
+        val sent = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("thread/goal/get", sent.method)
+        assertEquals("thr_123", sent.params?.jsonObject?.get("threadId")?.jsonPrimitive?.contentOrNull)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                sent.id,
+                result = buildJsonObject { put("goal", JsonNull) },
+            ),
+        )
+
+        assertEquals(null, deferred.await().goal)
+    }
+
+    @Test
+    fun threadGoalClearDescriptorSendsThreadIdAndDecodesClearedFlag() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val deferred = async {
+            fixture.client.request(
+                CodexRpc.Thread.ClearGoal,
+                ThreadGoalClearParams(ThreadId("thr_123")),
+            )
+        }
+        runCurrent()
+
+        val sent = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("thread/goal/clear", sent.method)
+        assertEquals("thr_123", sent.params?.jsonObject?.get("threadId")?.jsonPrimitive?.contentOrNull)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                sent.id,
+                result = buildJsonObject { put("cleared", true) },
+            ),
+        )
+
+        assertEquals(true, deferred.await().cleared)
+    }
+
+    @Test
+    fun threadCompactionDescriptorSendsThreadIdAndDecodesEmptyResult() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        assertEquals(
+            CodexRpcUnit,
+            fixture.requestUnitResult(
+                this,
+                CodexRpc.Thread.StartCompaction,
+                ThreadCompactionStartParams(ThreadId("thr_123")),
+                "thread/compact/start",
+            ),
+        )
+    }
+
+    @Test
     fun turnDescriptorsExposeEveryTurnRpcMethod() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
 
@@ -412,6 +538,17 @@ class CodexRpcClientTest {
             put("cwd", "/path/to/project")
         },
     )
+
+    private fun threadGoalPayload(status: String): JsonObject = buildJsonObject {
+        put("threadId", "thr_123")
+        put("objective", "Keep improving latency")
+        put("status", status)
+        put("tokenBudget", 200_000)
+        put("tokensUsed", 10_000)
+        put("timeUsedSeconds", 60)
+        put("createdAt", 1776272400)
+        put("updatedAt", 1776272460)
+    }
 
     private data class ConnectedRpcClientFixture(
         val client: CodexRpcClient,

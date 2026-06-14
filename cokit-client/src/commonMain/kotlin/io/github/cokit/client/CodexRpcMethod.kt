@@ -55,6 +55,13 @@ object CodexRpc {
             emptyResult = CodexRpcUnit,
         )
 
+        val Delete: CodexRpcMethod<ThreadDeleteParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/delete",
+            paramsSerializer = ThreadDeleteParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
         val Unsubscribe: CodexRpcMethod<ThreadUnsubscribeParams, CodexRpcUnit> = CodexRpcMethod(
             method = "thread/unsubscribe",
             paramsSerializer = ThreadUnsubscribeParams.serializer(),
@@ -73,6 +80,31 @@ object CodexRpc {
             method = "thread/metadata/update",
             paramsSerializer = ThreadMetadataUpdateParams.serializer(),
             resultSerializer = ThreadMetadataUpdateResult.serializer(),
+        )
+
+        val SetGoal: CodexRpcMethod<ThreadGoalSetParams, ThreadGoalSetResult> = CodexRpcMethod(
+            method = "thread/goal/set",
+            paramsSerializer = ThreadGoalSetParams.serializer(),
+            resultSerializer = ThreadGoalSetResult.serializer(),
+        )
+
+        val GetGoal: CodexRpcMethod<ThreadGoalGetParams, ThreadGoalGetResult> = CodexRpcMethod(
+            method = "thread/goal/get",
+            paramsSerializer = ThreadGoalGetParams.serializer(),
+            resultSerializer = ThreadGoalGetResult.serializer(),
+        )
+
+        val ClearGoal: CodexRpcMethod<ThreadGoalClearParams, ThreadGoalClearResult> = CodexRpcMethod(
+            method = "thread/goal/clear",
+            paramsSerializer = ThreadGoalClearParams.serializer(),
+            resultSerializer = ThreadGoalClearResult.serializer(),
+        )
+
+        val StartCompaction: CodexRpcMethod<ThreadCompactionStartParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/compact/start",
+            paramsSerializer = ThreadCompactionStartParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
         )
 
         @ExperimentalCodexApi

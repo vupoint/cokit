@@ -81,6 +81,11 @@ data class ThreadUnarchiveParams(
 )
 
 @Serializable
+data class ThreadDeleteParams(
+    val threadId: ThreadId,
+)
+
+@Serializable
 data class ThreadUnsubscribeParams(
     val threadId: ThreadId,
 )
@@ -100,6 +105,44 @@ data class ThreadMetadataUpdateParams(
 @Serializable
 data class ThreadMetadataUpdateResult(
     val thread: Thread,
+)
+
+@Serializable
+data class ThreadGoalSetParams(
+    val threadId: ThreadId,
+    val objective: String? = null,
+    val status: ThreadGoalStatus? = null,
+    val tokenBudget: Long? = null,
+)
+
+@Serializable
+data class ThreadGoalSetResult(
+    val goal: ThreadGoal,
+)
+
+@Serializable
+data class ThreadGoalGetParams(
+    val threadId: ThreadId,
+)
+
+@Serializable
+data class ThreadGoalGetResult(
+    val goal: ThreadGoal? = null,
+)
+
+@Serializable
+data class ThreadGoalClearParams(
+    val threadId: ThreadId,
+)
+
+@Serializable
+data class ThreadGoalClearResult(
+    val cleared: Boolean,
+)
+
+@Serializable
+data class ThreadCompactionStartParams(
+    val threadId: ThreadId,
 )
 
 @ExperimentalCodexApi
