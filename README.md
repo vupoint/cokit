@@ -22,7 +22,7 @@ CoKit is in early development. The current codebase includes:
 
 The upstream app-server README documents a much broader protocol surface than
 CoKit currently models. See [Protocol Compatibility](docs/protocol-compatibility.md)
-for the current coverage snapshot.
+for the current coverage snapshot and implementation roadmap.
 
 ## Modules
 

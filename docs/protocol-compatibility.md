@@ -116,6 +116,168 @@ Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.
 
+## Implementation Roadmap
+
+This roadmap orders the remaining protocol work by SDK usefulness, protocol
+risk, and security sensitivity. It is not a release commitment; it is the
+preferred implementation sequence when extending CoKit toward the full upstream
+app-server surface.
+
+### Phase 1: Protocol Inventory And Generation
+
+Goal: make the upstream README and generated schema the repeatable source of
+truth before broadening the public API.
+
+- Maintain a checked protocol inventory that groups every upstream method into
+  stable, experimental, notification, and server-request surfaces.
+- Generate stable and experimental schema fixtures from a recorded Codex version
+  or upstream commit, and validate generated DTOs against those fixtures.
+- Add a public coverage table that reports modeled request descriptors, typed
+  notifications, typed server requests, and explicit compatibility gaps.
+- Keep `CodexJsonPayload` limited to documented compatibility fields and avoid
+  adding new primary APIs that require callers to construct arbitrary JSON.
+
+Exit criteria:
+
+- Coverage can be recalculated from a documented upstream README/schema version.
+- New method descriptors cannot be added without params/result serializer tests.
+- Stable and experimental surfaces are visibly separated in source and docs.
+
+### Phase 2: Core Thread And Turn Fidelity
+
+Goal: complete the ordinary conversation lifecycle before utility and account
+surfaces.
+
+- Expand typed models for thread metadata, status, settings, permission profile
+  selection, runtime workspace roots, environments, token usage, and paged turn
+  history.
+- Add descriptors for loaded-thread listing, turn history paging, metadata
+  updates, settings updates, memory mode, goals, delete, compaction, shell
+  command, rollback, background terminals, and realtime methods.
+- Model the event stream needed by normal clients: `thread/*`, `turn/*`,
+  `item/started`, `item/completed`, item deltas, token usage, warnings, and
+  errors.
+- Keep unsupported upstream methods, such as currently unsupported item
+  hydration endpoints, out of the stable convenience surface until CoKit can
+  represent their unsupported state intentionally.
+
+Exit criteria:
+
+- A client can start, resume, fork, page, render, steer, interrupt, archive,
+  restore, delete, and observe a thread without raw JSON.
+- Event rendering code can rely on typed sealed models for common thread, turn,
+  item, warning, and error notifications.
+- Experimental thread and realtime APIs require explicit initialization and API
+  opt-in.
+
+### Phase 3: Server-Initiated Requests And Approvals
+
+Goal: make app-server initiated work safe, typed, and deny-by-default.
+
+- Add typed server-request models and handlers for command approval, file-change
+  approval, permission requests, dynamic tool calls, MCP elicitation, user input
+  requests, and attestation generation.
+- Preserve automatic decline or cancel defaults for approval-like requests when
+  no handler is registered.
+- Emit typed request lifecycle notifications such as `serverRequest/resolved`
+  so applications can clear pending UI state reliably.
+- Document handler trust boundaries, host path semantics, and persistence
+  behavior for session-scoped grants.
+
+Exit criteria:
+
+- Applications can choose safe defaults or explicit handlers without seeing
+  JSON-RPC envelopes.
+- Security tests cover malformed requests, missing responses, default denial,
+  and handler failures.
+- No handler accepts command execution, file changes, permission grants, tool
+  calls, elicitation, attestation, or user input by default.
+
+### Phase 4: Host Utilities And Execution APIs
+
+Goal: expose host-side utility APIs after the approval and event model is strong
+enough to observe side effects.
+
+- Add typed descriptors and models for `command/exec`, streaming command input
+  and output, command resizing, and command termination.
+- Add typed descriptors and models for filesystem read/write, directory,
+  metadata, copy, remove, watch, and unwatch methods.
+- Add experimental typed descriptors for standalone process lifecycle APIs.
+- Add review-start support once review items and detached review threads are
+  modeled well enough for consumers to render results safely.
+
+Exit criteria:
+
+- Command and process APIs document sandbox differences, host semantics, output
+  caps, timeout behavior, and connection-scoped lifecycle.
+- Filesystem APIs require explicit absolute host paths in typed value models.
+- Streaming output and filesystem watch notifications are typed and bounded.
+
+### Phase 5: Catalog, Configuration, And Extension Surfaces
+
+Goal: let applications inspect app-server capabilities and extension metadata
+without implementing local UI policy inside CoKit.
+
+- Add model catalog, model-provider capability, experimental feature,
+  permission-profile, environment, collaboration-mode, and config read/write
+  descriptors.
+- Add skills, skill config, extra skill roots, hooks, apps, marketplace, plugin,
+  and plugin-skill descriptors.
+- Add MCP status, resource read, tool call, OAuth login, and config reload
+  descriptors.
+- Keep plugin, app, hook, and MCP APIs data-oriented. CoKit should expose typed
+  state and events, not render UI or decide user policy.
+
+Exit criteria:
+
+- Clients can build settings, catalog, extension, and MCP screens from typed
+  models.
+- Experimental and under-development plugin/app APIs remain opt-in and clearly
+  marked.
+- Documentation distinguishes data surfaces from UI responsibilities.
+
+### Phase 6: Auth, Account, Remote Control, And Managed Policy
+
+Goal: complete account and remote-control support after core local protocol
+surfaces are reliable.
+
+- Add account read, login start, login cancel, logout, usage, rate limit, and
+  add-credits notification descriptors and models.
+- Add account update, login completed, rate-limit update, and MCP OAuth
+  completion notifications.
+- Add remote-control enable, disable, status, pairing, client list, client
+  revoke, and status-change models behind experimental opt-in.
+- Add config requirements and managed policy models so applications can explain
+  disabled capabilities without duplicating raw config parsing.
+
+Exit criteria:
+
+- Auth flows avoid logging API keys, auth URLs, tokens, emails, and account
+  identifiers by default.
+- Remote-control APIs document enrollment, pairing, revocation, and local trust
+  boundaries before becoming usable.
+- Managed policy constraints can be surfaced through typed read-only models.
+
+### Phase 7: Compatibility, Hardening, And Release Readiness
+
+Goal: make the API safe to publish and maintain as upstream evolves.
+
+- Add binary/API inspection or source-level checks that prevent accidental
+  primary API exposure of `JsonElement` and JSON-RPC envelope types.
+- Add high-rate notification, malformed message, oversized message, overload,
+  retry, and shutdown tests across protocol, RPC, transport, and client modules.
+- Document retry behavior for app-server overload errors and connection
+  lifecycle failures.
+- Keep sample CLI and getting-started docs aligned with the primary typed API.
+- Re-run public exposure and security scans before release candidates.
+
+Exit criteria:
+
+- `./gradlew check --stacktrace` and public exposure/security grep pass.
+- Docs include supported, experimental, deferred, and compatibility surfaces.
+- A new upstream README/schema update has a documented workflow for updating
+  descriptors, DTOs, tests, sample code, and coverage tables together.
+
 ## Schema Generation
 
 Run:
