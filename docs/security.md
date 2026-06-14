@@ -12,6 +12,8 @@ changes, permission grants, dynamic tool calls, or elicitation flows.
 
 Applications should register explicit handlers only when they can show the
 request to a user, apply a policy, or otherwise make an intentional decision.
+Prefer typed handlers such as command approval handlers over raw method-string
+compatibility hooks.
 
 ## Host Semantics
 

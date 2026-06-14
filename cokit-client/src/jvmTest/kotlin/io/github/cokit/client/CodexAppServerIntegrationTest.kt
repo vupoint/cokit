@@ -12,11 +12,9 @@ class CodexAppServerIntegrationTest {
             return@runTest
         }
 
-        StdioCodexTransport(
-            command = listOf("codex", "app-server", "--stdio"),
-        ).use { transport ->
-            val client = CodexAppServerClient.connect(
-                CodexClientOptions(
+        StdioCodexTransport().use { transport ->
+            val client = CodexRpcClient.connect(
+                CodexRpcConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_integration", "CoKit Integration", "0.1.0"),
                     scope = backgroundScope,

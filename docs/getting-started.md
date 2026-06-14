@@ -34,18 +34,17 @@ Optional `--cwd` and `--message` flags can override the defaults:
 ./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
 ```
 
-The sample defaults to `codex app-server --stdio`. Use `COKIT_CODEX_COMMAND` to
-point it at another local command during development.
+The sample uses CoKit's default stdio app-server transport. Use
+`COKIT_CODEX_COMMAND` only when you need to point it at another local command
+during development.
 
 ## Connect To app-server
 
 ```kotlin
-val transport = StdioCodexTransport(
-    command = listOf("codex", "app-server", "--stdio"),
-)
+val transport = StdioCodexTransport()
 
-val client = CodexAppServerClient.connect(
-    CodexClientOptions(
+val client = CodexRpcClient.connect(
+    CodexRpcConnection(
         transport = transport,
         clientInfo = ClientInfo(
             name = "my_kotlin_client",
@@ -60,45 +59,51 @@ val client = CodexAppServerClient.connect(
 `connect()` sends `initialize`, waits for the matching response, then sends the
 `initialized` notification.
 
-## Start A Thread And Turn
+## Send JSON-RPC Requests
 
 ```kotlin
-val thread = client.threads.start(
-    StartThreadRequest(
+val thread = client.request(
+    CodexRpc.Thread.Start,
+    ThreadStartParams(
         cwd = CodexHostPath("/path/to/project"),
         approvalPolicy = ApprovalPolicy.OnRequest,
         sandbox = SandboxPolicy.WorkspaceWrite,
     ),
-)
+).thread
 
-val turn = client.turns.start(
-    StartTurnRequest(
+val turn = client.request(
+    CodexRpc.Turn.Start,
+    TurnStartParams(
         threadId = thread.id,
         input = listOf(TurnInput.Text("Summarize this repository")),
     ),
-)
+).turn
 ```
 
-Thread and turn APIs return typed models when app-server responds with typed
-payloads. Identifiers and common options use lightweight SDK value types such as
+`CodexRpc` descriptors keep upstream JSON-RPC method names such as
+`thread/start` and `turn/start` visible without asking callers to pass raw
+strings or JSON payloads. Each descriptor binds exactly one params type to one
+result type, so `CodexRpc.Thread.Start` accepts `ThreadStartParams` and returns
+`ThreadStartResult`.
+
+Identifiers and common options use lightweight SDK value types such as
 `ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`,
-`ModelName`, and `TurnInput` so application code is explicit without losing
-protocol forward-compatibility. Use `TurnInput.Custom` with `CodexJsonPayload`
-only when upstream has added an input variant that CoKit has not modeled yet.
+`ModelName`, and `TurnInput` so application code is explicit while preserving
+the upstream wire shape.
 
 ## Observe Notifications
 
 ```kotlin
-client.events.collect { event ->
-    when (event) {
-        is CodexEvent.Notification -> println(event.method)
+client.notifications.collect { notification ->
+    when (notification) {
+        is CodexNotification.ThreadStarted -> println(notification.threadId.value)
+        is CodexNotification.Unknown -> println(notification.method)
     }
 }
 ```
 
-`events` exposes CoKit event types. Unknown notification payloads are preserved
-as `CodexJsonPayload` so applications can keep compatibility with new upstream
-members without taking a dependency on JSON-RPC envelope types.
+`notifications` exposes typed CoKit notification models. Unknown notifications
+keep the method name but do not expose raw JSON through the primary API.
 
 ## Handle Server Requests
 
@@ -107,10 +112,12 @@ registered. Consumers can register handlers for methods that need custom
 decisions:
 
 ```kotlin
-client.registerServerRequestHandler("item/commandExecution/requestApproval") { _ ->
-    CodexServerResponse.Result(CodexJsonPayload.parse("""{"decision":"decline"}"""))
+client.registerCommandApprovalHandler { request ->
+    println(request.command)
+    ApprovalDecision.Decline
 }
 ```
 
-Typed approval helpers will grow from this compatibility hook as the protocol
-surface is filled in.
+Command approval handlers use typed request and decision models. Raw JSON-RPC
+compatibility hooks remain available for advanced protocol work, but they are
+not the default application API.

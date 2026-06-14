@@ -6,12 +6,13 @@ import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import io.github.cokit.client.ClientInfo
-import io.github.cokit.client.CodexAppServerClient
-import io.github.cokit.client.CodexClientOptions
 import io.github.cokit.client.CodexHostPath
-import io.github.cokit.client.StartThreadRequest
-import io.github.cokit.client.StartTurnRequest
+import io.github.cokit.client.CodexRpc
+import io.github.cokit.client.CodexRpcClient
+import io.github.cokit.client.CodexRpcConnection
+import io.github.cokit.client.ThreadStartParams
 import io.github.cokit.client.TurnInput
+import io.github.cokit.client.TurnStartParams
 import io.github.cokit.transport.stdio.StdioCodexTransport
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
@@ -30,8 +31,7 @@ class SampleCliCommand(
         Run a minimal codex app-server thread and turn sample.
 
         With no arguments, the sample uses the current working directory and a
-        default message. Set COKIT_CODEX_COMMAND to override the local app-server
-        command. The default command is: codex app-server --stdio
+        default message. Set COKIT_CODEX_COMMAND to override the local app-server command.
     """.trimIndent()
 
     private val cwd by option(
@@ -67,9 +67,9 @@ object SampleCliDefaults {
 
 private class CodexSampleRunner : SampleRunner {
     override suspend fun run(options: SampleOptions): String = coroutineScope {
-        StdioCodexTransport(command = codexCommand()).use { transport ->
-            CodexAppServerClient.connect(
-                CodexClientOptions(
+        codexTransport().use { transport ->
+            CodexRpcClient.connect(
+                CodexRpcConnection(
                     transport = transport,
                     clientInfo = ClientInfo(
                         name = "cokit_sample_cli",
@@ -79,28 +79,38 @@ private class CodexSampleRunner : SampleRunner {
                     scope = this,
                 ),
             ).use { client ->
-                val thread = client.threads.start(
-                    StartThreadRequest(cwd = CodexHostPath(options.cwd)),
-                )
-                val turn = client.turns.start(
-                    StartTurnRequest(
+                val thread = client.request(
+                    CodexRpc.Thread.Start,
+                    ThreadStartParams(cwd = CodexHostPath(options.cwd)),
+                ).thread
+                val turn = client.request(
+                    CodexRpc.Turn.Start,
+                    TurnStartParams(
                         threadId = thread.id,
                         input = listOf(
                             TurnInput.Text(options.message),
                         ),
                     ),
-                )
+                ).turn
 
                 "Started thread ${thread.id.value} and turn ${turn.id.value}"
             }
         }
     }
 
-    private fun codexCommand(): List<String> {
+    private fun codexTransport(): StdioCodexTransport {
+        val overrideCommand = codexCommandOverride()
+        return if (overrideCommand == null) {
+            StdioCodexTransport()
+        } else {
+            StdioCodexTransport(command = overrideCommand)
+        }
+    }
+
+    private fun codexCommandOverride(): List<String>? {
         return System.getenv("COKIT_CODEX_COMMAND")
             ?.split(Regex("\\s+"))
             ?.filter { it.isNotBlank() }
             ?.takeIf { it.isNotEmpty() }
-            ?: listOf("codex", "app-server", "--stdio")
     }
 }

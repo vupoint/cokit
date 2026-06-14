@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.put
 
 class CodexAppServerClient private constructor(
     private val rpc: JsonRpcSession,
@@ -55,7 +53,7 @@ class CodexAppServerClient private constructor(
             return try {
                 when (
                     val response = customHandler.respond(
-                        CodexServerRequest(
+                        CodexRawServerRequest(
                             method = request.method,
                             params = request.params?.toCodexPayload(),
                         ),
@@ -77,10 +75,7 @@ class CodexAppServerClient private constructor(
             } catch (error: Throwable) {
                 JsonRpcResponse(
                     id = request.id,
-                    error = JsonRpcErrorObject(
-                        code = -32000,
-                        message = error.message ?: "Server request handler failed",
-                    ),
+                    error = serverRequestHandlerError(error),
                 )
             }
         }
@@ -91,26 +86,8 @@ class CodexAppServerClient private constructor(
         } else {
             JsonRpcResponse(
                 id = request.id,
-                error = JsonRpcErrorObject(
-                    code = -32601,
-                    message = "No handler registered for ${request.method}",
-                ),
+                error = noHandlerError(request.method),
             )
-        }
-    }
-
-    private fun defaultServerRequestResult(method: String): CodexJsonPayload? {
-        return when (method) {
-            "item/commandExecution/requestApproval",
-            "item/fileChange/requestApproval",
-            "item/permissions/requestApproval",
-            "item/tool/call",
-            "mcpServer/elicitation/request",
-            -> buildJsonObject { put("decision", "decline") }.toCodexPayload()
-
-            "item/tool/requestUserInput" -> buildJsonObject { put("decision", "cancel") }.toCodexPayload()
-            "attestation/generate" -> buildJsonObject { put("status", "unsupported") }.toCodexPayload()
-            else -> null
         }
     }
 
@@ -136,13 +113,8 @@ class CodexAppServerClient private constructor(
     }
 }
 
-data class CodexServerRequest(
-    val method: String,
-    val params: CodexJsonPayload? = null,
-)
-
 fun interface CodexServerRequestHandler {
-    suspend fun respond(request: CodexServerRequest): CodexServerResponse
+    suspend fun respond(request: CodexRawServerRequest): CodexServerResponse
 }
 
 sealed interface CodexServerResponse {

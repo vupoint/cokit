@@ -64,6 +64,7 @@ class SampleCliTest {
         assertTrue(help.contains("--cwd"))
         assertTrue(help.contains("--message"))
         assertTrue(help.contains("COKIT_CODEX_COMMAND"))
+        assertTrue(!help.contains("codex app-server --stdio"))
     }
 
     private class RecordingSampleRunner : SampleRunner {
