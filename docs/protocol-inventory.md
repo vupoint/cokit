@@ -92,6 +92,27 @@ modeled coverage. They are compatibility behavior only.
 | MCP elicitation | deferred | `mcpServer/elicitation/request` | No typed request model yet. Without a handler, CoKit declines by default. |
 | Attestation generation | partial | `attestation/generate` | No typed request model yet. Without a handler, CoKit returns an unsupported status by default. |
 
+## Current Modeled Request Descriptors
+
+This table is checked by `CodexRpcInventoryTest`. Every public `CodexRpc`
+request descriptor must have one row here so new descriptors cannot be added
+without updating the public inventory.
+
+| Descriptor | Method | Coverage note |
+| --- | --- | --- |
+| `CodexRpc.Thread.Start` | `thread/start` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Resume` | `thread/resume` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Fork` | `thread/fork` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.List` | `thread/list` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Read` | `thread/read` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Archive` | `thread/archive` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Unarchive` | `thread/unarchive` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.Unsubscribe` | `thread/unsubscribe` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.SetName` | `thread/name/set` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Turn.Start` | `turn/start` | Turn lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Turn.Steer` | `turn/steer` | Turn lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Turn.Interrupt` | `turn/interrupt` | Turn lifecycle descriptor; group coverage remains partial. |
+
 ## Current Modeled Method Summary
 
 Current public request descriptors:
