@@ -59,11 +59,11 @@ modeled coverage. They are compatibility behavior only.
 | Thread goal and settings | experimental | `thread/goal/updated`, `thread/goal/cleared`, `thread/settings/updated` | Deferred. Settings updates are experimental upstream. |
 | Turn lifecycle | partial | `turn/started`, `turn/completed`, `turn/diff/updated`, `turn/plan/updated`, `turn/moderationMetadata` | `CodexNotification.TurnStarted`, `TurnCompleted`, and `TurnFailed` are typed. `TurnFailed` is decoded from `turn/completed` when `turn.status` is `failed`. Other turn notifications currently map to `CodexNotification.Unknown`. |
 | Model routing and verification | deferred | `model/rerouted`, `model/verification` | No typed notifications yet. |
-| Item lifecycle | deferred | `item/started`, `item/completed` | No typed item notifications yet. |
+| Item lifecycle | partial | `item/started`, `item/completed` | `CodexNotification.ItemStarted` and `ItemCompleted` expose the common `ThreadItemSummary` compatibility wrapper. Unsupported item fields remain out of the primary API. |
 | Temporary auto-approval review | experimental | `item/autoApprovalReview/started`, `item/autoApprovalReview/completed` | Deferred. Upstream marks the shape unstable. |
-| Agent message streaming | deferred | `item/agentMessage/delta` | No typed notification yet. |
+| Agent message streaming | modeled | `item/agentMessage/delta` | `CodexNotification.AgentMessageDelta` models the streamed text payload. |
 | Plan streaming | experimental | `item/plan/delta` | Deferred. Upstream marks plan deltas experimental. |
-| Reasoning streaming | deferred | `item/reasoning/summaryTextDelta`, `item/reasoning/summaryPartAdded`, `item/reasoning/textDelta` | No typed notifications yet. |
+| Reasoning streaming | partial | `item/reasoning/summaryTextDelta`, `item/reasoning/summaryPartAdded`, `item/reasoning/textDelta` | `CodexNotification.ReasoningSummaryTextDelta` models summary text streaming. Summary part boundaries and raw reasoning text remain deferred. |
 | Command execution item streaming | deferred | `item/commandExecution/outputDelta` | No typed notification yet. |
 | File change item streaming | deferred | `item/fileChange/patchUpdated`, `item/fileChange/outputDelta` | No typed notification yet. File-change approvals are deny-by-default as server requests. |
 | Command execution output | deferred | `command/exec/outputDelta` | No typed notification yet. |
@@ -147,6 +147,13 @@ Current public request descriptors:
 Current typed notification:
 
 - `thread/started`
+- `thread/status/changed`
+- `turn/started`
+- `turn/completed`
+- `item/started`
+- `item/completed`
+- `item/agentMessage/delta`
+- `item/reasoning/summaryTextDelta`
 
 Current typed server request:
 

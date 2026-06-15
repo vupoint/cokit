@@ -41,6 +41,41 @@ sealed interface CodexNotification {
         override val method: String = "turn/completed"
     }
 
+    data class ItemStarted(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val item: ThreadItemSummary,
+    ) : CodexNotification {
+        override val method: String = "item/started"
+    }
+
+    data class ItemCompleted(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val item: ThreadItemSummary,
+    ) : CodexNotification {
+        override val method: String = "item/completed"
+    }
+
+    data class AgentMessageDelta(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val itemId: ItemId,
+        val delta: String,
+    ) : CodexNotification {
+        override val method: String = "item/agentMessage/delta"
+    }
+
+    data class ReasoningSummaryTextDelta(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val itemId: ItemId,
+        val summaryIndex: Int,
+        val delta: String,
+    ) : CodexNotification {
+        override val method: String = "item/reasoning/summaryTextDelta"
+    }
+
     data class Unknown(
         override val method: String,
     ) : CodexNotification
@@ -86,6 +121,57 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 else -> CodexNotification.TurnCompleted(turn)
             }
         }
+        "item/started" -> {
+            val payload = params.decodeNotificationParams<ItemPayload>()
+            if (payload != null) {
+                CodexNotification.ItemStarted(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    item = payload.item,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "item/completed" -> {
+            val payload = params.decodeNotificationParams<ItemPayload>()
+            if (payload != null) {
+                CodexNotification.ItemCompleted(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    item = payload.item,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "item/agentMessage/delta" -> {
+            val payload = params.decodeNotificationParams<ItemDeltaPayload>()
+            if (payload != null) {
+                CodexNotification.AgentMessageDelta(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    itemId = payload.itemId,
+                    delta = payload.delta,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "item/reasoning/summaryTextDelta" -> {
+            val payload = params.decodeNotificationParams<ReasoningSummaryTextDeltaPayload>()
+            if (payload != null) {
+                CodexNotification.ReasoningSummaryTextDelta(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    itemId = payload.itemId,
+                    summaryIndex = payload.summaryIndex,
+                    delta = payload.delta,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -105,6 +191,30 @@ private data class ThreadStatusChangedPayload(
 @Serializable
 private data class TurnPayload(
     val turn: Turn,
+)
+
+@Serializable
+private data class ItemPayload(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val item: ThreadItemSummary,
+)
+
+@Serializable
+private data class ItemDeltaPayload(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val itemId: ItemId,
+    val delta: String,
+)
+
+@Serializable
+private data class ReasoningSummaryTextDeltaPayload(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val itemId: ItemId,
+    val summaryIndex: Int,
+    val delta: String,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {

@@ -89,15 +89,109 @@ class CodexNotificationTest {
     }
 
     @Test
+    fun decodesItemLifecycleNotificationsAsTypedModels() {
+        val started = JsonRpcNotification(
+            method = "item/started",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put(
+                    "item",
+                    buildJsonObject {
+                        put("id", "item_msg")
+                        put("type", "agentMessage")
+                        put("text", "Hello")
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val itemStarted = assertIs<CodexNotification.ItemStarted>(started)
+        assertEquals(ThreadId("thr_123"), itemStarted.threadId)
+        assertEquals(TurnId("turn_123"), itemStarted.turnId)
+        assertEquals(ItemId("item_msg"), itemStarted.item.id)
+        assertEquals(ItemType.AgentMessage, itemStarted.item.type)
+        assertEquals("Hello", itemStarted.item.text)
+
+        val completed = JsonRpcNotification(
+            method = "item/completed",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put(
+                    "item",
+                    buildJsonObject {
+                        put("id", "item_cmd")
+                        put("type", "commandExecution")
+                        put("command", "git status --short")
+                        put("cwd", "/path/to/project")
+                        put("status", "completed")
+                        put("exitCode", 0)
+                        put("durationMs", 42)
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val itemCompleted = assertIs<CodexNotification.ItemCompleted>(completed)
+        assertEquals(ThreadId("thr_123"), itemCompleted.threadId)
+        assertEquals(TurnId("turn_123"), itemCompleted.turnId)
+        assertEquals(ItemId("item_cmd"), itemCompleted.item.id)
+        assertEquals(ItemType.CommandExecution, itemCompleted.item.type)
+        assertEquals(ItemStatus.Completed, itemCompleted.item.status)
+        assertEquals("git status --short", itemCompleted.item.command)
+        assertEquals(CodexHostPath("/path/to/project"), itemCompleted.item.cwd)
+        assertEquals(0, itemCompleted.item.exitCode)
+        assertEquals(42L, itemCompleted.item.durationMs)
+    }
+
+    @Test
+    fun decodesRepresentativeItemDeltaNotificationsAsTypedModels() {
+        val agentMessageDelta = JsonRpcNotification(
+            method = "item/agentMessage/delta",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put("itemId", "item_msg")
+                put("delta", "Hello")
+            },
+        ).toCodexNotification()
+
+        val agentDelta = assertIs<CodexNotification.AgentMessageDelta>(agentMessageDelta)
+        assertEquals(ThreadId("thr_123"), agentDelta.threadId)
+        assertEquals(TurnId("turn_123"), agentDelta.turnId)
+        assertEquals(ItemId("item_msg"), agentDelta.itemId)
+        assertEquals("Hello", agentDelta.delta)
+
+        val reasoningSummaryDelta = JsonRpcNotification(
+            method = "item/reasoning/summaryTextDelta",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put("itemId", "item_reasoning")
+                put("summaryIndex", 0)
+                put("delta", "Inspecting files")
+            },
+        ).toCodexNotification()
+
+        val reasoningDelta = assertIs<CodexNotification.ReasoningSummaryTextDelta>(reasoningSummaryDelta)
+        assertEquals(ThreadId("thr_123"), reasoningDelta.threadId)
+        assertEquals(TurnId("turn_123"), reasoningDelta.turnId)
+        assertEquals(ItemId("item_reasoning"), reasoningDelta.itemId)
+        assertEquals(0, reasoningDelta.summaryIndex)
+        assertEquals("Inspecting files", reasoningDelta.delta)
+    }
+
+    @Test
     fun unknownNotificationKeepsOnlyMethodName() {
         val notification = JsonRpcNotification(
-            method = "item/agentMessage/delta",
+            method = "item/future/delta",
             params = buildJsonObject {
                 put("delta", "hello")
             },
         ).toCodexNotification()
 
-        assertEquals(CodexNotification.Unknown("item/agentMessage/delta"), notification)
+        assertEquals(CodexNotification.Unknown("item/future/delta"), notification)
     }
 
     private fun turnParams(turnId: String, status: String) = buildJsonObject {

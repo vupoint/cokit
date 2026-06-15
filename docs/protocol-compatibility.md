@@ -106,7 +106,7 @@ request descriptor count is exact.
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
 | Request groups | 0 | 4 | 12 | 6 | 19 public `CodexRpc` request descriptors |
-| Notification groups | 0 | 2 | 15 | 7 | Not counted by this helper |
+| Notification groups | 1 | 4 | 12 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 4 | 1 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
@@ -120,10 +120,12 @@ Typed notification and server-request coverage is intentionally smaller than the
 upstream surface today:
 
 - Notifications: `CodexNotification.ThreadStarted`, `ThreadStatusChanged`,
-  `TurnStarted`, `TurnCompleted`, and `TurnFailed` are modeled. `TurnFailed`
-  is decoded from upstream `turn/completed` notifications with
-  `turn.status == "failed"`. Unknown notifications expose only the method name
-  in the primary API.
+  `TurnStarted`, `TurnCompleted`, `TurnFailed`, `ItemStarted`,
+  `ItemCompleted`, `AgentMessageDelta`, and `ReasoningSummaryTextDelta` are
+  modeled. `TurnFailed` is decoded from upstream `turn/completed`
+  notifications with `turn.status == "failed"`. Item lifecycle events expose a
+  `ThreadItemSummary` compatibility wrapper for common rendering fields.
+  Unknown notifications expose only the method name in the primary API.
 - Server requests: command execution approval is modeled with a typed handler.
   Approval-like request families without typed handlers remain deny-by-default.
 

@@ -101,6 +101,10 @@ client.notifications.collect { notification ->
         is CodexNotification.TurnStarted -> println(notification.turn.id.value)
         is CodexNotification.TurnCompleted -> println(notification.turn.status.value)
         is CodexNotification.TurnFailed -> println(notification.turn.error?.message)
+        is CodexNotification.ItemStarted -> println(notification.item.type.value)
+        is CodexNotification.ItemCompleted -> println(notification.item.status?.value)
+        is CodexNotification.AgentMessageDelta -> print(notification.delta)
+        is CodexNotification.ReasoningSummaryTextDelta -> print(notification.delta)
         is CodexNotification.Unknown -> println(notification.method)
     }
 }
@@ -109,7 +113,9 @@ client.notifications.collect { notification ->
 `notifications` exposes typed CoKit notification models. Unknown notifications
 keep the method name but do not expose raw JSON through the primary API.
 Turn failures are decoded from upstream `turn/completed` notifications whose
-turn status is `failed`.
+turn status is `failed`. Item lifecycle notifications expose `ThreadItemSummary`
+for common rendering fields, and streamed text deltas are typed for agent
+messages and reasoning summaries.
 
 ## Handle Server Requests
 
