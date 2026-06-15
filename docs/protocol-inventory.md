@@ -55,7 +55,7 @@ modeled coverage. They are compatibility behavior only.
 
 | Group | Status | Upstream notifications | CoKit coverage |
 | --- | --- | --- | --- |
-| Thread lifecycle | partial | `thread/started`, `thread/archived`, `thread/unarchived`, `thread/closed`, `thread/deleted`, `thread/name/updated`, `thread/status/changed`, `thread/tokenUsage/updated` | `CodexNotification.ThreadStarted` and `ThreadStatusChanged` are typed. Other thread notifications currently map to `CodexNotification.Unknown`. |
+| Thread lifecycle | partial | `thread/started`, `thread/archived`, `thread/unarchived`, `thread/closed`, `thread/deleted`, `thread/name/updated`, `thread/status/changed`, `thread/tokenUsage/updated` | `CodexNotification.ThreadStarted`, `ThreadStatusChanged`, and `ThreadTokenUsageUpdated` are typed. Other thread notifications currently map to `CodexNotification.Unknown`. |
 | Thread goal and settings | experimental | `thread/goal/updated`, `thread/goal/cleared`, `thread/settings/updated` | Deferred. Settings updates are experimental upstream. |
 | Turn lifecycle | partial | `turn/started`, `turn/completed`, `turn/diff/updated`, `turn/plan/updated`, `turn/moderationMetadata` | `CodexNotification.TurnStarted`, `TurnCompleted`, and `TurnFailed` are typed. `TurnFailed` is decoded from `turn/completed` when `turn.status` is `failed`. Other turn notifications currently map to `CodexNotification.Unknown`. |
 | Model routing and verification | deferred | `model/rerouted`, `model/verification` | No typed notifications yet. |
@@ -78,7 +78,7 @@ modeled coverage. They are compatibility behavior only.
 | Remote-control status | experimental | `remoteControl/status/changed` | Deferred. |
 | External agent migration | deferred | `externalAgentConfig/import/completed` | No typed notification yet. |
 | Server-request lifecycle | deferred | `serverRequest/resolved` | No typed notification yet. Approval handlers rely on request handling, not a typed resolved event. |
-| Warnings and errors | deferred | `configWarning`, `warning`, `error` | No typed notifications yet. |
+| Warnings and errors | modeled | `configWarning`, `warning`, `error` | `CodexNotification.ConfigWarning`, `Warning`, and `Error` expose safe typed fields without raw notification params. Structured `codexErrorInfo` remains deferred. |
 
 ## Server-Request Groups
 
@@ -148,12 +148,16 @@ Current typed notification:
 
 - `thread/started`
 - `thread/status/changed`
+- `thread/tokenUsage/updated`
 - `turn/started`
 - `turn/completed`
 - `item/started`
 - `item/completed`
 - `item/agentMessage/delta`
 - `item/reasoning/summaryTextDelta`
+- `warning`
+- `configWarning`
+- `error`
 
 Current typed server request:
 

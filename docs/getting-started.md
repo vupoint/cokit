@@ -98,6 +98,7 @@ client.notifications.collect { notification ->
     when (notification) {
         is CodexNotification.ThreadStarted -> println(notification.threadId.value)
         is CodexNotification.ThreadStatusChanged -> println(notification.status.value)
+        is CodexNotification.ThreadTokenUsageUpdated -> println(notification.tokenUsage.total.totalTokens)
         is CodexNotification.TurnStarted -> println(notification.turn.id.value)
         is CodexNotification.TurnCompleted -> println(notification.turn.status.value)
         is CodexNotification.TurnFailed -> println(notification.turn.error?.message)
@@ -105,6 +106,9 @@ client.notifications.collect { notification ->
         is CodexNotification.ItemCompleted -> println(notification.item.status?.value)
         is CodexNotification.AgentMessageDelta -> print(notification.delta)
         is CodexNotification.ReasoningSummaryTextDelta -> print(notification.delta)
+        is CodexNotification.Warning -> println(notification.message)
+        is CodexNotification.ConfigWarning -> println(notification.summary)
+        is CodexNotification.Error -> println(notification.error.message)
         is CodexNotification.Unknown -> println(notification.method)
     }
 }
@@ -115,7 +119,8 @@ keep the method name but do not expose raw JSON through the primary API.
 Turn failures are decoded from upstream `turn/completed` notifications whose
 turn status is `failed`. Item lifecycle notifications expose `ThreadItemSummary`
 for common rendering fields, and streamed text deltas are typed for agent
-messages and reasoning summaries.
+messages and reasoning summaries. Token usage, warning, config warning, and
+error notifications are typed without exposing raw notification params.
 
 ## Handle Server Requests
 

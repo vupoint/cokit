@@ -183,6 +183,146 @@ class CodexNotificationTest {
     }
 
     @Test
+    fun decodesThreadTokenUsageNotificationAsTypedModel() {
+        val notification = JsonRpcNotification(
+            method = "thread/tokenUsage/updated",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put(
+                    "tokenUsage",
+                    buildJsonObject {
+                        put(
+                            "total",
+                            tokenUsageBreakdown(
+                                totalTokens = 150,
+                                inputTokens = 120,
+                                cachedInputTokens = 20,
+                                outputTokens = 30,
+                                reasoningOutputTokens = 10,
+                            ),
+                        )
+                        put(
+                            "last",
+                            tokenUsageBreakdown(
+                                totalTokens = 90,
+                                inputTokens = 70,
+                                cachedInputTokens = 15,
+                                outputTokens = 20,
+                                reasoningOutputTokens = 5,
+                            ),
+                        )
+                        put("modelContextWindow", 200_000)
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val tokenUsage = assertIs<CodexNotification.ThreadTokenUsageUpdated>(notification)
+        assertEquals(ThreadId("thr_123"), tokenUsage.threadId)
+        assertEquals(TurnId("turn_123"), tokenUsage.turnId)
+        assertEquals(
+            TokenUsageBreakdown(
+                totalTokens = 150,
+                inputTokens = 120,
+                cachedInputTokens = 20,
+                outputTokens = 30,
+                reasoningOutputTokens = 10,
+            ),
+            tokenUsage.tokenUsage.total,
+        )
+        assertEquals(90L, tokenUsage.tokenUsage.last.totalTokens)
+        assertEquals(200_000L, tokenUsage.tokenUsage.modelContextWindow)
+    }
+
+    @Test
+    fun decodesWarningNotificationsAsTypedModels() {
+        val warning = JsonRpcNotification(
+            method = "warning",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("message", "Some enabled skills were not included.")
+            },
+        ).toCodexNotification()
+
+        val typedWarning = assertIs<CodexNotification.Warning>(warning)
+        assertEquals(ThreadId("thr_123"), typedWarning.threadId)
+        assertEquals("Some enabled skills were not included.", typedWarning.message)
+
+        val configWarning = JsonRpcNotification(
+            method = "configWarning",
+            params = buildJsonObject {
+                put("summary", "Config error: using defaults")
+                put("details", "error loading config: bad config")
+                put("path", "/path/to/config.toml")
+                put(
+                    "range",
+                    buildJsonObject {
+                        put(
+                            "start",
+                            buildJsonObject {
+                                put("line", 2)
+                                put("column", 4)
+                            },
+                        )
+                        put(
+                            "end",
+                            buildJsonObject {
+                                put("line", 2)
+                                put("column", 20)
+                            },
+                        )
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val typedConfigWarning = assertIs<CodexNotification.ConfigWarning>(configWarning)
+        assertEquals("Config error: using defaults", typedConfigWarning.summary)
+        assertEquals("error loading config: bad config", typedConfigWarning.details)
+        assertEquals("/path/to/config.toml", typedConfigWarning.path)
+        assertEquals(
+            ConfigTextRange(
+                start = ConfigTextPosition(line = 2, column = 4),
+                end = ConfigTextPosition(line = 2, column = 20),
+            ),
+            typedConfigWarning.range,
+        )
+    }
+
+    @Test
+    fun decodesErrorNotificationAsTypedModelWithoutRawErrorPayload() {
+        val notification = JsonRpcNotification(
+            method = "error",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("turnId", "turn_123")
+                put("willRetry", true)
+                put(
+                    "error",
+                    buildJsonObject {
+                        put("message", "upstream stream disconnected")
+                        put("additionalDetails", "retrying automatically")
+                        put(
+                            "codexErrorInfo",
+                            buildJsonObject {
+                                put("type", "ResponseStreamDisconnected")
+                            },
+                        )
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val error = assertIs<CodexNotification.Error>(notification)
+        assertEquals(ThreadId("thr_123"), error.threadId)
+        assertEquals(TurnId("turn_123"), error.turnId)
+        assertEquals("upstream stream disconnected", error.error.message)
+        assertEquals("retrying automatically", error.error.additionalDetails)
+        assertEquals(true, error.willRetry)
+    }
+
+    @Test
     fun unknownNotificationKeepsOnlyMethodName() {
         val notification = JsonRpcNotification(
             method = "item/future/delta",
@@ -203,5 +343,19 @@ class CodexNotificationTest {
                 put("items", buildJsonArray {})
             },
         )
+    }
+
+    private fun tokenUsageBreakdown(
+        totalTokens: Long,
+        inputTokens: Long,
+        cachedInputTokens: Long,
+        outputTokens: Long,
+        reasoningOutputTokens: Long,
+    ) = buildJsonObject {
+        put("totalTokens", totalTokens)
+        put("inputTokens", inputTokens)
+        put("cachedInputTokens", cachedInputTokens)
+        put("outputTokens", outputTokens)
+        put("reasoningOutputTokens", reasoningOutputTokens)
     }
 }

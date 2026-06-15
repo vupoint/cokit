@@ -23,6 +23,14 @@ sealed interface CodexNotification {
         override val method: String = "thread/status/changed"
     }
 
+    data class ThreadTokenUsageUpdated(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val tokenUsage: ThreadTokenUsage,
+    ) : CodexNotification {
+        override val method: String = "thread/tokenUsage/updated"
+    }
+
     data class TurnStarted(
         val turn: Turn,
     ) : CodexNotification {
@@ -76,10 +84,69 @@ sealed interface CodexNotification {
         override val method: String = "item/reasoning/summaryTextDelta"
     }
 
+    data class Warning(
+        val threadId: ThreadId? = null,
+        val message: String,
+    ) : CodexNotification {
+        override val method: String = "warning"
+    }
+
+    data class ConfigWarning(
+        val summary: String,
+        val details: String? = null,
+        val path: String? = null,
+        val range: ConfigTextRange? = null,
+    ) : CodexNotification {
+        override val method: String = "configWarning"
+    }
+
+    data class Error(
+        val threadId: ThreadId,
+        val turnId: TurnId,
+        val error: CodexNotificationError,
+        val willRetry: Boolean,
+    ) : CodexNotification {
+        override val method: String = "error"
+    }
+
     data class Unknown(
         override val method: String,
     ) : CodexNotification
 }
+
+@Serializable
+data class ThreadTokenUsage(
+    val total: TokenUsageBreakdown,
+    val last: TokenUsageBreakdown,
+    val modelContextWindow: Long? = null,
+)
+
+@Serializable
+data class TokenUsageBreakdown(
+    val totalTokens: Long,
+    val inputTokens: Long,
+    val cachedInputTokens: Long,
+    val outputTokens: Long,
+    val reasoningOutputTokens: Long,
+)
+
+@Serializable
+data class ConfigTextPosition(
+    val line: Int,
+    val column: Int,
+)
+
+@Serializable
+data class ConfigTextRange(
+    val start: ConfigTextPosition,
+    val end: ConfigTextPosition,
+)
+
+@Serializable
+data class CodexNotificationError(
+    val message: String,
+    val additionalDetails: String? = null,
+)
 
 internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
     return when (method) {
@@ -100,6 +167,18 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.ThreadStatusChanged(
                     threadId = payload.threadId,
                     status = payload.status,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "thread/tokenUsage/updated" -> {
+            val payload = params.decodeNotificationParams<ThreadTokenUsagePayload>()
+            if (payload != null) {
+                CodexNotification.ThreadTokenUsageUpdated(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    tokenUsage = payload.tokenUsage,
                 )
             } else {
                 CodexNotification.Unknown(method)
@@ -172,6 +251,43 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.Unknown(method)
             }
         }
+        "warning" -> {
+            val payload = params.decodeNotificationParams<WarningPayload>()
+            if (payload != null) {
+                CodexNotification.Warning(
+                    threadId = payload.threadId,
+                    message = payload.message,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "configWarning" -> {
+            val payload = params.decodeNotificationParams<ConfigWarningPayload>()
+            if (payload != null) {
+                CodexNotification.ConfigWarning(
+                    summary = payload.summary,
+                    details = payload.details,
+                    path = payload.path,
+                    range = payload.range,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "error" -> {
+            val payload = params.decodeNotificationParams<ErrorPayload>()
+            if (payload != null) {
+                CodexNotification.Error(
+                    threadId = payload.threadId,
+                    turnId = payload.turnId,
+                    error = payload.error,
+                    willRetry = payload.willRetry,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -186,6 +302,13 @@ private data class ThreadStartedPayload(
 private data class ThreadStatusChangedPayload(
     val threadId: ThreadId,
     val status: ThreadStatusType,
+)
+
+@Serializable
+private data class ThreadTokenUsagePayload(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val tokenUsage: ThreadTokenUsage,
 )
 
 @Serializable
@@ -215,6 +338,28 @@ private data class ReasoningSummaryTextDeltaPayload(
     val itemId: ItemId,
     val summaryIndex: Int,
     val delta: String,
+)
+
+@Serializable
+private data class WarningPayload(
+    val threadId: ThreadId? = null,
+    val message: String,
+)
+
+@Serializable
+private data class ConfigWarningPayload(
+    val summary: String,
+    val details: String? = null,
+    val path: String? = null,
+    val range: ConfigTextRange? = null,
+)
+
+@Serializable
+private data class ErrorPayload(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val error: CodexNotificationError,
+    val willRetry: Boolean,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {
