@@ -64,8 +64,15 @@ class CodexRpcClient private constructor(
     private suspend fun resolveServerRequest(request: JsonRpcRequest): JsonRpcResponse {
         val handler = commandApprovalHandler
         if (request.method == COMMAND_APPROVAL_METHOD && handler != null) {
+            val commandRequest = try {
+                request.decodeCommandApprovalRequest()
+            } catch (error: Throwable) {
+                return JsonRpcResponse(
+                    id = request.id,
+                    error = invalidServerRequestParamsError(request.method),
+                )
+            }
             return try {
-                val commandRequest = request.decodeCommandApprovalRequest()
                 JsonRpcResponse(
                     id = request.id,
                     result = handler.decide(commandRequest).toProtocolPayload().toJsonElement(),
@@ -73,7 +80,7 @@ class CodexRpcClient private constructor(
             } catch (error: Throwable) {
                 JsonRpcResponse(
                     id = request.id,
-                    error = serverRequestHandlerError(error),
+                    error = serverRequestHandlerError(),
                 )
             }
         }

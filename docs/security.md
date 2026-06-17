@@ -15,6 +15,14 @@ request to a user, apply a policy, or otherwise make an intentional decision.
 Prefer typed handlers such as command approval handlers over raw method-string
 compatibility hooks.
 
+Command execution approval requests are deny-by-default. Without a registered
+command approval handler, CoKit responds with `{"decision":"decline"}` without
+attempting to approve or execute the command. With a typed command approval
+handler, CoKit decodes the upstream params before invoking application code.
+Malformed params return JSON-RPC `-32602` and do not call the handler. Handler
+exceptions return JSON-RPC `-32000` with a generic failure message so exception
+text is not sent back to app-server.
+
 ## Host Semantics
 
 Paths, commands, process APIs, and filesystem APIs refer to the app-server host.

@@ -82,9 +82,16 @@ internal fun noHandlerError(method: String): JsonRpcErrorObject {
     )
 }
 
-internal fun serverRequestHandlerError(error: Throwable): JsonRpcErrorObject {
+internal fun invalidServerRequestParamsError(method: String): JsonRpcErrorObject {
+    return JsonRpcErrorObject(
+        code = -32602,
+        message = "Invalid params for $method",
+    )
+}
+
+internal fun serverRequestHandlerError(): JsonRpcErrorObject {
     return JsonRpcErrorObject(
         code = -32000,
-        message = error.message ?: "Server request handler failed",
+        message = "Server request handler failed",
     )
 }

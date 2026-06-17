@@ -75,7 +75,7 @@ class CodexAppServerClient private constructor(
             } catch (error: Throwable) {
                 JsonRpcResponse(
                     id = request.id,
-                    error = serverRequestHandlerError(error),
+                    error = serverRequestHandlerError(),
                 )
             }
         }

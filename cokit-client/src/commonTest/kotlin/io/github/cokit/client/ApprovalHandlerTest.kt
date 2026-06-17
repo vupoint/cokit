@@ -1,5 +1,6 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.approvals.ApprovalDecision
 import io.github.cokit.client.approvals.CommandApprovalRequest
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcRequest
@@ -7,6 +8,7 @@ import io.github.cokit.protocol.JsonRpcResponse
 import io.github.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -16,6 +18,8 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -56,7 +60,7 @@ class ApprovalHandlerTest {
 
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
-        assertTrue(response.result.toString().contains("decline"))
+        assertEquals("decline", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
     }
 
     @Test
@@ -82,6 +86,76 @@ class ApprovalHandlerTest {
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
         assertTrue(response.result.toString().contains("decline"))
+    }
+
+    @Test
+    fun malformedCommandApprovalParamsReturnInvalidParamsWithoutCallingTypedHandler() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        var handlerCalled = false
+        fixture.client.registerCommandApprovalHandler {
+            handlerCalled = true
+            ApprovalDecision.Accept
+        }
+
+        fixture.transport.receive(
+            JsonRpcRequest(
+                id = JsonRpcId.Number(99),
+                method = "item/commandExecution/requestApproval",
+                params = buildJsonObject {
+                    put("threadId", "thr_123")
+                    put("turnId", "turn_123")
+                    put("itemId", "item_123")
+                },
+            ),
+        )
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(-32602, response.error?.code)
+        assertEquals(
+            "Invalid params for item/commandExecution/requestApproval",
+            response.error?.message,
+        )
+        assertFalse(handlerCalled)
+    }
+
+    @Test
+    fun commandApprovalHandlerExceptionsReturnGenericJsonRpcError() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        fixture.client.registerCommandApprovalHandler {
+            error("internal detail should not leak")
+        }
+
+        fixture.transport.receive(commandApprovalRequest(id = 99))
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(-32000, response.error?.code)
+        assertEquals("Server request handler failed", response.error?.message)
+        assertFalse(response.toString().contains("internal detail"))
+    }
+
+    @Test
+    fun commandApprovalHandlerEncodesTypedDecisionsExactly() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val cases = listOf(
+            ApprovalDecision.Accept to "accept",
+            ApprovalDecision.AcceptForSession to "accept_for_session",
+            ApprovalDecision.Decline to "decline",
+            ApprovalDecision.Cancel to "cancel",
+        )
+
+        cases.forEachIndexed { index, (decision, expectedValue) ->
+            fixture.client.registerCommandApprovalHandler { decision }
+            fixture.transport.receive(commandApprovalRequest(id = index.toLong()))
+            runCurrent()
+
+            val response = fixture.transport.sent.last() as JsonRpcResponse
+            assertEquals(JsonRpcId.Number(index.toLong()), response.id)
+            assertEquals(expectedValue, response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
+        }
     }
 
     @Test
@@ -125,8 +199,44 @@ class ApprovalHandlerTest {
         return ConnectedClientFixture(client.await(), transport)
     }
 
+    private suspend fun TestScope.connectedRpcClientFixture(
+        scope: CoroutineScope,
+    ): ConnectedRpcClientFixture {
+        val transport = FakeJsonRpcTransport()
+        val client = async {
+            CodexRpcClient.connect(
+                CodexRpcConnection(
+                    transport = transport,
+                    clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
+                    scope = scope,
+                ),
+            )
+        }
+        runCurrent()
+        val initialize = transport.sent.single() as JsonRpcRequest
+        transport.receive(JsonRpcResponse(initialize.id, result = JsonObject(emptyMap())))
+        return ConnectedRpcClientFixture(client.await(), transport)
+    }
+
+    private fun commandApprovalRequest(id: Long): JsonRpcRequest = JsonRpcRequest(
+        id = JsonRpcId.Number(id),
+        method = "item/commandExecution/requestApproval",
+        params = buildJsonObject {
+            put("threadId", "thr_123")
+            put("turnId", "turn_123")
+            put("itemId", "item_123")
+            put("command", "git status")
+            put("cwd", "/path/to/project")
+        },
+    )
+
     private data class ConnectedClientFixture(
         val client: CodexAppServerClient,
+        val transport: FakeJsonRpcTransport,
+    )
+
+    private data class ConnectedRpcClientFixture(
+        val client: CodexRpcClient,
         val transport: FakeJsonRpcTransport,
     )
 }
