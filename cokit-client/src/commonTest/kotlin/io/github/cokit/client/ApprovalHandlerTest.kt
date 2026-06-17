@@ -5,6 +5,16 @@ import io.github.cokit.client.approvals.CommandApprovalRequest
 import io.github.cokit.client.approvals.FileChangeApprovalRequest
 import io.github.cokit.client.approvals.FileChangeKind
 import io.github.cokit.client.approvals.FileChangeSummary
+import io.github.cokit.client.approvals.FileSystemPermissionAccess
+import io.github.cokit.client.approvals.FileSystemPermissionEntry
+import io.github.cokit.client.approvals.FileSystemPermissionPath
+import io.github.cokit.client.approvals.PermissionApprovalRequest
+import io.github.cokit.client.approvals.PermissionApprovalResponse
+import io.github.cokit.client.approvals.PermissionEnvironmentId
+import io.github.cokit.client.approvals.PermissionFileSystem
+import io.github.cokit.client.approvals.PermissionGrantScope
+import io.github.cokit.client.approvals.PermissionNetwork
+import io.github.cokit.client.approvals.PermissionProfile
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -21,10 +31,13 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ApprovalHandlerTest {
@@ -65,6 +78,40 @@ class ApprovalHandlerTest {
         assertEquals(CodexHostPath("/path/to/project"), request.grantRoot)
         assertEquals(1_776_000_000_000, request.startedAtMs)
         assertEquals(CodexHostPath("/path/to/project/src/Main.kt"), summary.path)
+    }
+
+    @Test
+    fun permissionApprovalRequestUsesSdkValueTypes() {
+        val profile = PermissionProfile(
+            fileSystem = PermissionFileSystem(
+                write = listOf(CodexHostPath("/path/to/project")),
+                entries = listOf(
+                    FileSystemPermissionEntry(
+                        access = FileSystemPermissionAccess.Read,
+                        path = FileSystemPermissionPath.ProjectRoots(subpath = "src"),
+                    ),
+                ),
+            ),
+            network = PermissionNetwork(enabled = true),
+        )
+        val request = PermissionApprovalRequest(
+            threadId = ThreadId("thr_123"),
+            turnId = TurnId("turn_123"),
+            itemId = ItemId("item_123"),
+            startedAtMs = 1_776_000_000_000,
+            environmentId = PermissionEnvironmentId("local"),
+            cwd = CodexHostPath("/path/to/project"),
+            reason = "Select a workspace root",
+            permissions = profile,
+        )
+
+        assertEquals(ThreadId("thr_123"), request.threadId)
+        assertEquals(TurnId("turn_123"), request.turnId)
+        assertEquals(ItemId("item_123"), request.itemId)
+        assertEquals(PermissionEnvironmentId("local"), request.environmentId)
+        assertEquals(CodexHostPath("/path/to/project"), request.cwd)
+        assertEquals(CodexHostPath("/path/to/project"), request.permissions.fileSystem?.write?.single())
+        assertEquals(true, request.permissions.network?.enabled)
     }
 
     @Test
@@ -124,6 +171,131 @@ class ApprovalHandlerTest {
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
         assertEquals("acceptForSession", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
+    }
+
+    @Test
+    fun permissionApprovalServerRequestsAreTypedAndDeclineByDefault() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val serverRequest = async { fixture.client.serverRequests.first() }
+
+        fixture.transport.receive(permissionApprovalRequest(id = 99))
+        runCurrent()
+
+        val permissionApproval = assertIs<CodexServerRequest.PermissionApproval>(serverRequest.await())
+        assertEquals(ItemId("item_123"), permissionApproval.request.itemId)
+        assertEquals(PermissionEnvironmentId("local"), permissionApproval.request.environmentId)
+        assertEquals(CodexHostPath("/path/to/project"), permissionApproval.request.cwd)
+        assertEquals(CodexHostPath("/path/to/project"), permissionApproval.request.permissions.fileSystem?.write?.single())
+        assertEquals(true, permissionApproval.request.permissions.network?.enabled)
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(emptySet(), response.result?.jsonObject?.get("permissions")?.jsonObject?.keys)
+        assertFalse(response.result?.jsonObject?.containsKey("decision") ?: false)
+        assertFalse(response.result?.jsonObject?.containsKey("scope") ?: false)
+    }
+
+    @Test
+    fun permissionApprovalHandlerCanReturnTurnScopedGrant() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        fixture.client.registerPermissionApprovalHandler { request ->
+            assertEquals(ItemId("item_123"), request.itemId)
+            assertEquals(CodexHostPath("/path/to/project"), request.cwd)
+            PermissionApprovalResponse(
+                permissions = PermissionProfile(
+                    fileSystem = PermissionFileSystem(
+                        write = listOf(CodexHostPath("/path/to/project")),
+                    ),
+                ),
+                scope = PermissionGrantScope.Turn,
+            )
+        }
+
+        fixture.transport.receive(permissionApprovalRequest(id = 99))
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        val result = response.result?.jsonObject
+        val permissions = result?.get("permissions")?.jsonObject
+        val fileSystem = permissions?.get("fileSystem")?.jsonObject
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals("/path/to/project", fileSystem?.get("write")?.jsonArray?.single()?.jsonPrimitive?.content)
+        assertEquals("turn", result?.get("scope")?.jsonPrimitive?.content)
+    }
+
+    @Test
+    fun permissionApprovalHandlerCanReturnSessionScopedGrantWithAutoReview() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        fixture.client.registerPermissionApprovalHandler {
+            PermissionApprovalResponse(
+                permissions = PermissionProfile(
+                    network = PermissionNetwork(enabled = true),
+                ),
+                scope = PermissionGrantScope.Session,
+                strictAutoReview = true,
+            )
+        }
+
+        fixture.transport.receive(permissionApprovalRequest(id = 99))
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        val result = response.result?.jsonObject
+        val permissions = result?.get("permissions")?.jsonObject
+        val network = permissions?.get("network")?.jsonObject
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(true, network?.get("enabled")?.jsonPrimitive?.content?.toBooleanStrict())
+        assertEquals("session", result?.get("scope")?.jsonPrimitive?.content)
+        assertEquals(true, result?.get("strictAutoReview")?.jsonPrimitive?.content?.toBooleanStrict())
+    }
+
+    @Test
+    fun malformedPermissionApprovalParamsReturnInvalidParamsWithoutCallingTypedHandler() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        var handlerCalled = false
+        fixture.client.registerPermissionApprovalHandler {
+            handlerCalled = true
+            PermissionApprovalResponse.Decline
+        }
+
+        fixture.transport.receive(
+            JsonRpcRequest(
+                id = JsonRpcId.Number(99),
+                method = "item/permissions/requestApproval",
+                params = buildJsonObject {
+                    put("threadId", "thr_123")
+                    put("turnId", "turn_123")
+                    put("itemId", "item_123")
+                },
+            ),
+        )
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(-32602, response.error?.code)
+        assertEquals(
+            "Invalid params for item/permissions/requestApproval",
+            response.error?.message,
+        )
+        assertFalse(handlerCalled)
+    }
+
+    @Test
+    fun permissionApprovalHandlerExceptionsReturnGenericJsonRpcError() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        fixture.client.registerPermissionApprovalHandler {
+            error("internal detail should not leak")
+        }
+
+        fixture.transport.receive(permissionApprovalRequest(id = 99))
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals(-32000, response.error?.code)
+        assertEquals("Server request handler failed", response.error?.message)
+        assertFalse(response.toString().contains("internal detail"))
     }
 
     @Test
@@ -303,6 +475,59 @@ class ApprovalHandlerTest {
             put("startedAtMs", 1_776_000_000_000)
             put("reason", "Review proposed patch")
             put("grantRoot", "/path/to/project")
+        },
+    )
+
+    private fun permissionApprovalRequest(id: Long): JsonRpcRequest = JsonRpcRequest(
+        id = JsonRpcId.Number(id),
+        method = "item/permissions/requestApproval",
+        params = buildJsonObject {
+            put("threadId", "thr_123")
+            put("turnId", "turn_123")
+            put("itemId", "item_123")
+            put("startedAtMs", 1_776_000_000_000)
+            put("environmentId", "local")
+            put("cwd", "/path/to/project")
+            put("reason", "Select a workspace root")
+            put(
+                "permissions",
+                buildJsonObject {
+                    put(
+                        "fileSystem",
+                        buildJsonObject {
+                            putJsonArray("write") {
+                                add("/path/to/project")
+                            }
+                            putJsonArray("entries") {
+                                add(
+                                    buildJsonObject {
+                                        put("access", "read")
+                                        put(
+                                            "path",
+                                            buildJsonObject {
+                                                put("type", "special")
+                                                put(
+                                                    "value",
+                                                    buildJsonObject {
+                                                        put("kind", "project_roots")
+                                                        put("subpath", "src")
+                                                    },
+                                                )
+                                            },
+                                        )
+                                    },
+                                )
+                            }
+                        },
+                    )
+                    put(
+                        "network",
+                        buildJsonObject {
+                            put("enabled", true)
+                        },
+                    )
+                },
+            )
         },
     )
 

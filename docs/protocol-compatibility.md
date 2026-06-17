@@ -129,9 +129,11 @@ upstream surface today:
   Error notifications expose safe message fields; structured `codexErrorInfo`
   remains deferred until it has a typed compatibility model. Unknown
   notifications expose only the method name in the primary API.
-- Server requests: command execution approval and file-change approval are
-  modeled with typed handlers. Approval-like request families without typed
-  handlers remain deny-by-default.
+- Server requests: command execution approval, file-change approval, and
+  permission approval are modeled with typed handlers. Permission approvals
+  return granted permission subsets instead of command-style decision strings.
+  Approval-like request families without typed handlers remain
+  deny-by-default.
 
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
@@ -219,6 +221,9 @@ Goal: make app-server initiated work safe, typed, and deny-by-default.
   requests, and attestation generation.
 - Preserve automatic decline or cancel defaults for approval-like requests when
   no handler is registered.
+- Permission request handlers grant only explicit filesystem and network
+  subsets; an empty grant is the default denial shape and session grants must be
+  requested with `scope: "session"`.
 - Emit typed request lifecycle notifications such as `serverRequest/resolved`
   so applications can clear pending UI state reliably.
 - Document handler trust boundaries, host path semantics, and persistence

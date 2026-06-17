@@ -2,6 +2,7 @@ package io.github.cokit.client
 
 import io.github.cokit.client.approvals.CommandApprovalHandler
 import io.github.cokit.client.approvals.FileChangeApprovalHandler
+import io.github.cokit.client.approvals.PermissionApprovalHandler
 import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -35,6 +36,7 @@ class CodexRpcClient private constructor(
     )
     private var commandApprovalHandler: CommandApprovalHandler? = null
     private var fileChangeApprovalHandler: FileChangeApprovalHandler? = null
+    private var permissionApprovalHandler: PermissionApprovalHandler? = null
     private val serverRequestJob: Job = scope.launch {
         rpc.serverRequests.collect { request ->
             mutableServerRequests.tryEmit(request.toCodexServerRequest())
@@ -60,6 +62,10 @@ class CodexRpcClient private constructor(
 
     fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler) {
         fileChangeApprovalHandler = handler
+    }
+
+    fun registerPermissionApprovalHandler(handler: PermissionApprovalHandler) {
+        permissionApprovalHandler = handler
     }
 
     override fun close() {
@@ -105,6 +111,29 @@ class CodexRpcClient private constructor(
                 JsonRpcResponse(
                     id = request.id,
                     result = fileChangeHandler.decide(fileChangeRequest).toProtocolPayload().toJsonElement(),
+                )
+            } catch (error: Throwable) {
+                JsonRpcResponse(
+                    id = request.id,
+                    error = serverRequestHandlerError(),
+                )
+            }
+        }
+
+        val permissionHandler = permissionApprovalHandler
+        if (request.method == PERMISSION_APPROVAL_METHOD && permissionHandler != null) {
+            val permissionRequest = try {
+                request.decodePermissionApprovalRequest()
+            } catch (error: Throwable) {
+                return JsonRpcResponse(
+                    id = request.id,
+                    error = invalidServerRequestParamsError(request.method),
+                )
+            }
+            return try {
+                JsonRpcResponse(
+                    id = request.id,
+                    result = permissionHandler.decide(permissionRequest).toProtocolPayload().toJsonElement(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(

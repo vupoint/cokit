@@ -86,7 +86,7 @@ modeled coverage. They are compatibility behavior only.
 | --- | --- | --- | --- |
 | Command execution approval | partial | `item/commandExecution/requestApproval` | Typed `CodexServerRequest.CommandApproval` and approval handlers exist. Some newer upstream decisions and experimental additional-permission payloads are not fully modeled. Without a handler, CoKit declines by default. |
 | File change approval | partial | `item/fileChange/requestApproval` | Typed `CodexServerRequest.FileChangeApproval` and approval handlers exist. Unstable grant-root semantics are exposed as host paths. Without a handler, CoKit declines by default. |
-| Permission grant approval | partial | `item/permissions/requestApproval` | No typed request model yet. Without a handler, CoKit declines by default. |
+| Permission grant approval | partial | `item/permissions/requestApproval` | Typed `CodexServerRequest.PermissionApproval` and approval handlers exist for requested filesystem/network grants. Without a handler, CoKit returns an empty granted-permissions profile. |
 | Dynamic tool call | experimental | `item/tool/call` | Deferred. Without a handler, CoKit declines by default. |
 | Tool user-input prompt | experimental | `item/tool/requestUserInput` | Deferred. Without a handler, CoKit cancels by default. |
 | MCP elicitation | deferred | `mcpServer/elicitation/request` | No typed request model yet. Without a handler, CoKit declines by default. |
