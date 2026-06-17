@@ -77,7 +77,7 @@ modeled coverage. They are compatibility behavior only.
 | Account and auth | deferred | `account/login/completed`, `account/updated`, `account/rateLimits/updated` | No typed notifications yet. |
 | Remote-control status | experimental | `remoteControl/status/changed` | Deferred. |
 | External agent migration | deferred | `externalAgentConfig/import/completed` | No typed notification yet. |
-| Server-request lifecycle | deferred | `serverRequest/resolved` | No typed notification yet. Approval handlers rely on request handling, not a typed resolved event. |
+| Server-request lifecycle | modeled | `serverRequest/resolved` | `CodexNotification.ServerRequestResolved` exposes the thread id and JSON-RPC request id so applications can clear pending request UI after the server reports resolution or cleanup. Current upstream schema does not include request method or status fields on this notification. |
 | Warnings and errors | modeled | `configWarning`, `warning`, `error` | `CodexNotification.ConfigWarning`, `Warning`, and `Error` expose safe typed fields without raw notification params. Structured `codexErrorInfo` remains deferred. |
 
 ## Server-Request Groups
@@ -158,6 +158,7 @@ Current typed notification:
 - `warning`
 - `configWarning`
 - `error`
+- `serverRequest/resolved`
 
 Current typed server request:
 

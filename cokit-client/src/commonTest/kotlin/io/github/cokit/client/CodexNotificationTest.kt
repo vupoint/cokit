@@ -1,6 +1,7 @@
 package io.github.cokit.client
 
 import io.github.cokit.protocol.JsonRpcNotification
+import io.github.cokit.protocol.JsonRpcId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -320,6 +321,32 @@ class CodexNotificationTest {
         assertEquals("upstream stream disconnected", error.error.message)
         assertEquals("retrying automatically", error.error.additionalDetails)
         assertEquals(true, error.willRetry)
+    }
+
+    @Test
+    fun decodesServerRequestResolvedNotificationAsTypedModel() {
+        val notification = JsonRpcNotification(
+            method = "serverRequest/resolved",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("requestId", 99)
+            },
+        ).toCodexNotification()
+
+        val resolved = assertIs<CodexNotification.ServerRequestResolved>(notification)
+        assertEquals(ThreadId("thr_123"), resolved.threadId)
+        assertEquals(JsonRpcId.Number(99), resolved.requestId)
+
+        val stringIdNotification = JsonRpcNotification(
+            method = "serverRequest/resolved",
+            params = buildJsonObject {
+                put("threadId", "thr_123")
+                put("requestId", "req_abc")
+            },
+        ).toCodexNotification()
+
+        val stringIdResolved = assertIs<CodexNotification.ServerRequestResolved>(stringIdNotification)
+        assertEquals(JsonRpcId.StringId("req_abc"), stringIdResolved.requestId)
     }
 
     @Test

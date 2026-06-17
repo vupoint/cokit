@@ -1,6 +1,7 @@
 package io.github.cokit.client
 
 import io.github.cokit.protocol.CodexProtocolJson
+import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcNotification
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -107,6 +108,13 @@ sealed interface CodexNotification {
         val willRetry: Boolean,
     ) : CodexNotification {
         override val method: String = "error"
+    }
+
+    data class ServerRequestResolved(
+        val threadId: ThreadId,
+        val requestId: JsonRpcId,
+    ) : CodexNotification {
+        override val method: String = "serverRequest/resolved"
     }
 
     data class Unknown(
@@ -288,6 +296,17 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.Unknown(method)
             }
         }
+        "serverRequest/resolved" -> {
+            val payload = params.decodeNotificationParams<ServerRequestResolvedPayload>()
+            if (payload != null) {
+                CodexNotification.ServerRequestResolved(
+                    threadId = payload.threadId,
+                    requestId = payload.requestId,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -360,6 +379,12 @@ private data class ErrorPayload(
     val turnId: TurnId,
     val error: CodexNotificationError,
     val willRetry: Boolean,
+)
+
+@Serializable
+private data class ServerRequestResolvedPayload(
+    val threadId: ThreadId,
+    val requestId: JsonRpcId,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {

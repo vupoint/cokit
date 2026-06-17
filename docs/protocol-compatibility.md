@@ -106,7 +106,7 @@ request descriptor count is exact.
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
 | Request groups | 0 | 4 | 12 | 6 | 19 public `CodexRpc` request descriptors |
-| Notification groups | 2 | 4 | 11 | 7 | Not counted by this helper |
+| Notification groups | 3 | 4 | 10 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
@@ -122,13 +122,16 @@ upstream surface today:
 - Notifications: `CodexNotification.ThreadStarted`, `ThreadStatusChanged`,
   `ThreadTokenUsageUpdated`, `TurnStarted`, `TurnCompleted`, `TurnFailed`,
   `ItemStarted`, `ItemCompleted`, `AgentMessageDelta`,
-  `ReasoningSummaryTextDelta`, `Warning`, `ConfigWarning`, and `Error` are
-  modeled. `TurnFailed` is decoded from upstream `turn/completed`
-  notifications with `turn.status == "failed"`. Item lifecycle events expose a
-  `ThreadItemSummary` compatibility wrapper for common rendering fields.
+  `ReasoningSummaryTextDelta`, `Warning`, `ConfigWarning`, `Error`, and
+  `ServerRequestResolved` are modeled. `TurnFailed` is decoded from upstream
+  `turn/completed` notifications with `turn.status == "failed"`. Item lifecycle
+  events expose a `ThreadItemSummary` compatibility wrapper for common rendering
+  fields.
   Error notifications expose safe message fields; structured `codexErrorInfo`
-  remains deferred until it has a typed compatibility model. Unknown
-  notifications expose only the method name in the primary API.
+  remains deferred until it has a typed compatibility model.
+  `serverRequest/resolved` currently carries only `threadId` and `requestId`;
+  CoKit preserves that schema shape instead of fabricating method or status
+  fields. Unknown notifications expose only the method name in the primary API.
 - Server requests: command execution approval, file-change approval, permission
   approval, tool user-input prompts, and MCP elicitations are modeled with typed
   handlers. Permission approvals return granted permission subsets instead of

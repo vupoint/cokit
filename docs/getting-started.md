@@ -109,6 +109,7 @@ client.notifications.collect { notification ->
         is CodexNotification.Warning -> println(notification.message)
         is CodexNotification.ConfigWarning -> println(notification.summary)
         is CodexNotification.Error -> println(notification.error.message)
+        is CodexNotification.ServerRequestResolved -> println(notification.requestId)
         is CodexNotification.Unknown -> println(notification.method)
     }
 }
@@ -121,6 +122,9 @@ turn status is `failed`. Item lifecycle notifications expose `ThreadItemSummary`
 for common rendering fields, and streamed text deltas are typed for agent
 messages and reasoning summaries. Token usage, warning, config warning, and
 error notifications are typed without exposing raw notification params.
+`ServerRequestResolved` exposes the thread id and JSON-RPC request id so
+applications can clear pending approval, elicitation, attestation, or user-input
+UI when app-server reports that the request was answered or cleared.
 
 ## Handle Server Requests
 
