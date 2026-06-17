@@ -12,8 +12,8 @@ changes, permission grants, dynamic tool calls, or elicitation flows.
 
 Applications should register explicit handlers only when they can show the
 request to a user, apply a policy, or otherwise make an intentional decision.
-Prefer typed handlers such as command approval handlers over raw method-string
-compatibility hooks.
+Prefer typed handlers such as command and file-change approval handlers over
+raw method-string compatibility hooks.
 
 Command execution approval requests are deny-by-default. Without a registered
 command approval handler, CoKit responds with `{"decision":"decline"}` without
@@ -22,6 +22,14 @@ handler, CoKit decodes the upstream params before invoking application code.
 Malformed params return JSON-RPC `-32602` and do not call the handler. Handler
 exceptions return JSON-RPC `-32000` with a generic failure message so exception
 text is not sent back to app-server.
+
+File-change approval requests are deny-by-default. Without a registered
+file-change approval handler, CoKit responds with `{"decision":"decline"}`
+without approving the patch or granting write access. With a typed file-change
+approval handler, CoKit exposes the request ids, optional reason, and optional
+host `grantRoot` as typed values before encoding the handler's explicit
+decision. Handler failures use the same generic JSON-RPC error behavior as
+command approvals.
 
 ## Host Semantics
 

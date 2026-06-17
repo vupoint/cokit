@@ -1,6 +1,7 @@
 package io.github.cokit.client
 
 import io.github.cokit.client.approvals.CommandApprovalHandler
+import io.github.cokit.client.approvals.FileChangeApprovalHandler
 import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -33,6 +34,7 @@ class CodexRpcClient private constructor(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     private var commandApprovalHandler: CommandApprovalHandler? = null
+    private var fileChangeApprovalHandler: FileChangeApprovalHandler? = null
     private val serverRequestJob: Job = scope.launch {
         rpc.serverRequests.collect { request ->
             mutableServerRequests.tryEmit(request.toCodexServerRequest())
@@ -56,6 +58,10 @@ class CodexRpcClient private constructor(
         commandApprovalHandler = handler
     }
 
+    fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler) {
+        fileChangeApprovalHandler = handler
+    }
+
     override fun close() {
         serverRequestJob.cancel()
         rpc.close()
@@ -76,6 +82,29 @@ class CodexRpcClient private constructor(
                 JsonRpcResponse(
                     id = request.id,
                     result = handler.decide(commandRequest).toProtocolPayload().toJsonElement(),
+                )
+            } catch (error: Throwable) {
+                JsonRpcResponse(
+                    id = request.id,
+                    error = serverRequestHandlerError(),
+                )
+            }
+        }
+
+        val fileChangeHandler = fileChangeApprovalHandler
+        if (request.method == FILE_CHANGE_APPROVAL_METHOD && fileChangeHandler != null) {
+            val fileChangeRequest = try {
+                request.decodeFileChangeApprovalRequest()
+            } catch (error: Throwable) {
+                return JsonRpcResponse(
+                    id = request.id,
+                    error = invalidServerRequestParamsError(request.method),
+                )
+            }
+            return try {
+                JsonRpcResponse(
+                    id = request.id,
+                    result = fileChangeHandler.decide(fileChangeRequest).toProtocolPayload().toJsonElement(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(

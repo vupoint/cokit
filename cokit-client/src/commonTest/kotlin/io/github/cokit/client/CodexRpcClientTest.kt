@@ -505,7 +505,7 @@ class CodexRpcClientTest {
         runCurrent()
 
         val response = fixture.transport.sent.last() as JsonRpcResponse
-        assertTrue(response.result.toString().contains("accept_for_session"))
+        assertTrue(response.result.toString().contains("acceptForSession"))
     }
 
     private suspend fun TestScope.connectedRpcClientFixture(

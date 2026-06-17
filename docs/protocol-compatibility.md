@@ -129,8 +129,9 @@ upstream surface today:
   Error notifications expose safe message fields; structured `codexErrorInfo`
   remains deferred until it has a typed compatibility model. Unknown
   notifications expose only the method name in the primary API.
-- Server requests: command execution approval is modeled with a typed handler.
-  Approval-like request families without typed handlers remain deny-by-default.
+- Server requests: command execution approval and file-change approval are
+  modeled with typed handlers. Approval-like request families without typed
+  handlers remain deny-by-default.
 
 The following upstream request groups are not yet modeled as primary typed
 descriptors:

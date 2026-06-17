@@ -2,6 +2,9 @@ package io.github.cokit.client
 
 import io.github.cokit.client.approvals.ApprovalDecision
 import io.github.cokit.client.approvals.CommandApprovalRequest
+import io.github.cokit.client.approvals.FileChangeApprovalRequest
+import io.github.cokit.client.approvals.FileChangeKind
+import io.github.cokit.client.approvals.FileChangeSummary
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -9,6 +12,7 @@ import io.github.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -40,6 +44,30 @@ class ApprovalHandlerTest {
     }
 
     @Test
+    fun fileChangeApprovalRequestUsesSdkValueTypes() {
+        val request = FileChangeApprovalRequest(
+            threadId = ThreadId("thr_123"),
+            turnId = TurnId("turn_123"),
+            itemId = ItemId("item_123"),
+            startedAtMs = 1_776_000_000_000,
+            reason = "Review proposed patch",
+            grantRoot = CodexHostPath("/path/to/project"),
+        )
+        val summary = FileChangeSummary(
+            path = CodexHostPath("/path/to/project/src/Main.kt"),
+            kind = FileChangeKind("modify"),
+            diff = "@@ -1 +1 @@",
+        )
+
+        assertEquals(ThreadId("thr_123"), request.threadId)
+        assertEquals(TurnId("turn_123"), request.turnId)
+        assertEquals(ItemId("item_123"), request.itemId)
+        assertEquals(CodexHostPath("/path/to/project"), request.grantRoot)
+        assertEquals(1_776_000_000_000, request.startedAtMs)
+        assertEquals(CodexHostPath("/path/to/project/src/Main.kt"), summary.path)
+    }
+
+    @Test
     fun commandApprovalDeclinesWhenNoHandlerIsRegistered() = runTest {
         val fixture = connectedClientFixture(backgroundScope)
 
@@ -61,6 +89,41 @@ class ApprovalHandlerTest {
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
         assertEquals("decline", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
+    }
+
+    @Test
+    fun fileChangeApprovalServerRequestsAreTypedAndDeclineByDefault() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val serverRequest = async { fixture.client.serverRequests.first() }
+
+        fixture.transport.receive(fileChangeApprovalRequest(id = 99))
+        runCurrent()
+
+        val fileChangeApproval = assertIs<CodexServerRequest.FileChangeApproval>(serverRequest.await())
+        assertEquals(ItemId("item_123"), fileChangeApproval.request.itemId)
+        assertEquals("Review proposed patch", fileChangeApproval.request.reason)
+        assertEquals(CodexHostPath("/path/to/project"), fileChangeApproval.request.grantRoot)
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals("decline", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
+    }
+
+    @Test
+    fun fileChangeApprovalHandlerCanReturnTypedDecision() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        fixture.client.registerFileChangeApprovalHandler { request ->
+            assertEquals(ItemId("item_123"), request.itemId)
+            assertEquals(CodexHostPath("/path/to/project"), request.grantRoot)
+            ApprovalDecision.AcceptForSession
+        }
+
+        fixture.transport.receive(fileChangeApprovalRequest(id = 99))
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(99), response.id)
+        assertEquals("acceptForSession", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
     }
 
     @Test
@@ -142,7 +205,7 @@ class ApprovalHandlerTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
         val cases = listOf(
             ApprovalDecision.Accept to "accept",
-            ApprovalDecision.AcceptForSession to "accept_for_session",
+            ApprovalDecision.AcceptForSession to "acceptForSession",
             ApprovalDecision.Decline to "decline",
             ApprovalDecision.Cancel to "cancel",
         )
@@ -227,6 +290,19 @@ class ApprovalHandlerTest {
             put("itemId", "item_123")
             put("command", "git status")
             put("cwd", "/path/to/project")
+        },
+    )
+
+    private fun fileChangeApprovalRequest(id: Long): JsonRpcRequest = JsonRpcRequest(
+        id = JsonRpcId.Number(id),
+        method = "item/fileChange/requestApproval",
+        params = buildJsonObject {
+            put("threadId", "thr_123")
+            put("turnId", "turn_123")
+            put("itemId", "item_123")
+            put("startedAtMs", 1_776_000_000_000)
+            put("reason", "Review proposed patch")
+            put("grantRoot", "/path/to/project")
         },
     )
 

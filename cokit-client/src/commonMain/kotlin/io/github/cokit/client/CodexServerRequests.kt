@@ -2,6 +2,7 @@ package io.github.cokit.client
 
 import io.github.cokit.client.approvals.ApprovalDecision
 import io.github.cokit.client.approvals.CommandApprovalRequest
+import io.github.cokit.client.approvals.FileChangeApprovalRequest
 import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcErrorObject
 import io.github.cokit.protocol.JsonRpcRequest
@@ -10,6 +11,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.put
 
 internal const val COMMAND_APPROVAL_METHOD = "item/commandExecution/requestApproval"
+internal const val FILE_CHANGE_APPROVAL_METHOD = "item/fileChange/requestApproval"
 
 sealed interface CodexServerRequest {
     val method: String
@@ -18,6 +20,12 @@ sealed interface CodexServerRequest {
         val request: CommandApprovalRequest,
     ) : CodexServerRequest {
         override val method: String = COMMAND_APPROVAL_METHOD
+    }
+
+    data class FileChangeApproval(
+        val request: FileChangeApprovalRequest,
+    ) : CodexServerRequest {
+        override val method: String = FILE_CHANGE_APPROVAL_METHOD
     }
 
     data class Unsupported(
@@ -37,6 +45,11 @@ internal fun JsonRpcRequest.toCodexServerRequest(): CodexServerRequest {
         }.getOrElse {
             CodexServerRequest.Unsupported(method)
         }
+        FILE_CHANGE_APPROVAL_METHOD -> runCatching {
+            CodexServerRequest.FileChangeApproval(decodeFileChangeApprovalRequest())
+        }.getOrElse {
+            CodexServerRequest.Unsupported(method)
+        }
         else -> CodexServerRequest.Unsupported(method)
     }
 }
@@ -48,10 +61,17 @@ internal fun JsonRpcRequest.decodeCommandApprovalRequest(): CommandApprovalReque
     return CodexProtocolJson.decodeFromJsonElement(CommandApprovalRequest.serializer(), paramsElement)
 }
 
+internal fun JsonRpcRequest.decodeFileChangeApprovalRequest(): FileChangeApprovalRequest {
+    val paramsElement = requireNotNull(params) {
+        "Expected file change approval request params"
+    }
+    return CodexProtocolJson.decodeFromJsonElement(FileChangeApprovalRequest.serializer(), paramsElement)
+}
+
 internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
     val value = when (this) {
         ApprovalDecision.Accept -> "accept"
-        ApprovalDecision.AcceptForSession -> "accept_for_session"
+        ApprovalDecision.AcceptForSession -> "acceptForSession"
         ApprovalDecision.Decline -> "decline"
         ApprovalDecision.Cancel -> "cancel"
     }
@@ -63,7 +83,7 @@ internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
 internal fun defaultServerRequestResult(method: String): CodexJsonPayload? {
     return when (method) {
         COMMAND_APPROVAL_METHOD,
-        "item/fileChange/requestApproval",
+        FILE_CHANGE_APPROVAL_METHOD,
         "item/permissions/requestApproval",
         "item/tool/call",
         "mcpServer/elicitation/request",
