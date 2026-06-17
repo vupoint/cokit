@@ -62,6 +62,14 @@ fields as untrusted input. Handler responses must return explicit accept,
 decline, or cancel actions. Malformed params and handler failures use the same
 JSON-RPC error behavior as command approvals.
 
+Attestation generation requests are unsupported by default. Without a registered
+typed attestation handler, CoKit responds with `{"status":"unsupported"}` and
+never creates or fabricates an attestation token. Applications that provide
+upstream attestation must opt into `capabilities.requestAttestation`, register an
+explicit attestation handler, and return only an opaque client-owned token in the
+`token` field. Malformed params and handler failures use the same JSON-RPC error
+behavior as command approvals.
+
 ## Host Semantics
 
 Paths, commands, process APIs, and filesystem APIs refer to the app-server host.

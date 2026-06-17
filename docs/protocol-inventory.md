@@ -90,7 +90,7 @@ modeled coverage. They are compatibility behavior only.
 | Dynamic tool call | experimental | `item/tool/call` | Deferred. Without a handler, CoKit declines by default. |
 | Tool user-input prompt | experimental | `item/tool/requestUserInput` | Typed `CodexServerRequest.UserInput` and user-input handlers exist for questions, options, and answer maps. Upstream marks this flow experimental. Without a handler, CoKit cancels by default. |
 | MCP elicitation | partial | `mcpServer/elicitation/request` | Typed `CodexServerRequest.McpElicitation` and MCP elicitation handlers exist for form and URL requests. Without a handler, CoKit declines by default. |
-| Attestation generation | partial | `attestation/generate` | No typed request model yet. Without a handler, CoKit returns an unsupported status by default. |
+| Attestation generation | partial | `attestation/generate` | Typed `CodexServerRequest.AttestationGenerate` and attestation handlers exist for empty generate requests and opaque token responses. Without a handler, CoKit returns an unsupported status by default. |
 
 ## Current Modeled Request Descriptors
 

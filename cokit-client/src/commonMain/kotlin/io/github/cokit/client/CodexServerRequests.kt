@@ -5,6 +5,8 @@ import io.github.cokit.client.approvals.CommandApprovalRequest
 import io.github.cokit.client.approvals.FileChangeApprovalRequest
 import io.github.cokit.client.approvals.PermissionApprovalRequest
 import io.github.cokit.client.approvals.PermissionApprovalResponse
+import io.github.cokit.client.attestation.AttestationGenerateRequest
+import io.github.cokit.client.attestation.AttestationGenerateResponse
 import io.github.cokit.client.mcp.McpElicitationRequest
 import io.github.cokit.client.mcp.McpElicitationResponse
 import io.github.cokit.client.server.UserInputRequest
@@ -26,6 +28,7 @@ internal const val FILE_CHANGE_APPROVAL_METHOD = "item/fileChange/requestApprova
 internal const val PERMISSION_APPROVAL_METHOD = "item/permissions/requestApproval"
 internal const val USER_INPUT_REQUEST_METHOD = "item/tool/requestUserInput"
 internal const val MCP_ELICITATION_REQUEST_METHOD = "mcpServer/elicitation/request"
+internal const val ATTESTATION_GENERATE_METHOD = "attestation/generate"
 
 sealed interface CodexServerRequest {
     val method: String
@@ -58,6 +61,12 @@ sealed interface CodexServerRequest {
         val request: McpElicitationRequest,
     ) : CodexServerRequest {
         override val method: String = MCP_ELICITATION_REQUEST_METHOD
+    }
+
+    data class AttestationGenerate(
+        val request: AttestationGenerateRequest,
+    ) : CodexServerRequest {
+        override val method: String = ATTESTATION_GENERATE_METHOD
     }
 
     data class Unsupported(
@@ -94,6 +103,11 @@ internal fun JsonRpcRequest.toCodexServerRequest(): CodexServerRequest {
         }
         MCP_ELICITATION_REQUEST_METHOD -> runCatching {
             CodexServerRequest.McpElicitation(decodeMcpElicitationRequest())
+        }.getOrElse {
+            CodexServerRequest.Unsupported(method)
+        }
+        ATTESTATION_GENERATE_METHOD -> runCatching {
+            CodexServerRequest.AttestationGenerate(decodeAttestationGenerateRequest())
         }.getOrElse {
             CodexServerRequest.Unsupported(method)
         }
@@ -134,6 +148,13 @@ internal fun JsonRpcRequest.decodeMcpElicitationRequest(): McpElicitationRequest
         "Expected MCP elicitation request params"
     }
     return CodexProtocolJson.decodeFromJsonElement(McpElicitationRequest.serializer(), paramsElement)
+}
+
+internal fun JsonRpcRequest.decodeAttestationGenerateRequest(): AttestationGenerateRequest {
+    val paramsElement = requireNotNull(params) {
+        "Expected attestation generate request params"
+    }
+    return CodexProtocolJson.decodeFromJsonElement(AttestationGenerateRequest.serializer(), paramsElement)
 }
 
 internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
@@ -193,6 +214,13 @@ private fun mcpElicitationTerminalPayload(action: String): CodexJsonPayload {
     }.toCodexPayload()
 }
 
+internal fun AttestationGenerateResponse.toProtocolPayload(): CodexJsonPayload {
+    return CodexProtocolJson.encodeToJsonElement(
+        AttestationGenerateResponse.serializer(),
+        this,
+    ).toCodexPayload()
+}
+
 internal fun defaultServerRequestResult(method: String): CodexJsonPayload? {
     return when (method) {
         COMMAND_APPROVAL_METHOD,
@@ -203,7 +231,7 @@ internal fun defaultServerRequestResult(method: String): CodexJsonPayload? {
         PERMISSION_APPROVAL_METHOD -> PermissionApprovalResponse.Decline.toProtocolPayload()
         USER_INPUT_REQUEST_METHOD -> UserInputResponse.Cancel.toProtocolPayload()
         MCP_ELICITATION_REQUEST_METHOD -> McpElicitationResponse.Decline.toProtocolPayload()
-        "attestation/generate" -> buildJsonObject { put("status", "unsupported") }.toCodexPayload()
+        ATTESTATION_GENERATE_METHOD -> buildJsonObject { put("status", "unsupported") }.toCodexPayload()
         else -> null
     }
 }

@@ -226,6 +226,9 @@ Goal: make app-server initiated work safe, typed, and deny-by-default.
 - Permission request handlers grant only explicit filesystem and network
   subsets; an empty grant is the default denial shape and session grants must be
   requested with `scope: "session"`.
+- Attestation generation handlers require explicit application registration and
+  return opaque client-owned tokens; the absence of a handler returns
+  unsupported by default.
 - Emit typed request lifecycle notifications such as `serverRequest/resolved`
   so applications can clear pending UI state reliably.
 - Document handler trust boundaries, host path semantics, and persistence

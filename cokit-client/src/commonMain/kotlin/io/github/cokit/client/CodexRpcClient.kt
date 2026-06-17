@@ -3,6 +3,7 @@ package io.github.cokit.client
 import io.github.cokit.client.approvals.CommandApprovalHandler
 import io.github.cokit.client.approvals.FileChangeApprovalHandler
 import io.github.cokit.client.approvals.PermissionApprovalHandler
+import io.github.cokit.client.attestation.AttestationGenerateHandler
 import io.github.cokit.client.mcp.McpElicitationHandler
 import io.github.cokit.client.server.UserInputRequestHandler
 import io.github.cokit.protocol.CodexProtocolJson
@@ -41,6 +42,7 @@ class CodexRpcClient private constructor(
     private var permissionApprovalHandler: PermissionApprovalHandler? = null
     private var userInputRequestHandler: UserInputRequestHandler? = null
     private var mcpElicitationHandler: McpElicitationHandler? = null
+    private var attestationGenerateHandler: AttestationGenerateHandler? = null
     private val serverRequestJob: Job = scope.launch {
         rpc.serverRequests.collect { request ->
             mutableServerRequests.tryEmit(request.toCodexServerRequest())
@@ -78,6 +80,10 @@ class CodexRpcClient private constructor(
 
     fun registerMcpElicitationHandler(handler: McpElicitationHandler) {
         mcpElicitationHandler = handler
+    }
+
+    fun registerAttestationGenerateHandler(handler: AttestationGenerateHandler) {
+        attestationGenerateHandler = handler
     }
 
     override fun close() {
@@ -192,6 +198,29 @@ class CodexRpcClient private constructor(
                 JsonRpcResponse(
                     id = request.id,
                     result = mcpHandler.respond(mcpRequest).toProtocolPayload().toJsonElement(),
+                )
+            } catch (error: Throwable) {
+                JsonRpcResponse(
+                    id = request.id,
+                    error = serverRequestHandlerError(),
+                )
+            }
+        }
+
+        val attestationHandler = attestationGenerateHandler
+        if (request.method == ATTESTATION_GENERATE_METHOD && attestationHandler != null) {
+            val attestationRequest = try {
+                request.decodeAttestationGenerateRequest()
+            } catch (error: Throwable) {
+                return JsonRpcResponse(
+                    id = request.id,
+                    error = invalidServerRequestParamsError(request.method),
+                )
+            }
+            return try {
+                JsonRpcResponse(
+                    id = request.id,
+                    result = attestationHandler.generate(attestationRequest).toProtocolPayload().toJsonElement(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
