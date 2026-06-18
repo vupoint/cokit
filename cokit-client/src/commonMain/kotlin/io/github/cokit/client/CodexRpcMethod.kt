@@ -1,7 +1,10 @@
 package io.github.cokit.client
 
 import io.github.cokit.client.commands.CommandExecParams
+import io.github.cokit.client.commands.CommandExecResizeParams
 import io.github.cokit.client.commands.CommandExecResult
+import io.github.cokit.client.commands.CommandExecTerminateParams
+import io.github.cokit.client.commands.CommandExecWriteParams
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -144,6 +147,27 @@ object CodexRpc {
             method = "command/exec",
             paramsSerializer = CommandExecParams.serializer(),
             resultSerializer = CommandExecResult.serializer(),
+        )
+
+        val WriteStdin: CodexRpcMethod<CommandExecWriteParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "command/exec/write",
+            paramsSerializer = CommandExecWriteParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Resize: CodexRpcMethod<CommandExecResizeParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "command/exec/resize",
+            paramsSerializer = CommandExecResizeParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Terminate: CodexRpcMethod<CommandExecTerminateParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "command/exec/terminate",
+            paramsSerializer = CommandExecTerminateParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
         )
     }
 }

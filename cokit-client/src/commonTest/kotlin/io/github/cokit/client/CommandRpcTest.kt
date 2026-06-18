@@ -1,7 +1,10 @@
 package io.github.cokit.client
 
 import io.github.cokit.client.commands.CommandExecParams
+import io.github.cokit.client.commands.CommandExecResizeParams
 import io.github.cokit.client.commands.CommandExecTerminalSize
+import io.github.cokit.client.commands.CommandExecTerminateParams
+import io.github.cokit.client.commands.CommandExecWriteParams
 import io.github.cokit.client.commands.CommandProcessId
 import io.github.cokit.client.commands.CommandSandboxPolicy
 import io.github.cokit.protocol.JsonRpcRequest
@@ -105,6 +108,69 @@ class CommandRpcTest {
         assertEquals(0, result.await().exitCode)
         assertEquals("clean\n", result.await().stdout)
         assertEquals("", result.await().stderr)
+    }
+
+    @Test
+    fun commandControlDescriptorsSendProcessScopedParamsAndDecodeEmptyResults() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val processId = CommandProcessId("cmd_stream_1")
+
+        val writeResult = async {
+            fixture.client.request(
+                CodexRpc.Command.WriteStdin,
+                CommandExecWriteParams(
+                    processId = processId,
+                    deltaBase64 = "aGVsbG8K",
+                    closeStdin = true,
+                ),
+            )
+        }
+        runCurrent()
+
+        val write = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("command/exec/write", write.method)
+        val writeParams = write.params!!.jsonObject
+        assertEquals("cmd_stream_1", writeParams["processId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("aGVsbG8K", writeParams["deltaBase64"]?.jsonPrimitive?.contentOrNull)
+        assertEquals(true, writeParams["closeStdin"]?.jsonPrimitive?.booleanOrNull)
+        fixture.transport.receive(JsonRpcResponse(write.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, writeResult.await())
+
+        val resizeResult = async {
+            fixture.client.request(
+                CodexRpc.Command.Resize,
+                CommandExecResizeParams(
+                    processId = processId,
+                    size = CommandExecTerminalSize(cols = 100, rows = 32),
+                ),
+            )
+        }
+        runCurrent()
+
+        val resize = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("command/exec/resize", resize.method)
+        val resizeParams = resize.params!!.jsonObject
+        assertEquals("cmd_stream_1", resizeParams["processId"]?.jsonPrimitive?.contentOrNull)
+        val resizeSize = resizeParams["size"]!!.jsonObject
+        assertEquals("100", resizeSize["cols"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("32", resizeSize["rows"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(JsonRpcResponse(resize.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, resizeResult.await())
+
+        val terminateResult = async {
+            fixture.client.request(
+                CodexRpc.Command.Terminate,
+                CommandExecTerminateParams(processId = processId),
+            )
+        }
+        runCurrent()
+
+        val terminate = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("command/exec/terminate", terminate.method)
+        val terminateParams = terminate.params!!.jsonObject
+        assertEquals("cmd_stream_1", terminateParams["processId"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(JsonRpcResponse(terminate.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, terminateResult.await())
     }
 
     private suspend fun TestScope.connectedRpcClientFixture(

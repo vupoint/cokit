@@ -79,9 +79,12 @@ or proxy scenarios.
 `CodexRpc.Command.Exec` sends an argv vector to the app-server for execution
 under the server's sandbox policy. The `cwd`, environment overrides, timeout,
 output cap, process id, PTY size, and sandbox policy fields describe host-side
-execution only; they do not run commands in the Kotlin client process. Callers
-should choose sandbox policies deliberately and should avoid passing secrets in
-argv, environment overrides, working directories, or captured output.
+execution only; they do not run commands in the Kotlin client process.
+`CodexRpc.Command.WriteStdin`, `Resize`, and `Terminate` target the same
+connection-scoped app-server process id supplied by `command/exec`; stdin chunks
+are base64-encoded by the caller before they cross the protocol. Callers should
+choose sandbox policies deliberately and should avoid passing secrets in argv,
+stdin, environment overrides, working directories, or captured output.
 
 ## Secrets
 

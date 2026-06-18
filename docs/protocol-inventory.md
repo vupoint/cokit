@@ -34,7 +34,7 @@ modeled coverage. They are compatibility behavior only.
 | Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors exist. Experimental params such as environment selection and some schema-shaped fields are not fully modeled. |
 | Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
 | Review | deferred | `review/start` | No typed descriptor yet. Review item notifications are also deferred. |
-| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec` models the buffered command request/result shape from the `codex-cli 0.140.0` generated schema. Streaming stdin, resize, terminate, and output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
+| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.140.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | Deferred. Upstream marks this surface experimental and unsandboxed. |
 | Filesystem utilities | deferred | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | No typed descriptors yet. Future models must keep host-path semantics explicit. |
 | Models and provider catalog | deferred | `model/list`, `modelProvider/capabilities/read` | No typed descriptors yet. |
@@ -120,6 +120,9 @@ without updating the public inventory.
 | `CodexRpc.Turn.Steer` | `turn/steer` | Turn lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Turn.Interrupt` | `turn/interrupt` | Turn lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Command.Exec` | `command/exec` | Sandboxed command execution descriptor; group coverage remains partial. |
+| `CodexRpc.Command.WriteStdin` | `command/exec/write` | Sandboxed command stdin descriptor; group coverage remains partial. |
+| `CodexRpc.Command.Resize` | `command/exec/resize` | Sandboxed command PTY resize descriptor; group coverage remains partial. |
+| `CodexRpc.Command.Terminate` | `command/exec/terminate` | Sandboxed command termination descriptor; group coverage remains partial. |
 
 ## Current Modeled Method Summary
 
@@ -145,6 +148,9 @@ Current public request descriptors:
 - `turn/steer`
 - `turn/interrupt`
 - `command/exec`
+- `command/exec/write`
+- `command/exec/resize`
+- `command/exec/terminate`
 
 Current typed notification:
 

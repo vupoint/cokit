@@ -29,6 +29,24 @@ data class CommandExecResult(
 )
 
 @Serializable
+data class CommandExecWriteParams(
+    val processId: CommandProcessId,
+    val deltaBase64: String? = null,
+    val closeStdin: Boolean? = null,
+)
+
+@Serializable
+data class CommandExecResizeParams(
+    val processId: CommandProcessId,
+    val size: CommandExecTerminalSize,
+)
+
+@Serializable
+data class CommandExecTerminateParams(
+    val processId: CommandProcessId,
+)
+
+@Serializable
 @JvmInline
 value class CommandProcessId(val value: String)
 
