@@ -1730,6 +1730,8 @@ cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: companion
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: class JsonRpcRemoteException(
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val error: JsonRpcErrorObject,
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val isRetryableOverload: Boolean
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: companion object {
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: class JsonRpcMessageSizeException(
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val actualMessageBytes: Int,
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val maxMessageBytes: Int,

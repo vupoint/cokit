@@ -146,7 +146,14 @@ typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
 
 class JsonRpcRemoteException(
     val error: JsonRpcErrorObject,
-) : RuntimeException(error.message)
+) : RuntimeException(error.message) {
+    val isRetryableOverload: Boolean
+        get() = error.code == SERVER_OVERLOADED_CODE
+
+    companion object {
+        const val SERVER_OVERLOADED_CODE: Int = -32001
+    }
+}
 
 class JsonRpcMessageSizeException(
     val actualMessageBytes: Int,

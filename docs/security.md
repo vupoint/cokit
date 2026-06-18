@@ -85,6 +85,18 @@ session constructor. Oversized messages fail fast with
 `JsonRpcMessageSizeException`; CoKit does not silently truncate JSON-RPC
 messages.
 
+## Overload And Retry Policy
+
+When app-server request ingress is saturated, upstream returns JSON-RPC error
+code `-32001` with a retry-later message. CoKit surfaces that response as
+`JsonRpcRemoteException` and exposes `isRetryableOverload` for callers that want
+to apply their own bounded retry policy.
+
+CoKit does not retry JSON-RPC requests automatically. Applications that retry
+overload failures should use bounded attempts, exponential backoff with jitter,
+and operation-level idempotency rules. Do not add unbounded request queues or
+background retry loops around `JsonRpcSession`.
+
 ## Notification Backpressure
 
 CoKit bounds raw JSON-RPC notifications, server-initiated requests, and typed

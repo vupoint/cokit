@@ -464,8 +464,9 @@ Goal: make the API safe to publish and maintain as upstream evolves.
 - Reject malformed JSON-RPC envelopes during protocol decode and enforce an
   encoded-size limit in `JsonRpcSession` before messages enter request,
   notification, or transport buffers.
-- Document retry behavior for app-server overload errors and connection
-  lifecycle failures.
+- Surface app-server overload errors as retryable remote exceptions, but keep
+  retries application-owned and bounded rather than automatic.
+- Document connection lifecycle failure behavior.
 - Keep sample CLI and getting-started docs aligned with the primary typed API.
 - Re-run public exposure and security scans before release candidates.
 

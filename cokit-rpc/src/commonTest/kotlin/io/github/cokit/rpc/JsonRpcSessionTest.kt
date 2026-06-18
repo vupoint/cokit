@@ -1,6 +1,7 @@
 package io.github.cokit.rpc
 
 import io.github.cokit.protocol.JsonRpcId
+import io.github.cokit.protocol.JsonRpcErrorObject
 import io.github.cokit.protocol.JsonRpcMessage
 import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcRequest
@@ -8,6 +9,8 @@ import io.github.cokit.protocol.JsonRpcResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
@@ -63,6 +66,45 @@ class JsonRpcSessionTest {
         transport.receive(JsonRpcResponse(id = sent.id, result = expected))
 
         assertEquals(expected, deferred.await())
+    }
+
+    @Test
+    fun overloadErrorCompletesRequestAsRetryableRemoteExceptionWithoutAutomaticRetry() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val session = JsonRpcSession(transport, backgroundScope)
+        val result = async {
+            runCatching { session.request("model/list", JsonObject(emptyMap())) }
+        }
+        runCurrent()
+
+        val sent = transport.sent.single() as JsonRpcRequest
+        transport.receive(
+            JsonRpcResponse(
+                id = sent.id,
+                error = JsonRpcErrorObject(
+                    code = -32001,
+                    message = "Server overloaded; retry later.",
+                ),
+            ),
+        )
+
+        val error = assertIs<JsonRpcRemoteException>(result.await().exceptionOrNull())
+
+        assertTrue(error.isRetryableOverload)
+        assertEquals(-32001, error.error.code)
+        assertEquals(1, transport.sent.size)
+    }
+
+    @Test
+    fun nonOverloadErrorsAreNotRetryableByDefault() {
+        val error = JsonRpcRemoteException(
+            JsonRpcErrorObject(
+                code = -32000,
+                message = "Server error",
+            ),
+        )
+
+        assertFalse(error.isRetryableOverload)
     }
 
     @Test
