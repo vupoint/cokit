@@ -176,8 +176,16 @@ tokens. ChatGPT account email values are wrapped in a type whose string
 representation is redacted, but applications that access the raw `value` should
 still treat it as private account data and avoid writing it to telemetry,
 logs, analytics, crash reports, or shared support bundles. `CodexRpc.Account`
-logout has no request parameters and returns no account payload; applications
-should still treat logout as a user-visible auth state change.
+login descriptors expose API-key, ChatGPT browser, ChatGPT device-code, and
+unstable external-token flows as protocol data. CoKit redacts API keys, access
+tokens, auth URLs, device user codes, and account identifiers from login model
+string representations, but applications remain responsible for browser
+opening, user-consent UX, secure storage, and avoiding telemetry of raw
+properties. Account login completion notifications report success or failure;
+applications should not treat them as authorization to perform unrelated
+actions. `CodexRpc.Account` logout has no request parameters and returns no
+account payload; applications should still treat logout as a user-visible auth
+state change.
 
 ## Secrets
 

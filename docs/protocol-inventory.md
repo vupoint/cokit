@@ -49,7 +49,7 @@ modeled coverage. They are compatibility behavior only.
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
 | Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | Deferred. Remote-control methods require explicit experimental opt-in and trust-boundary documentation. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
-| Account and auth | partial | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.Logout` models the current no-params empty response. Login, rate-limit, usage, and add-credits descriptors remain deferred. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
+| Account and auth | partial | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. Rate-limit, usage, and add-credits descriptors remain deferred. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
 
 ## Notification Groups
 
@@ -74,7 +74,7 @@ modeled coverage. They are compatibility behavior only.
 | Windows sandbox setup | deferred | `windowsSandbox/setupCompleted` | No typed notification yet. |
 | MCP startup and OAuth | deferred | `mcpServer/startupStatus/updated`, `mcpServer/oauthLogin/completed` | No typed notifications yet. |
 | Skill and app catalog changes | deferred | `skills/changed`, `app/list/updated` | No typed notifications yet. |
-| Account and auth | deferred | `account/login/completed`, `account/updated`, `account/rateLimits/updated` | No typed notifications yet. |
+| Account and auth | partial | `account/login/completed`, `account/updated`, `account/rateLimits/updated` | `CodexNotification.AccountLoginCompleted` models login success and failure completion events. Account update and rate-limit update notifications remain deferred. |
 | Remote-control status | experimental | `remoteControl/status/changed` | Deferred. |
 | External agent migration | deferred | `externalAgentConfig/import/completed` | No typed notification yet. |
 | Server-request lifecycle | modeled | `serverRequest/resolved` | `CodexNotification.ServerRequestResolved` exposes the thread id and JSON-RPC request id so applications can clear pending request UI after the server reports resolution or cleanup. Current upstream schema does not include request method or status fields on this notification. |
@@ -162,6 +162,8 @@ without updating the public inventory.
 | `CodexRpc.Mcp.ReadResource` | `mcpServer/resource/read` | MCP resource read descriptor; MCP API coverage is modeled. |
 | `CodexRpc.Mcp.CallTool` | `mcpServer/tool/call` | MCP tool call descriptor; MCP API coverage is modeled with raw result payload preservation. |
 | `CodexRpc.Account.Read` | `account/read` | Account read descriptor; account and auth coverage remains partial. |
+| `CodexRpc.Account.StartLogin` | `account/login/start` | Account login descriptor; account and auth coverage remains partial. |
+| `CodexRpc.Account.CancelLogin` | `account/login/cancel` | Account login cancellation descriptor; account and auth coverage remains partial. |
 | `CodexRpc.Account.Logout` | `account/logout` | Account logout descriptor; account and auth coverage remains partial. |
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
@@ -233,6 +235,8 @@ Current public request descriptors:
 - `mcpServer/resource/read`
 - `mcpServer/tool/call`
 - `account/read`
+- `account/login/start`
+- `account/login/cancel`
 - `account/logout`
 - `permissionProfile/list`
 - `collaborationMode/list`
@@ -255,6 +259,7 @@ Current typed notification:
 - `serverRequest/resolved`
 - `command/exec/outputDelta`
 - `fs/changed`
+- `account/login/completed`
 
 Current typed server request:
 

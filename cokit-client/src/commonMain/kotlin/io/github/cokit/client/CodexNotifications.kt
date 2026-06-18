@@ -1,5 +1,6 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.auth.LoginAccountId
 import io.github.cokit.client.commands.CommandExecOutputStream
 import io.github.cokit.client.commands.CommandProcessId
 import io.github.cokit.client.filesystem.FilesystemWatchId
@@ -134,6 +135,14 @@ sealed interface CodexNotification {
         val changedPaths: List<CodexHostPath>,
     ) : CodexNotification {
         override val method: String = "fs/changed"
+    }
+
+    data class AccountLoginCompleted(
+        val loginId: LoginAccountId? = null,
+        val success: Boolean,
+        val error: String? = null,
+    ) : CodexNotification {
+        override val method: String = "account/login/completed"
     }
 
     data class Unknown(
@@ -350,6 +359,18 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.Unknown(method)
             }
         }
+        "account/login/completed" -> {
+            val payload = params.decodeNotificationParams<AccountLoginCompletedPayload>()
+            if (payload != null) {
+                CodexNotification.AccountLoginCompleted(
+                    loginId = payload.loginId,
+                    success = payload.success,
+                    error = payload.error,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -442,6 +463,13 @@ private data class CommandExecOutputDeltaPayload(
 private data class FilesystemChangedPayload(
     val watchId: FilesystemWatchId,
     val changedPaths: List<CodexHostPath>,
+)
+
+@Serializable
+private data class AccountLoginCompletedPayload(
+    val loginId: LoginAccountId? = null,
+    val success: Boolean,
+    val error: String? = null,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {

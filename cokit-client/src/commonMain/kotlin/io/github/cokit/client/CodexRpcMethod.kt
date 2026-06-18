@@ -2,6 +2,10 @@ package io.github.cokit.client
 
 import io.github.cokit.client.auth.AccountReadParams
 import io.github.cokit.client.auth.AccountReadResult
+import io.github.cokit.client.auth.CancelLoginAccountParams
+import io.github.cokit.client.auth.CancelLoginAccountResult
+import io.github.cokit.client.auth.LoginAccountParams
+import io.github.cokit.client.auth.LoginAccountResult
 import io.github.cokit.client.auth.LogoutAccountParams
 import io.github.cokit.client.commands.CommandExecParams
 import io.github.cokit.client.commands.CommandExecResizeParams
@@ -520,6 +524,18 @@ object CodexRpc {
             method = "account/read",
             paramsSerializer = AccountReadParams.serializer(),
             resultSerializer = AccountReadResult.serializer(),
+        )
+
+        val StartLogin: CodexRpcMethod<LoginAccountParams, LoginAccountResult> = CodexRpcMethod(
+            method = "account/login/start",
+            paramsSerializer = LoginAccountParams.serializer(),
+            resultSerializer = LoginAccountResult.serializer(),
+        )
+
+        val CancelLogin: CodexRpcMethod<CancelLoginAccountParams, CancelLoginAccountResult> = CodexRpcMethod(
+            method = "account/login/cancel",
+            paramsSerializer = CancelLoginAccountParams.serializer(),
+            resultSerializer = CancelLoginAccountResult.serializer(),
         )
 
         val Logout: CodexRpcMethod<LogoutAccountParams, CodexRpcUnit> = CodexRpcMethod(

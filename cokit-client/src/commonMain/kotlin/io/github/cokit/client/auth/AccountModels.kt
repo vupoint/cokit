@@ -1,5 +1,6 @@
 package io.github.cokit.client.auth
 
+import io.github.cokit.client.ExperimentalCodexApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -86,3 +87,93 @@ sealed interface CodexAccount {
 
 @Serializable
 data object LogoutAccountParams
+
+@Serializable
+@JvmInline
+value class LoginAccountId(val value: String)
+
+@Serializable
+sealed interface LoginAccountParams {
+    @Serializable
+    @SerialName("apiKey")
+    data class ApiKey(
+        val apiKey: String,
+    ) : LoginAccountParams {
+        override fun toString(): String =
+            "ApiKey(apiKey=<redacted>)"
+    }
+
+    @Serializable
+    @SerialName("chatgpt")
+    data class ChatGpt(
+        val codexStreamlinedLogin: Boolean? = null,
+    ) : LoginAccountParams
+
+    @Serializable
+    @SerialName("chatgptDeviceCode")
+    data object ChatGptDeviceCode : LoginAccountParams
+
+    @ExperimentalCodexApi
+    @Serializable
+    @SerialName("chatgptAuthTokens")
+    data class ChatGptAuthTokens(
+        val accessToken: String,
+        val chatgptAccountId: String,
+        val chatgptPlanType: AccountPlanType? = null,
+    ) : LoginAccountParams {
+        override fun toString(): String =
+            "ChatGptAuthTokens(accessToken=<redacted>, chatgptAccountId=<redacted>, chatgptPlanType=$chatgptPlanType)"
+    }
+}
+
+@Serializable
+sealed interface LoginAccountResult {
+    @Serializable
+    @SerialName("apiKey")
+    data object ApiKey : LoginAccountResult
+
+    @Serializable
+    @SerialName("chatgpt")
+    data class ChatGpt(
+        val loginId: LoginAccountId,
+        val authUrl: String,
+    ) : LoginAccountResult {
+        override fun toString(): String =
+            "ChatGpt(loginId=$loginId, authUrl=<redacted>)"
+    }
+
+    @Serializable
+    @SerialName("chatgptDeviceCode")
+    data class ChatGptDeviceCode(
+        val loginId: LoginAccountId,
+        val verificationUrl: String,
+        val userCode: String,
+    ) : LoginAccountResult {
+        override fun toString(): String =
+            "ChatGptDeviceCode(loginId=$loginId, verificationUrl=<redacted>, userCode=<redacted>)"
+    }
+
+    @ExperimentalCodexApi
+    @Serializable
+    @SerialName("chatgptAuthTokens")
+    data object ChatGptAuthTokens : LoginAccountResult
+}
+
+@Serializable
+data class CancelLoginAccountParams(
+    val loginId: LoginAccountId,
+)
+
+@Serializable
+@JvmInline
+value class CancelLoginAccountStatus(val value: String) {
+    companion object {
+        val Canceled = CancelLoginAccountStatus("canceled")
+        val NotFound = CancelLoginAccountStatus("notFound")
+    }
+}
+
+@Serializable
+data class CancelLoginAccountResult(
+    val status: CancelLoginAccountStatus,
+)
