@@ -466,7 +466,8 @@ Goal: make the API safe to publish and maintain as upstream evolves.
   notification, or transport buffers.
 - Surface app-server overload errors as retryable remote exceptions, but keep
   retries application-owned and bounded rather than automatic.
-- Document connection lifecycle failure behavior.
+- Make RPC and stdio shutdown idempotent, cancel pending requests on session
+  close, destroy stdio app-server processes once, and drain stderr when present.
 - Keep sample CLI and getting-started docs aligned with the primary typed API.
 - Re-run public exposure and security scans before release candidates.
 

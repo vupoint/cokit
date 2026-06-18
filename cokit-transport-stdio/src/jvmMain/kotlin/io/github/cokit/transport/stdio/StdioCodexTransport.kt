@@ -28,11 +28,13 @@ class StdioCodexTransport internal constructor(
     input: InputStream,
     output: OutputStream,
     scope: CoroutineScope,
+    error: InputStream? = null,
     onClose: () -> Unit = {},
 ) : JsonRpcTransport {
     private val delegate = StreamStdioTransport(
         input = input,
         output = output,
+        error = error,
         scope = scope,
         onClose = onClose,
     )
@@ -47,11 +49,13 @@ class StdioCodexTransport internal constructor(
         input: InputStream,
         output: OutputStream,
         scope: CoroutineScope,
+        error: InputStream? = null,
     ) : this(
         command = emptyList(),
         input = input,
         output = output,
         scope = scope,
+        error = error,
     )
 
     private constructor(
@@ -62,6 +66,7 @@ class StdioCodexTransport internal constructor(
         input = process.inputStream,
         output = process.outputStream,
         scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+        error = process.errorStream,
         onClose = { process.destroy() },
     )
 
@@ -104,12 +109,14 @@ class StdioCodexTransport internal constructor(
 private class StreamStdioTransport(
     input: InputStream,
     output: OutputStream,
+    private val error: InputStream? = null,
     scope: CoroutineScope,
     private val onClose: () -> Unit = {},
 ) : JsonRpcTransport {
     private val reader = BufferedReader(InputStreamReader(input, Charsets.UTF_8))
     private val writer = BufferedWriter(OutputStreamWriter(output, Charsets.UTF_8))
     private val writeMutex = Mutex()
+    private var closed = false
     private val mutableIncoming = MutableSharedFlow<JsonRpcMessage>(
         replay = 64,
         extraBufferCapacity = 64,
@@ -120,6 +127,14 @@ private class StreamStdioTransport(
             val line = reader.readLine() ?: break
             if (line.isNotBlank()) {
                 mutableIncoming.emit(CodexProtocolJson.decodeFromString<JsonRpcMessage>(line))
+            }
+        }
+    }
+    private val errorJob: Job? = error?.let { stream ->
+        scope.launch {
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (stream.read(buffer) != -1) {
+                // Drain stderr so app-server diagnostics cannot block stdout.
             }
         }
     }
@@ -136,9 +151,13 @@ private class StreamStdioTransport(
     }
 
     override fun close() {
+        if (closed) return
+        closed = true
         readJob.cancel()
+        errorJob?.cancel()
         runCatching { writer.close() }
         runCatching { reader.close() }
+        runCatching { error?.close() }
         onClose()
     }
 }

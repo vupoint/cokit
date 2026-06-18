@@ -6,6 +6,7 @@ import io.github.cokit.protocol.JsonRpcMessage
 import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
+import kotlinx.coroutines.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -49,6 +50,23 @@ class JsonRpcSessionTest {
         session.notify("initialized")
 
         assertEquals(JsonRpcNotification(method = "initialized"), transport.sent.single())
+    }
+
+    @Test
+    fun closeIsIdempotentAndCancelsPendingRequests() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val session = JsonRpcSession(transport, backgroundScope)
+        val result = async {
+            runCatching { session.request("model/list", JsonObject(emptyMap())) }
+        }
+        runCurrent()
+
+        session.close()
+        session.close()
+
+        val error = assertIs<CancellationException>(result.await().exceptionOrNull())
+        assertEquals("JSON-RPC session closed", error.message)
+        assertEquals(1, transport.closeCount)
     }
 
     @Test
@@ -204,6 +222,11 @@ class JsonRpcSessionTest {
             mutableIncoming.emit(message)
         }
 
-        override fun close() = Unit
+        var closeCount: Int = 0
+            private set
+
+        override fun close() {
+            closeCount += 1
+        }
     }
 }

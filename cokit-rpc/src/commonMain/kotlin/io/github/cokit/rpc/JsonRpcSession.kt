@@ -30,6 +30,7 @@ class JsonRpcSession(
     }
 
     private var nextRequestId = 1L
+    private var closed = false
     private val mutex = Mutex()
     private val pendingRequests = mutableMapOf<JsonRpcId, CompletableDeferred<JsonElementResult>>()
     private val mutableNotifications = MutableSharedFlow<JsonRpcNotification>(
@@ -120,6 +121,8 @@ class JsonRpcSession(
     }
 
     override fun close() {
+        if (closed) return
+        closed = true
         collectorJob.cancel()
         transport.close()
         val cancellation = CancellationException("JSON-RPC session closed")

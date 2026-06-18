@@ -106,6 +106,18 @@ notifications promptly, treat high-rate streams as best-effort recent state, and
 re-read canonical thread, turn, filesystem, or account state after a burst when
 they need a complete snapshot.
 
+## Shutdown And Process Cleanup
+
+Closing `JsonRpcSession` is idempotent, cancels collection, closes the
+underlying transport once, and completes pending requests with cancellation
+rather than leaving callers suspended.
+
+`StdioCodexTransport` closes stdin/stdout resources once and destroys the
+underlying app-server process once. When a process stderr stream is available,
+CoKit drains it to avoid blocking stdout protocol delivery and closes it during
+transport shutdown. Stderr content is diagnostic data only and is not emitted as
+JSON-RPC protocol messages.
+
 ## Host Semantics
 
 Paths, commands, process APIs, and filesystem APIs refer to the app-server host.
