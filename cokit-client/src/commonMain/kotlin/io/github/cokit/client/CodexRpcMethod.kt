@@ -36,6 +36,15 @@ import io.github.cokit.client.models.ModelListParams
 import io.github.cokit.client.models.ModelListResult
 import io.github.cokit.client.models.ModelProviderCapabilities
 import io.github.cokit.client.models.ModelProviderCapabilitiesReadParams
+import io.github.cokit.client.mcp.McpConfigReloadParams
+import io.github.cokit.client.mcp.McpResourceReadParams
+import io.github.cokit.client.mcp.McpResourceReadResult
+import io.github.cokit.client.mcp.McpServerOauthLoginParams
+import io.github.cokit.client.mcp.McpServerOauthLoginResult
+import io.github.cokit.client.mcp.McpServerStatusListParams
+import io.github.cokit.client.mcp.McpServerStatusListResult
+import io.github.cokit.client.mcp.McpServerToolCallParams
+import io.github.cokit.client.mcp.McpServerToolCallResult
 import io.github.cokit.client.plugins.MarketplaceAddParams
 import io.github.cokit.client.plugins.MarketplaceAddResult
 import io.github.cokit.client.plugins.MarketplaceRemoveParams
@@ -68,7 +77,7 @@ import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
     val method: String,
-    internal val paramsSerializer: KSerializer<P>,
+    internal val paramsSerializer: KSerializer<P>?,
     internal val resultSerializer: KSerializer<R>,
     internal val emptyResult: R? = null,
 )
@@ -464,6 +473,43 @@ object CodexRpc {
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
         )
+    }
+
+    object Mcp {
+        val StartOauthLogin: CodexRpcMethod<McpServerOauthLoginParams, McpServerOauthLoginResult> =
+            CodexRpcMethod(
+                method = "mcpServer/oauth/login",
+                paramsSerializer = McpServerOauthLoginParams.serializer(),
+                resultSerializer = McpServerOauthLoginResult.serializer(),
+            )
+
+        val ReloadConfig: CodexRpcMethod<McpConfigReloadParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "config/mcpServer/reload",
+            paramsSerializer = null,
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val ListServerStatus: CodexRpcMethod<McpServerStatusListParams, McpServerStatusListResult> =
+            CodexRpcMethod(
+                method = "mcpServerStatus/list",
+                paramsSerializer = McpServerStatusListParams.serializer(),
+                resultSerializer = McpServerStatusListResult.serializer(),
+            )
+
+        val ReadResource: CodexRpcMethod<McpResourceReadParams, McpResourceReadResult> =
+            CodexRpcMethod(
+                method = "mcpServer/resource/read",
+                paramsSerializer = McpResourceReadParams.serializer(),
+                resultSerializer = McpResourceReadResult.serializer(),
+            )
+
+        val CallTool: CodexRpcMethod<McpServerToolCallParams, McpServerToolCallResult> =
+            CodexRpcMethod(
+                method = "mcpServer/tool/call",
+                paramsSerializer = McpServerToolCallParams.serializer(),
+                resultSerializer = McpServerToolCallResult.serializer(),
+            )
     }
 
     object PermissionProfile {

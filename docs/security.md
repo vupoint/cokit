@@ -160,6 +160,17 @@ Applications should show source URLs, sparse paths, marketplace names, plugin
 ids, install auth policy, apps needing auth, and installed roots to a user or
 policy engine before invoking them.
 
+`CodexRpc.Mcp` descriptors expose configured MCP server names, OAuth login URLs,
+auth status, server presentation metadata, resources, resource templates, tool
+definitions, resource contents, and tool-call results as untrusted protocol
+data. CoKit preserves MCP-provided schemas, annotations, content arrays, tool
+arguments, structured content, and `_meta` fields as `CodexJsonPayload` values
+for compatibility, but it does not authenticate MCP servers, open OAuth URLs,
+render connector UI, approve connector trust, or interpret tool results.
+Applications should present the server name, resource URI, tool name, OAuth URL,
+and any raw MCP payloads to a user or policy engine before initiating login,
+reading resources, or calling tools.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:

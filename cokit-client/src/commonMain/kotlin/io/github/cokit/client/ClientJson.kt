@@ -34,9 +34,12 @@ internal suspend fun <P : Any, R : Any> JsonRpcSession.request(
     method: CodexRpcMethod<P, R>,
     params: P,
 ): R {
+    val requestParams = method.paramsSerializer?.let { serializer ->
+        CodexProtocolJson.encodeToJsonElement(serializer, params)
+    }
     val result = request(
         method = method.method,
-        params = CodexProtocolJson.encodeToJsonElement(method.paramsSerializer, params),
+        params = requestParams,
     )
     return result.decodeResult(method)
 }

@@ -140,14 +140,14 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 4 | 8 | 5 | 5 | 59 public `CodexRpc` request descriptors |
+| Request groups | 5 | 8 | 4 | 5 | 64 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 4 | 8 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 59%
+together. On that basis, CoKit's typed request descriptor coverage is about 64%
 of the full upstream request surface, or about 60% if the internal initialize
 handshake is counted as implemented coverage.
 
@@ -234,15 +234,22 @@ data. `CodexRpc.Plugin.Install` returns app-auth requirements and
 and filesystem-root metadata while leaving policy and UI decisions to the
 calling application. Current plugin sharing methods remain deferred.
 
+MCP request APIs are modeled as data descriptors. `CodexRpc.Mcp` exposes OAuth
+login, config reload, server status listing, resource reads, and tool calls.
+MCP-provided resource metadata, tool schemas, annotations, tool arguments,
+content arrays, structured content, and `_meta` payloads remain opaque
+`CodexJsonPayload` values so clients can preserve wire compatibility without
+CoKit interpreting connector-specific data or rendering connector UI.
+
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
 - Advanced thread APIs: loaded-thread listing, turn-item hydration, settings,
   memory mode, shell command, background terminals, rollback, realtime, and raw
   item injection.
-- Catalog and configuration APIs: experimental feature flags, MCP
-  status/resources/tools, config requirements, Windows sandbox setup, feedback
-  upload, and external-agent import.
+- Catalog and configuration APIs: experimental feature flags, config
+  requirements, Windows sandbox setup, feedback upload, and external-agent
+  import.
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
 - Remote control APIs: enable, disable, status, pairing, client list, and client
   revoke.

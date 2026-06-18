@@ -42,7 +42,7 @@ modeled coverage. They are compatibility behavior only.
 | Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.140.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
 | Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.140.0` schema does not define a `skills/config/read` request. |
 | Apps, marketplaces, and plugins | partial | `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall`, `plugin/share/save`, `plugin/share/updateTargets`, `plugin/share/list`, `plugin/share/checkout`, `plugin/share/delete` | `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. `CodexRpc.Marketplace` and `CodexRpc.Plugin` model marketplace add/remove/upgrade, plugin list/installed/read/skill-read, install, and uninstall descriptors. Plugin sharing descriptors remain deferred. |
-| MCP APIs | deferred | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | No typed descriptors yet. Server-initiated MCP elicitation is tracked under server requests. |
+| MCP APIs | modeled | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | `CodexRpc.Mcp.StartOauthLogin`, `ReloadConfig`, `ListServerStatus`, `ReadResource`, and `CallTool` model current MCP catalog, resource, OAuth, config-reload, and tool-call request shapes. MCP-provided schemas, annotations, content, `_meta`, and tool arguments stay behind `CodexJsonPayload` compatibility fields. Server-initiated MCP elicitation is tracked under server requests. |
 | Windows sandbox setup | deferred | `windowsSandbox/setupStart` | No typed descriptor yet. |
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
 | Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `configRequirements/read` remains deferred for managed-policy models. |
@@ -156,6 +156,11 @@ without updating the public inventory.
 | `CodexRpc.Plugin.ReadSkill` | `plugin/skill/read` | Plugin skill content descriptor; apps, marketplaces, and plugins coverage remains partial. |
 | `CodexRpc.Plugin.Install` | `plugin/install` | Plugin install descriptor; apps, marketplaces, and plugins coverage remains partial. |
 | `CodexRpc.Plugin.Uninstall` | `plugin/uninstall` | Plugin uninstall descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Mcp.StartOauthLogin` | `mcpServer/oauth/login` | MCP OAuth login descriptor; MCP API coverage is modeled. |
+| `CodexRpc.Mcp.ReloadConfig` | `config/mcpServer/reload` | MCP config reload descriptor; MCP API coverage is modeled. |
+| `CodexRpc.Mcp.ListServerStatus` | `mcpServerStatus/list` | MCP server status and inventory descriptor; MCP API coverage is modeled. |
+| `CodexRpc.Mcp.ReadResource` | `mcpServer/resource/read` | MCP resource read descriptor; MCP API coverage is modeled. |
+| `CodexRpc.Mcp.CallTool` | `mcpServer/tool/call` | MCP tool call descriptor; MCP API coverage is modeled with raw result payload preservation. |
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
 | `CodexRpc.Environment.Add` | `environment/add` | Experimental environment registration descriptor; group coverage remains experimental. |
@@ -220,6 +225,11 @@ Current public request descriptors:
 - `plugin/skill/read`
 - `plugin/install`
 - `plugin/uninstall`
+- `mcpServer/oauth/login`
+- `config/mcpServer/reload`
+- `mcpServerStatus/list`
+- `mcpServer/resource/read`
+- `mcpServer/tool/call`
 - `permissionProfile/list`
 - `collaborationMode/list`
 - `environment/add`
