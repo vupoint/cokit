@@ -76,6 +76,13 @@ Paths, commands, process APIs, and filesystem APIs refer to the app-server host.
 That host may be different from the Kotlin client process host in remote-control
 or proxy scenarios.
 
+`CodexRpc.Command.Exec` sends an argv vector to the app-server for execution
+under the server's sandbox policy. The `cwd`, environment overrides, timeout,
+output cap, process id, PTY size, and sandbox policy fields describe host-side
+execution only; they do not run commands in the Kotlin client process. Callers
+should choose sandbox policies deliberately and should avoid passing secrets in
+argv, environment overrides, working directories, or captured output.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:

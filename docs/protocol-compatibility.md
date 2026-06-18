@@ -64,7 +64,7 @@ remain deny-by-default unless a typed handler is registered.
 ## Upstream Coverage Snapshot
 
 This snapshot was reviewed against the upstream app-server README on
-2026-06-15:
+2026-06-18:
 
 https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md
 
@@ -72,8 +72,8 @@ The checked protocol inventory groups upstream request, notification, and
 server-request surfaces by current CoKit coverage:
 [Protocol Inventory](protocol-inventory.md).
 
-The current `CodexRpc` descriptor catalog covers the core modeled thread and
-turn request methods:
+The current `CodexRpc` descriptor catalog covers the core modeled thread, turn,
+and command request methods:
 
 - `thread/start`
 - `thread/resume`
@@ -94,6 +94,7 @@ turn request methods:
 - `turn/start`
 - `turn/steer`
 - `turn/interrupt`
+- `command/exec`
 
 `CodexRpcClient.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
@@ -105,15 +106,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 0 | 4 | 12 | 6 | 19 public `CodexRpc` request descriptors |
+| Request groups | 0 | 5 | 11 | 6 | 20 public `CodexRpc` request descriptors |
 | Notification groups | 3 | 4 | 10 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 19%
-of the full upstream request surface, or about 20% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 20%
+of the full upstream request surface, or about 21% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -146,7 +147,7 @@ descriptors:
 - Advanced thread APIs: loaded-thread listing, turn-item hydration, settings,
   memory mode, shell command, background terminals, rollback, realtime, and raw
   item injection.
-- Review and execution APIs: review start, sandboxed command execution,
+- Review and execution APIs: review start, command streaming and control,
   standalone process lifecycle, and filesystem utilities.
 - Catalog and configuration APIs: model, model-provider capabilities,
   experimental feature flags, permission profiles, environments, collaboration

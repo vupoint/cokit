@@ -1,5 +1,7 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.commands.CommandExecParams
+import io.github.cokit.client.commands.CommandExecResult
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -134,6 +136,14 @@ object CodexRpc {
             paramsSerializer = TurnInterruptParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
+        )
+    }
+
+    object Command {
+        val Exec: CodexRpcMethod<CommandExecParams, CommandExecResult> = CodexRpcMethod(
+            method = "command/exec",
+            paramsSerializer = CommandExecParams.serializer(),
+            resultSerializer = CommandExecResult.serializer(),
         )
     }
 }
