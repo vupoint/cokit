@@ -14,7 +14,10 @@ import io.github.cokit.client.filesystem.FilesystemReadDirectoryResult
 import io.github.cokit.client.filesystem.FilesystemReadFileParams
 import io.github.cokit.client.filesystem.FilesystemReadFileResult
 import io.github.cokit.client.filesystem.FilesystemRemoveParams
+import io.github.cokit.client.filesystem.FilesystemUnwatchParams
 import io.github.cokit.client.filesystem.FilesystemWriteFileParams
+import io.github.cokit.client.filesystem.FilesystemWatchParams
+import io.github.cokit.client.filesystem.FilesystemWatchResult
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -225,6 +228,19 @@ object CodexRpc {
         val Remove: CodexRpcMethod<FilesystemRemoveParams, CodexRpcUnit> = CodexRpcMethod(
             method = "fs/remove",
             paramsSerializer = FilesystemRemoveParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Watch: CodexRpcMethod<FilesystemWatchParams, FilesystemWatchResult> = CodexRpcMethod(
+            method = "fs/watch",
+            paramsSerializer = FilesystemWatchParams.serializer(),
+            resultSerializer = FilesystemWatchResult.serializer(),
+        )
+
+        val Unwatch: CodexRpcMethod<FilesystemUnwatchParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "fs/unwatch",
+            paramsSerializer = FilesystemUnwatchParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
         )

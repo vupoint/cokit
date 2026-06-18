@@ -2,6 +2,7 @@ package io.github.cokit.client
 
 import io.github.cokit.client.commands.CommandExecOutputStream
 import io.github.cokit.client.commands.CommandProcessId
+import io.github.cokit.client.filesystem.FilesystemWatchId
 import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcNotification
@@ -126,6 +127,13 @@ sealed interface CodexNotification {
         val capReached: Boolean,
     ) : CodexNotification {
         override val method: String = "command/exec/outputDelta"
+    }
+
+    data class FilesystemChanged(
+        val watchId: FilesystemWatchId,
+        val changedPaths: List<CodexHostPath>,
+    ) : CodexNotification {
+        override val method: String = "fs/changed"
     }
 
     data class Unknown(
@@ -331,6 +339,17 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.Unknown(method)
             }
         }
+        "fs/changed" -> {
+            val payload = params.decodeNotificationParams<FilesystemChangedPayload>()
+            if (payload != null) {
+                CodexNotification.FilesystemChanged(
+                    watchId = payload.watchId,
+                    changedPaths = payload.changedPaths,
+                )
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -417,6 +436,12 @@ private data class CommandExecOutputDeltaPayload(
     val stream: CommandExecOutputStream,
     val deltaBase64: String,
     val capReached: Boolean,
+)
+
+@Serializable
+private data class FilesystemChangedPayload(
+    val watchId: FilesystemWatchId,
+    val changedPaths: List<CodexHostPath>,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {

@@ -100,6 +100,13 @@ the app-server host filesystem. Exposing these descriptors does not approve
 side effects or grant permissions; applications should call them only after an
 explicit user or policy decision and should rely on app-server sandbox and
 permission enforcement for the active session.
+`CodexRpc.Filesystem.Watch` and `Unwatch` manage connection-scoped app-server
+host filesystem watch subscriptions by caller-provided watch id. Watch responses
+return the canonicalized host path, and `CodexNotification.FilesystemChanged`
+reports only the watch id and changed host paths; it does not include file
+contents or an event-kind field. Applications should treat changed paths as
+untrusted host data, debounce or re-read state as needed, and unwatch paths when
+the subscription is no longer needed.
 
 ## Secrets
 

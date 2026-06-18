@@ -73,7 +73,7 @@ server-request surfaces by current CoKit coverage:
 [Protocol Inventory](protocol-inventory.md).
 
 The current `CodexRpc` descriptor catalog covers the core modeled thread, turn,
-command, and read-only filesystem request methods:
+command, and filesystem request methods:
 
 - `thread/start`
 - `thread/resume`
@@ -105,6 +105,8 @@ command, and read-only filesystem request methods:
 - `fs/createDirectory`
 - `fs/copy`
 - `fs/remove`
+- `fs/watch`
+- `fs/unwatch`
 
 `CodexRpcClient.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
@@ -116,15 +118,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 0 | 6 | 10 | 6 | 30 public `CodexRpc` request descriptors |
-| Notification groups | 4 | 4 | 9 | 7 | Not counted by this helper |
+| Request groups | 1 | 5 | 10 | 6 | 32 public `CodexRpc` request descriptors |
+| Notification groups | 5 | 4 | 8 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 30%
-of the full upstream request surface, or about 31% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 32%
+of the full upstream request surface, or about 33% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -145,8 +147,10 @@ upstream surface today:
   fields. `command/exec/outputDelta` currently carries base64 stdout/stderr
   chunks and `capReached`; command exit status remains part of the final
   `command/exec` response, and command failures use JSON-RPC errors rather than
-  separate notifications. Unknown notifications expose only the method name in
-  the primary API.
+  separate notifications. `fs/changed` carries a connection-scoped watch id and
+  changed host paths for `fs/watch` subscribers; current upstream does not
+  include a separate event-kind field. Unknown notifications expose only the
+  method name in the primary API.
 - Server requests: command execution approval, file-change approval, permission
   approval, tool user-input prompts, and MCP elicitations are modeled with typed
   handlers. Permission approvals return granted permission subsets instead of
@@ -161,8 +165,7 @@ descriptors:
 - Advanced thread APIs: loaded-thread listing, turn-item hydration, settings,
   memory mode, shell command, background terminals, rollback, realtime, and raw
   item injection.
-- Review and execution APIs: review start, standalone process lifecycle, and
-  filesystem watch utilities.
+- Review and execution APIs: review start and standalone process lifecycle.
 - Catalog and configuration APIs: model, model-provider capabilities,
   experimental feature flags, permission profiles, environments, collaboration
   modes, MCP status/resources/tools, config read/write/reload, Windows sandbox

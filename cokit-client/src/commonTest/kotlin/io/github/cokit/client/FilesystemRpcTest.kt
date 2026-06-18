@@ -6,18 +6,24 @@ import io.github.cokit.client.filesystem.FilesystemGetMetadataParams
 import io.github.cokit.client.filesystem.FilesystemRemoveParams
 import io.github.cokit.client.filesystem.FilesystemReadDirectoryParams
 import io.github.cokit.client.filesystem.FilesystemReadFileParams
+import io.github.cokit.client.filesystem.FilesystemUnwatchParams
 import io.github.cokit.client.filesystem.FilesystemWriteFileParams
+import io.github.cokit.client.filesystem.FilesystemWatchId
+import io.github.cokit.client.filesystem.FilesystemWatchParams
 import io.github.cokit.protocol.JsonRpcRequest
+import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcResponse
 import io.github.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -223,6 +229,78 @@ class FilesystemRpcTest {
         assertEquals(false, removeParams["force"]?.jsonPrimitive?.booleanOrNull)
         fixture.transport.receive(JsonRpcResponse(remove.id, result = JsonObject(emptyMap())))
         assertEquals(CodexRpcUnit, removeResult.await())
+    }
+
+    @Test
+    fun filesystemWatchDescriptorsUseConnectionScopedWatchIds() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val watchResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.Watch,
+                FilesystemWatchParams(
+                    path = CodexHostPath("/path/to/project/src"),
+                    watchId = FilesystemWatchId("watch_src"),
+                ),
+            )
+        }
+        runCurrent()
+
+        val watch = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/watch", watch.method)
+        val watchParams = watch.params!!.jsonObject
+        assertEquals("/path/to/project/src", watchParams["path"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("watch_src", watchParams["watchId"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                watch.id,
+                result = buildJsonObject {
+                    put("path", "/path/to/project/src")
+                },
+            ),
+        )
+        assertEquals(CodexHostPath("/path/to/project/src"), watchResult.await().path)
+
+        val unwatchResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.Unwatch,
+                FilesystemUnwatchParams(watchId = FilesystemWatchId("watch_src")),
+            )
+        }
+        runCurrent()
+
+        val unwatch = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/unwatch", unwatch.method)
+        assertEquals("watch_src", unwatch.params!!.jsonObject["watchId"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(JsonRpcResponse(unwatch.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, unwatchResult.await())
+    }
+
+    @Test
+    fun decodesFilesystemChangedNotificationsAsTypedModels() {
+        val notification = JsonRpcNotification(
+            method = "fs/changed",
+            params = buildJsonObject {
+                put("watchId", "watch_src")
+                put(
+                    "changedPaths",
+                    buildJsonArray {
+                        add("/path/to/project/src/Main.kt")
+                        add("/path/to/project/src/Utils.kt")
+                    },
+                )
+            },
+        ).toCodexNotification()
+
+        val changed = assertIs<CodexNotification.FilesystemChanged>(notification)
+        assertEquals(FilesystemWatchId("watch_src"), changed.watchId)
+        assertEquals(
+            listOf(
+                CodexHostPath("/path/to/project/src/Main.kt"),
+                CodexHostPath("/path/to/project/src/Utils.kt"),
+            ),
+            changed.changedPaths,
+        )
     }
 
     private suspend fun TestScope.connectedRpcClientFixture(

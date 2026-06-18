@@ -110,6 +110,7 @@ client.notifications.collect { notification ->
         is CodexNotification.ConfigWarning -> println(notification.summary)
         is CodexNotification.Error -> println(notification.error.message)
         is CodexNotification.ServerRequestResolved -> println(notification.requestId)
+        is CodexNotification.FilesystemChanged -> println(notification.changedPaths.size)
         is CodexNotification.Unknown -> println(notification.method)
     }
 }
@@ -125,6 +126,8 @@ error notifications are typed without exposing raw notification params.
 `ServerRequestResolved` exposes the thread id and JSON-RPC request id so
 applications can clear pending approval, elicitation, attestation, or user-input
 UI when app-server reports that the request was answered or cleared.
+`FilesystemChanged` exposes the connection-scoped filesystem watch id and the
+changed host paths reported by app-server.
 
 ## Handle Server Requests
 

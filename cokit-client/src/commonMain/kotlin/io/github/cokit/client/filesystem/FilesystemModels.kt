@@ -3,6 +3,10 @@ package io.github.cokit.client.filesystem
 import io.github.cokit.client.CodexHostPath
 import kotlinx.serialization.Serializable
 
+@JvmInline
+@Serializable
+value class FilesystemWatchId(val value: String)
+
 @Serializable
 data class FilesystemReadFileParams(
     val path: CodexHostPath,
@@ -61,6 +65,22 @@ data class FilesystemRemoveParams(
     val path: CodexHostPath,
     val recursive: Boolean? = null,
     val force: Boolean? = null,
+)
+
+@Serializable
+data class FilesystemWatchParams(
+    val path: CodexHostPath,
+    val watchId: FilesystemWatchId,
+)
+
+@Serializable
+data class FilesystemWatchResult(
+    val path: CodexHostPath,
+)
+
+@Serializable
+data class FilesystemUnwatchParams(
+    val watchId: FilesystemWatchId,
 )
 
 @Serializable
