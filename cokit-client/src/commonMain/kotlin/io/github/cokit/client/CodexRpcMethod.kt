@@ -38,6 +38,11 @@ import io.github.cokit.client.process.ProcessSpawnParams
 import io.github.cokit.client.process.ProcessWriteStdinParams
 import io.github.cokit.client.review.ReviewStartParams
 import io.github.cokit.client.review.ReviewStartResult
+import io.github.cokit.client.skills.SkillConfigWriteParams
+import io.github.cokit.client.skills.SkillConfigWriteResult
+import io.github.cokit.client.skills.SkillsExtraRootsSetParams
+import io.github.cokit.client.skills.SkillsListParams
+import io.github.cokit.client.skills.SkillsListResult
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -339,6 +344,29 @@ object CodexRpc {
             paramsSerializer = ConfigBatchWriteParams.serializer(),
             resultSerializer = ConfigWriteResult.serializer(),
         )
+    }
+
+    object Skills {
+        val List: CodexRpcMethod<SkillsListParams, SkillsListResult> = CodexRpcMethod(
+            method = "skills/list",
+            paramsSerializer = SkillsListParams.serializer(),
+            resultSerializer = SkillsListResult.serializer(),
+        )
+
+        val SetExtraRoots: CodexRpcMethod<SkillsExtraRootsSetParams, CodexRpcUnit> =
+            CodexRpcMethod(
+                method = "skills/extraRoots/set",
+                paramsSerializer = SkillsExtraRootsSetParams.serializer(),
+                resultSerializer = CodexRpcUnit.serializer(),
+                emptyResult = CodexRpcUnit,
+            )
+
+        val WriteConfig: CodexRpcMethod<SkillConfigWriteParams, SkillConfigWriteResult> =
+            CodexRpcMethod(
+                method = "skills/config/write",
+                paramsSerializer = SkillConfigWriteParams.serializer(),
+                resultSerializer = SkillConfigWriteResult.serializer(),
+            )
     }
 
     object PermissionProfile {

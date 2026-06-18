@@ -130,6 +130,16 @@ approve config edits or policy changes; applications should show the target key
 path, file path, merge strategy, expected version, and reload behavior to a user
 or policy engine before calling them.
 
+`CodexRpc.Skills.List` reads skill metadata and parse errors for app-server host
+working directories. CoKit treats returned skill names, paths, descriptions,
+interface metadata, and dependency declarations as untrusted data and does not
+execute skill content or render skill UI. `CodexRpc.Skills.SetExtraRoots`
+changes the app-server skill search roots, and `CodexRpc.Skills.WriteConfig`
+changes a skill's effective enabled state by name or host path. Applications
+should show root paths, skill selectors, and enablement changes to a user or
+policy engine before calling these mutation descriptors, especially when extra
+roots point outside the active project.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:
