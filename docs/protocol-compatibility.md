@@ -456,6 +456,9 @@ Goal: make the API safe to publish and maintain as upstream evolves.
 - `checkPublicApiExposure` runs during `check` and prevents accidental primary
   client API exposure of `JsonElement` and JSON-RPC envelope types. Use typed
   models or `CodexJsonPayload` for documented compatibility fields.
+- `checkPublicApiBaseline` compares public main-source declarations against
+  `api/public-api.txt`. Review intentional API changes, then refresh the
+  baseline with `./gradlew updatePublicApiBaseline`.
 - Add high-rate notification, malformed message, oversized message, overload,
   retry, and shutdown tests across protocol, RPC, transport, and client modules.
 - Document retry behavior for app-server overload errors and connection
