@@ -80,11 +80,11 @@ val turn = client.request(
 ).turn
 ```
 
-`CodexRpc` descriptors keep upstream JSON-RPC method names such as
-`thread/start` and `turn/start` visible without asking callers to pass raw
-strings or JSON payloads. Each descriptor binds exactly one params type to one
-result type, so `CodexRpc.Thread.Start` accepts `ThreadStartParams` and returns
-`ThreadStartResult`.
+`CodexRpc` descriptors expose upstream operations through typed names such as
+`CodexRpc.Thread.Start` and `CodexRpc.Turn.Start` without asking callers to pass
+raw strings or JSON payloads. Each descriptor binds exactly one params type to
+one result type, so `CodexRpc.Thread.Start` accepts `ThreadStartParams` and
+returns `ThreadStartResult`.
 
 Identifiers and common options use lightweight SDK value types such as
 `ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`,
@@ -146,11 +146,11 @@ client.notifications.collect { notification ->
 
 `notifications` exposes typed CoKit notification models. Unknown notifications
 keep the method name but do not expose raw JSON through the primary API.
-Turn failures are decoded from upstream `turn/completed` notifications whose
-turn status is `failed`. Item lifecycle notifications expose `ThreadItemSummary`
-for common rendering fields, and streamed text deltas are typed for agent
-messages and reasoning summaries. Token usage, warning, config warning, and
-error notifications are typed without exposing raw notification params.
+Turn failures are decoded from typed turn-completion notifications whose turn
+status is `failed`. Item lifecycle notifications expose `ThreadItemSummary` for
+common rendering fields, and streamed text deltas are typed for agent messages
+and reasoning summaries. Token usage, warning, config warning, and error
+notifications are typed without exposing raw notification params.
 `ServerRequestResolved` exposes the thread id and JSON-RPC request id so
 applications can clear pending approval, elicitation, attestation, or user-input
 UI when app-server reports that the request was answered or cleared.

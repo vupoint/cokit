@@ -193,10 +193,43 @@ val checkPublicApiBaseline = tasks.register("checkPublicApiBaseline") {
     }
 }
 
+val primaryDocsAlignmentFiles = listOf(
+    "README.md",
+    "docs/getting-started.md",
+    "cokit-sample-cli/src/main/kotlin/io/github/cokit/sample/cli/Main.kt",
+).map { path -> layout.projectDirectory.file(path) }
+
+val checkPrimaryApiDocsAlignment = tasks.register("checkPrimaryApiDocsAlignment") {
+    group = "verification"
+    description = "Checks primary docs and samples use typed CoKit APIs instead of raw protocol examples."
+
+    inputs.files(primaryDocsAlignmentFiles)
+
+    doLast {
+        val violations = CokitPrimaryDocsAlignment.findViolations(
+            primaryDocsAlignmentFiles.map { file -> file.asFile },
+            rootDir,
+        )
+        check(violations.isEmpty()) {
+            buildString {
+                appendLine("Primary docs and samples must use typed CoKit APIs.")
+                appendLine("Keep raw app-server method strings in protocol compatibility docs only.")
+                appendLine("Use StdioCodexTransport defaults instead of direct stdio command lists in primary examples.")
+                violations.forEach { violation ->
+                    appendLine(
+                        "${violation.relativePath}:${violation.lineNumber}: ${violation.reason}: ${violation.match}",
+                    )
+                }
+            }
+        }
+    }
+}
+
 subprojects {
     tasks.matching { task -> task.name == "check" }.configureEach {
         dependsOn(rootProject.tasks.named("validateModuleBoundaries"))
         dependsOn(checkPublicApiExposure)
         dependsOn(checkPublicApiBaseline)
+        dependsOn(checkPrimaryApiDocsAlignment)
     }
 }

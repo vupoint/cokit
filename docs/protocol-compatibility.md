@@ -459,6 +459,9 @@ Goal: make the API safe to publish and maintain as upstream evolves.
 - `checkPublicApiBaseline` compares public main-source declarations against
   `api/public-api.txt`. Review intentional API changes, then refresh the
   baseline with `./gradlew updatePublicApiBaseline`.
+- `checkPrimaryApiDocsAlignment` keeps README, getting-started, and the sample
+  CLI centered on typed CoKit APIs. Raw app-server method strings belong in
+  protocol compatibility or inventory docs, not primary examples.
 - Add high-rate notification, malformed message, oversized message, overload,
   retry, and shutdown tests across protocol, RPC, transport, and client modules.
 - Reject malformed JSON-RPC envelopes during protocol decode and enforce an

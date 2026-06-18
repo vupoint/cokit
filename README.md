@@ -32,7 +32,7 @@ for the current coverage snapshot and implementation roadmap.
   flow. This module depends on protocol types only.
 - `cokit-client`: high-level Codex app-server client APIs. Public operations use
   typed option and request models while the raw JSON-RPC session stays internal.
-- `cokit-transport-stdio`: JVM stdio transport for `codex app-server --stdio`.
+- `cokit-transport-stdio`: JVM stdio transport for the local Codex app-server.
 - `cokit-transport-websocket`: experimental WebSocket transport placeholder.
 - `cokit-testing`: fake transports and protocol test helpers for consumers and
   CoKit module tests.
@@ -90,9 +90,9 @@ Override the default app-server host path or message when needed:
 ./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
 ```
 
-The sample uses `codex app-server --stdio` by default. Set
-`COKIT_CODEX_COMMAND` to a whitespace-separated command when testing a different
-local app-server executable.
+The sample uses `StdioCodexTransport` defaults. Set `COKIT_CODEX_COMMAND` to a
+whitespace-separated command when testing a different local app-server
+executable.
 
 ## Upstream Protocol
 
@@ -111,9 +111,9 @@ Run:
 ./gradlew check
 ```
 
-`check` includes unit tests, coverage verification, and
-`validateModuleBoundaries`, which fails if production modules depend on
-forbidden project modules.
+`check` includes unit tests, coverage verification, module-boundary validation,
+public API exposure checks, public API baseline checks, and primary docs/sample
+alignment checks.
 
 Run JVM unit tests only:
 
