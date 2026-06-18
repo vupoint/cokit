@@ -47,7 +47,7 @@ modeled coverage. They are compatibility behavior only.
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
 | Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `configRequirements/read` remains deferred for managed-policy models. |
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
-| Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` model experimental remote-control status snapshots behind `ExperimentalCodexApi`. Pairing and client-management descriptors remain deferred. |
+| Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl` models experimental status, enable/disable, pairing, client list, and client revoke descriptors behind `ExperimentalCodexApi`. Pairing codes and controller client ids are redacted from model string representations. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
 | Account and auth | modeled | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. `ReadRateLimits`, `ReadUsage`, and `SendAddCreditsNudgeEmail` model current rate-limit snapshots, usage summaries, daily buckets, and add-credits nudge status. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
 
@@ -174,6 +174,10 @@ without updating the public inventory.
 | `CodexRpc.RemoteControl.Enable` | `remoteControl/enable` | Experimental remote-control enable descriptor; group coverage remains experimental. |
 | `CodexRpc.RemoteControl.Disable` | `remoteControl/disable` | Experimental remote-control disable descriptor; group coverage remains experimental. |
 | `CodexRpc.RemoteControl.ReadStatus` | `remoteControl/status/read` | Experimental remote-control status descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.StartPairing` | `remoteControl/pairing/start` | Experimental remote-control pairing descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.ReadPairingStatus` | `remoteControl/pairing/status` | Experimental remote-control pairing status descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.ListClients` | `remoteControl/client/list` | Experimental remote-control client list descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.RevokeClient` | `remoteControl/client/revoke` | Experimental remote-control client revoke descriptor; group coverage remains experimental. |
 
 ## Current Modeled Method Summary
 
@@ -253,6 +257,10 @@ Current public request descriptors:
 - `remoteControl/enable`
 - `remoteControl/disable`
 - `remoteControl/status/read`
+- `remoteControl/pairing/start`
+- `remoteControl/pairing/status`
+- `remoteControl/client/list`
+- `remoteControl/client/revoke`
 
 Current typed notification:
 

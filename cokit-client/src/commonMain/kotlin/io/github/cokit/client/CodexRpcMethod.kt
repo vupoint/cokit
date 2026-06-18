@@ -81,6 +81,14 @@ import io.github.cokit.client.process.ProcessSpawnParams
 import io.github.cokit.client.process.ProcessWriteStdinParams
 import io.github.cokit.client.remote.RemoteControlDisableParams
 import io.github.cokit.client.remote.RemoteControlEnableParams
+import io.github.cokit.client.remote.RemoteControlClientsListParams
+import io.github.cokit.client.remote.RemoteControlClientsListResult
+import io.github.cokit.client.remote.RemoteControlClientsRevokeParams
+import io.github.cokit.client.remote.RemoteControlClientsRevokeResult
+import io.github.cokit.client.remote.RemoteControlPairingStartParams
+import io.github.cokit.client.remote.RemoteControlPairingStartResult
+import io.github.cokit.client.remote.RemoteControlPairingStatusParams
+import io.github.cokit.client.remote.RemoteControlPairingStatusResult
 import io.github.cokit.client.remote.RemoteControlStatusReadParams
 import io.github.cokit.client.remote.RemoteControlStatusSnapshot
 import io.github.cokit.client.review.ReviewStartParams
@@ -624,5 +632,36 @@ object CodexRpc {
             paramsSerializer = null,
             resultSerializer = RemoteControlStatusSnapshot.serializer(),
         )
+
+        val StartPairing:
+            CodexRpcMethod<RemoteControlPairingStartParams, RemoteControlPairingStartResult> =
+            CodexRpcMethod(
+                method = "remoteControl/pairing/start",
+                paramsSerializer = RemoteControlPairingStartParams.serializer(),
+                resultSerializer = RemoteControlPairingStartResult.serializer(),
+            )
+
+        val ReadPairingStatus:
+            CodexRpcMethod<RemoteControlPairingStatusParams, RemoteControlPairingStatusResult> =
+            CodexRpcMethod(
+                method = "remoteControl/pairing/status",
+                paramsSerializer = RemoteControlPairingStatusParams.serializer(),
+                resultSerializer = RemoteControlPairingStatusResult.serializer(),
+            )
+
+        val ListClients: CodexRpcMethod<RemoteControlClientsListParams, RemoteControlClientsListResult> =
+            CodexRpcMethod(
+                method = "remoteControl/client/list",
+                paramsSerializer = RemoteControlClientsListParams.serializer(),
+                resultSerializer = RemoteControlClientsListResult.serializer(),
+            )
+
+        val RevokeClient:
+            CodexRpcMethod<RemoteControlClientsRevokeParams, RemoteControlClientsRevokeResult> =
+            CodexRpcMethod(
+                method = "remoteControl/client/revoke",
+                paramsSerializer = RemoteControlClientsRevokeParams.serializer(),
+                resultSerializer = RemoteControlClientsRevokeResult.serializer(),
+            )
     }
 }

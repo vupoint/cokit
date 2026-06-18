@@ -198,6 +198,12 @@ revoke clients, or decide whether remote access should be allowed. Applications
 should keep these descriptors behind explicit opt-in and policy review, avoid
 logging identifiers or host names, and show users when enable or disable calls
 persist a preference rather than only changing the current process.
+`CodexRpc.RemoteControl.StartPairing`, `ReadPairingStatus`, `ListClients`, and
+`RevokeClient` expose remote-control pairing and controller-device management as
+protocol data. CoKit redacts pairing codes, manual pairing codes, and client ids
+from model string representations, but applications remain responsible for
+displaying short-lived pairing artifacts carefully, confirming revocations, and
+avoiding telemetry of raw identifiers or controller-device metadata.
 
 ## Secrets
 

@@ -5,6 +5,15 @@ import io.github.cokit.client.remote.RemoteControlDisableParams
 import io.github.cokit.client.remote.RemoteControlEnableParams
 import io.github.cokit.client.remote.RemoteControlEnvironmentId
 import io.github.cokit.client.remote.RemoteControlInstallationId
+import io.github.cokit.client.remote.RemoteControlClientId
+import io.github.cokit.client.remote.RemoteControlClientsListOrder
+import io.github.cokit.client.remote.RemoteControlClientsListParams
+import io.github.cokit.client.remote.RemoteControlClientsRevokeParams
+import io.github.cokit.client.remote.RemoteControlClientsRevokeResult
+import io.github.cokit.client.remote.RemoteControlManualPairingCode
+import io.github.cokit.client.remote.RemoteControlPairingCode
+import io.github.cokit.client.remote.RemoteControlPairingStartParams
+import io.github.cokit.client.remote.RemoteControlPairingStatusParams
 import io.github.cokit.client.remote.RemoteControlStatusReadParams
 import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcRequest
@@ -12,6 +21,7 @@ import io.github.cokit.protocol.JsonRpcResponse
 import io.github.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +30,9 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
@@ -99,6 +111,119 @@ class RemoteControlRpcTest {
         assertEquals(RemoteControlEnvironmentId("env_123"), changed.status.environmentId)
     }
 
+    @Test
+    fun experimentalRemotePairingDescriptorsUseStartAndStatusWireShapes() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val startResult = async {
+            fixture.client.request(
+                CodexRpc.RemoteControl.StartPairing,
+                RemoteControlPairingStartParams(manualCode = true),
+            )
+        }
+        runCurrent()
+
+        val start = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("remoteControl/pairing/start", start.method)
+        assertEquals(true, start.params!!.jsonObject["manualCode"]?.jsonPrimitive?.booleanOrNull)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                start.id,
+                result = pairingStartResult(),
+            ),
+        )
+
+        val pairing = startResult.await()
+        assertEquals(RemoteControlPairingCode("pairing-code"), pairing.pairingCode)
+        assertEquals(RemoteControlManualPairingCode("ABCD-EFGH"), pairing.manualPairingCode)
+        assertEquals(RemoteControlEnvironmentId("environment-id"), pairing.environmentId)
+        assertEquals(33_336_362_096L, pairing.expiresAt)
+        assertFalse(pairing.toString().contains("pairing-code"))
+        assertFalse(pairing.toString().contains("ABCD-EFGH"))
+
+        val statusParams = RemoteControlPairingStatusParams(
+            pairingCode = RemoteControlPairingCode("pairing-code"),
+        )
+        val statusResult = async {
+            fixture.client.request(CodexRpc.RemoteControl.ReadPairingStatus, statusParams)
+        }
+        runCurrent()
+
+        val status = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("remoteControl/pairing/status", status.method)
+        assertEquals("pairing-code", status.params!!.jsonObject["pairingCode"]?.jsonPrimitive?.contentOrNull)
+        assertNull(status.params!!.jsonObject["manualPairingCode"]?.jsonPrimitive?.contentOrNull)
+        assertFalse(statusParams.toString().contains("pairing-code"))
+        fixture.transport.receive(
+            JsonRpcResponse(
+                status.id,
+                result = buildJsonObject { put("claimed", true) },
+            ),
+        )
+        assertEquals(true, statusResult.await().claimed)
+    }
+
+    @Test
+    fun experimentalRemoteClientDescriptorsUseListAndRevokeWireShapes() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val listResult = async {
+            fixture.client.request(
+                CodexRpc.RemoteControl.ListClients,
+                RemoteControlClientsListParams(
+                    environmentId = RemoteControlEnvironmentId("environment-id"),
+                    cursor = CodexCursor("cursor-id"),
+                    limit = 10,
+                    order = RemoteControlClientsListOrder.Desc,
+                ),
+            )
+        }
+        runCurrent()
+
+        val list = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("remoteControl/client/list", list.method)
+        assertEquals("environment-id", list.params!!.jsonObject["environmentId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("cursor-id", list.params!!.jsonObject["cursor"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("10", list.params!!.jsonObject["limit"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("desc", list.params!!.jsonObject["order"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                list.id,
+                result = clientListResult(),
+            ),
+        )
+
+        val clients = listResult.await()
+        val client = clients.data.single()
+        assertEquals(RemoteControlClientId("client-id"), client.clientId)
+        assertEquals("Anton Phone", client.displayName)
+        assertEquals("phone", client.deviceType)
+        assertEquals("ios", client.platform)
+        assertEquals("19.0", client.osVersion)
+        assertEquals("iPhone", client.deviceModel)
+        assertEquals("1.2.3", client.appVersion)
+        assertEquals(1_772_694_000L, client.lastSeenAt)
+        assertEquals(CodexCursor("next-cursor"), clients.nextCursor)
+        assertFalse(client.toString().contains("client-id"))
+
+        val revokeParams = RemoteControlClientsRevokeParams(
+            environmentId = RemoteControlEnvironmentId("environment-id"),
+            clientId = RemoteControlClientId("client-id"),
+        )
+        val revokeResult = async {
+            fixture.client.request(CodexRpc.RemoteControl.RevokeClient, revokeParams)
+        }
+        runCurrent()
+
+        val revoke = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("remoteControl/client/revoke", revoke.method)
+        assertEquals("environment-id", revoke.params!!.jsonObject["environmentId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("client-id", revoke.params!!.jsonObject["clientId"]?.jsonPrimitive?.contentOrNull)
+        assertFalse(revokeParams.toString().contains("client-id"))
+        fixture.transport.receive(JsonRpcResponse(revoke.id, result = JsonObject(emptyMap())))
+        assertEquals(RemoteControlClientsRevokeResult, revokeResult.await())
+    }
+
     private suspend fun TestScope.connectedRpcClientFixture(
         scope: CoroutineScope,
     ): ConnectedRpcClientFixture {
@@ -127,6 +252,36 @@ class RemoteControlRpcTest {
             put("installationId", "install_123")
             put("serverName", "desktop-host")
             put("environmentId", environmentId)
+        }
+
+    private fun pairingStartResult(): JsonObject =
+        buildJsonObject {
+            put("pairingCode", "pairing-code")
+            put("manualPairingCode", "ABCD-EFGH")
+            put("environmentId", "environment-id")
+            put("expiresAt", 33_336_362_096L)
+        }
+
+    private fun clientListResult(): JsonObject =
+        buildJsonObject {
+            put(
+                "data",
+                buildJsonArray {
+                    add(
+                        buildJsonObject {
+                            put("clientId", "client-id")
+                            put("displayName", "Anton Phone")
+                            put("deviceType", "phone")
+                            put("platform", "ios")
+                            put("osVersion", "19.0")
+                            put("deviceModel", "iPhone")
+                            put("appVersion", "1.2.3")
+                            put("lastSeenAt", 1_772_694_000L)
+                        },
+                    )
+                },
+            )
+            put("nextCursor", "next-cursor")
         }
 
     private data class ConnectedRpcClientFixture(

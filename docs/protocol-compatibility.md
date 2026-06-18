@@ -140,6 +140,10 @@ methods:
 - `remoteControl/enable`
 - `remoteControl/disable`
 - `remoteControl/status/read`
+- `remoteControl/pairing/start`
+- `remoteControl/pairing/status`
+- `remoteControl/client/list`
+- `remoteControl/client/revoke`
 
 `CodexRpcClient.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
@@ -151,15 +155,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 74 public `CodexRpc` request descriptors |
+| Request groups | 6 | 8 | 3 | 5 | 78 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 74%
-of the full upstream request surface, or about 75% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 78%
+of the full upstream request surface, or about 79% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -269,12 +273,16 @@ response. `CodexRpc.Account.ReadRateLimits`, `ReadUsage`, and
 `SendAddCreditsNudgeEmail` model rate-limit snapshots, usage summaries, daily
 usage buckets, and add-credits nudge email status.
 
-Remote-control status APIs are modeled behind experimental opt-in.
+Remote-control APIs are modeled behind experimental opt-in.
 `CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` return the current
 status snapshot with `status`, `installationId`, `serverName`, and nullable
-`environmentId`. CoKit treats these values as protocol data only; pairing,
-client listing, and client revocation remain deferred until their sensitive
-identifiers and trust boundaries are fully modeled.
+`environmentId`. `StartPairing` and `ReadPairingStatus` model pairing codes,
+manual pairing codes, expiration time, and claimed status. `ListClients` and
+`RevokeClient` model controller-device metadata and revocation by environment
+and client id. Pairing codes, manual pairing codes, and client ids are redacted
+from model string representations. CoKit treats these values as protocol data
+only and does not decide whether remote access should be enabled, paired, or
+revoked.
 
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
@@ -286,7 +294,6 @@ descriptors:
   requirements, Windows sandbox setup, feedback upload, and external-agent
   import.
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
-- Remote control APIs: pairing, client list, and client revoke.
 Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.
