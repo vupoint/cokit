@@ -47,7 +47,7 @@ modeled coverage. They are compatibility behavior only.
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
 | Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `configRequirements/read` remains deferred for managed-policy models. |
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
-| Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | Deferred. Remote-control methods require explicit experimental opt-in and trust-boundary documentation. |
+| Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` model experimental remote-control status snapshots behind `ExperimentalCodexApi`. Pairing and client-management descriptors remain deferred. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
 | Account and auth | modeled | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. `ReadRateLimits`, `ReadUsage`, and `SendAddCreditsNudgeEmail` model current rate-limit snapshots, usage summaries, daily buckets, and add-credits nudge status. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
 
@@ -75,7 +75,7 @@ modeled coverage. They are compatibility behavior only.
 | MCP startup and OAuth | deferred | `mcpServer/startupStatus/updated`, `mcpServer/oauthLogin/completed` | No typed notifications yet. |
 | Skill and app catalog changes | deferred | `skills/changed`, `app/list/updated` | No typed notifications yet. |
 | Account and auth | partial | `account/login/completed`, `account/updated`, `account/rateLimits/updated` | `CodexNotification.AccountLoginCompleted` models login success and failure completion events. `CodexNotification.AccountRateLimitsUpdated` models sparse rolling rate-limit updates. Account update notifications remain deferred. |
-| Remote-control status | experimental | `remoteControl/status/changed` | Deferred. |
+| Remote-control status | experimental | `remoteControl/status/changed` | `CodexNotification.RemoteControlStatusChanged` exposes the experimental status snapshot behind `ExperimentalCodexApi`. |
 | External agent migration | deferred | `externalAgentConfig/import/completed` | No typed notification yet. |
 | Server-request lifecycle | modeled | `serverRequest/resolved` | `CodexNotification.ServerRequestResolved` exposes the thread id and JSON-RPC request id so applications can clear pending request UI after the server reports resolution or cleanup. Current upstream schema does not include request method or status fields on this notification. |
 | Warnings and errors | modeled | `configWarning`, `warning`, `error` | `CodexNotification.ConfigWarning`, `Warning`, and `Error` expose safe typed fields without raw notification params. Structured `codexErrorInfo` remains deferred. |
@@ -171,6 +171,9 @@ without updating the public inventory.
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
 | `CodexRpc.Environment.Add` | `environment/add` | Experimental environment registration descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.Enable` | `remoteControl/enable` | Experimental remote-control enable descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.Disable` | `remoteControl/disable` | Experimental remote-control disable descriptor; group coverage remains experimental. |
+| `CodexRpc.RemoteControl.ReadStatus` | `remoteControl/status/read` | Experimental remote-control status descriptor; group coverage remains experimental. |
 
 ## Current Modeled Method Summary
 
@@ -247,6 +250,9 @@ Current public request descriptors:
 - `permissionProfile/list`
 - `collaborationMode/list`
 - `environment/add`
+- `remoteControl/enable`
+- `remoteControl/disable`
+- `remoteControl/status/read`
 
 Current typed notification:
 
@@ -267,6 +273,7 @@ Current typed notification:
 - `fs/changed`
 - `account/login/completed`
 - `account/rateLimits/updated`
+- `remoteControl/status/changed`
 
 Current typed server request:
 

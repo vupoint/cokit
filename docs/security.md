@@ -190,6 +190,15 @@ user or policy approval. `CodexRpc.Account` logout has no request parameters and
 returns no account payload; applications should still treat logout as a
 user-visible auth state change.
 
+`CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` are experimental
+remote-control descriptors. They expose app-server remote-control state,
+installation id, local server name, and nullable environment id as protocol data
+for the calling application; CoKit does not enroll controllers, start pairing,
+revoke clients, or decide whether remote access should be allowed. Applications
+should keep these descriptors behind explicit opt-in and policy review, avoid
+logging identifiers or host names, and show users when enable or disable calls
+persist a preference rather than only changing the current process.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:

@@ -79,6 +79,10 @@ import io.github.cokit.client.process.ProcessKillParams
 import io.github.cokit.client.process.ProcessResizePtyParams
 import io.github.cokit.client.process.ProcessSpawnParams
 import io.github.cokit.client.process.ProcessWriteStdinParams
+import io.github.cokit.client.remote.RemoteControlDisableParams
+import io.github.cokit.client.remote.RemoteControlEnableParams
+import io.github.cokit.client.remote.RemoteControlStatusReadParams
+import io.github.cokit.client.remote.RemoteControlStatusSnapshot
 import io.github.cokit.client.review.ReviewStartParams
 import io.github.cokit.client.review.ReviewStartResult
 import io.github.cokit.client.skills.SkillConfigWriteParams
@@ -598,6 +602,27 @@ object CodexRpc {
             paramsSerializer = EnvironmentAddParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
+        )
+    }
+
+    @ExperimentalCodexApi
+    object RemoteControl {
+        val Enable: CodexRpcMethod<RemoteControlEnableParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
+            method = "remoteControl/enable",
+            paramsSerializer = RemoteControlEnableParams.serializer(),
+            resultSerializer = RemoteControlStatusSnapshot.serializer(),
+        )
+
+        val Disable: CodexRpcMethod<RemoteControlDisableParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
+            method = "remoteControl/disable",
+            paramsSerializer = RemoteControlDisableParams.serializer(),
+            resultSerializer = RemoteControlStatusSnapshot.serializer(),
+        )
+
+        val ReadStatus: CodexRpcMethod<RemoteControlStatusReadParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
+            method = "remoteControl/status/read",
+            paramsSerializer = null,
+            resultSerializer = RemoteControlStatusSnapshot.serializer(),
         )
     }
 }

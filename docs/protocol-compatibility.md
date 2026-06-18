@@ -27,6 +27,14 @@ Standalone process lifecycle descriptors are also experimental. `CodexRpc.Proces
 and its params models require `@ExperimentalCodexApi`, and applications should
 enable the matching upstream experimental capability before use.
 
+Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
+status models require `@ExperimentalCodexApi`, and applications should enable
+the matching upstream experimental capability before use. Current local
+`codex-cli 0.140.0` generated schema exposes the enable/disable params and
+status-changed notification shape; the upstream README also documents the
+`remoteControl/enable`, `remoteControl/disable`, and
+`remoteControl/status/read` request methods.
+
 ## Public Client Model Policy
 
 The primary client API is JSON-RPC-first. It should expose upstream method names
@@ -129,6 +137,9 @@ methods:
 - `permissionProfile/list`
 - `collaborationMode/list`
 - `environment/add`
+- `remoteControl/enable`
+- `remoteControl/disable`
+- `remoteControl/status/read`
 
 `CodexRpcClient.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
@@ -140,15 +151,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 71 public `CodexRpc` request descriptors |
+| Request groups | 6 | 8 | 3 | 5 | 74 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 71%
-of the full upstream request surface, or about 72% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 74%
+of the full upstream request surface, or about 75% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -174,8 +185,10 @@ upstream surface today:
   include a separate event-kind field. `AccountLoginCompleted` reports login
   success or failure, preserving nullable login ids for API-key and canceled
   flows. `AccountRateLimitsUpdated` carries sparse rolling rate-limit snapshots
-  that clients can merge into the latest read response. Unknown notifications
-  expose only the method name in the primary API.
+  that clients can merge into the latest read response.
+  `RemoteControlStatusChanged` exposes the experimental remote-control status
+  snapshot, including local server name and client-visible environment id.
+  Unknown notifications expose only the method name in the primary API.
 - Server requests: command execution approval, file-change approval, permission
   approval, tool user-input prompts, and MCP elicitations are modeled with typed
   handlers. Permission approvals return granted permission subsets instead of
@@ -256,6 +269,13 @@ response. `CodexRpc.Account.ReadRateLimits`, `ReadUsage`, and
 `SendAddCreditsNudgeEmail` model rate-limit snapshots, usage summaries, daily
 usage buckets, and add-credits nudge email status.
 
+Remote-control status APIs are modeled behind experimental opt-in.
+`CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` return the current
+status snapshot with `status`, `installationId`, `serverName`, and nullable
+`environmentId`. CoKit treats these values as protocol data only; pairing,
+client listing, and client revocation remain deferred until their sensitive
+identifiers and trust boundaries are fully modeled.
+
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
@@ -266,8 +286,7 @@ descriptors:
   requirements, Windows sandbox setup, feedback upload, and external-agent
   import.
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
-- Remote control APIs: enable, disable, status, pairing, client list, and client
-  revoke.
+- Remote control APIs: pairing, client list, and client revoke.
 Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.

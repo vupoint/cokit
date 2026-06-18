@@ -5,6 +5,7 @@ import io.github.cokit.client.auth.AccountRateLimitSnapshot
 import io.github.cokit.client.commands.CommandExecOutputStream
 import io.github.cokit.client.commands.CommandProcessId
 import io.github.cokit.client.filesystem.FilesystemWatchId
+import io.github.cokit.client.remote.RemoteControlStatusSnapshot
 import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcNotification
@@ -152,6 +153,13 @@ sealed interface CodexNotification {
         override val method: String = "account/rateLimits/updated"
     }
 
+    @ExperimentalCodexApi
+    data class RemoteControlStatusChanged(
+        val status: RemoteControlStatusSnapshot,
+    ) : CodexNotification {
+        override val method: String = "remoteControl/status/changed"
+    }
+
     data class Unknown(
         override val method: String,
     ) : CodexNotification
@@ -191,6 +199,7 @@ data class CodexNotificationError(
     val additionalDetails: String? = null,
 )
 
+@OptIn(ExperimentalCodexApi::class)
 internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
     return when (method) {
         "thread/started" -> {
@@ -382,6 +391,14 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
             val payload = params.decodeNotificationParams<AccountRateLimitsUpdatedPayload>()
             if (payload != null) {
                 CodexNotification.AccountRateLimitsUpdated(payload.rateLimits)
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
+        "remoteControl/status/changed" -> {
+            val status = params.decodeNotificationParams<RemoteControlStatusSnapshot>()
+            if (status != null) {
+                CodexNotification.RemoteControlStatusChanged(status)
             } else {
                 CodexNotification.Unknown(method)
             }
