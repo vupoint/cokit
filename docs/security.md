@@ -171,6 +171,14 @@ Applications should present the server name, resource URI, tool name, OAuth URL,
 and any raw MCP payloads to a user or policy engine before initiating login,
 reading resources, or calling tools.
 
+`CodexRpc.Account.Read` exposes current authentication state without access
+tokens. ChatGPT account email values are wrapped in a type whose string
+representation is redacted, but applications that access the raw `value` should
+still treat it as private account data and avoid writing it to telemetry,
+logs, analytics, crash reports, or shared support bundles. `CodexRpc.Account`
+logout has no request parameters and returns no account payload; applications
+should still treat logout as a user-visible auth state change.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:

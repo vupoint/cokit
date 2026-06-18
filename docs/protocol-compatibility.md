@@ -140,15 +140,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 5 | 8 | 4 | 5 | 64 public `CodexRpc` request descriptors |
+| Request groups | 5 | 9 | 3 | 5 | 66 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 4 | 8 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 64%
-of the full upstream request surface, or about 60% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 66%
+of the full upstream request surface, or about 67% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -241,6 +241,12 @@ content arrays, structured content, and `_meta` payloads remain opaque
 `CodexJsonPayload` values so clients can preserve wire compatibility without
 CoKit interpreting connector-specific data or rendering connector UI.
 
+Account read and logout APIs are partially modeled. `CodexRpc.Account.Read`
+exposes the current account state, whether OpenAI auth is required, API-key and
+Amazon Bedrock account markers, and ChatGPT plan plus redacted email data.
+`CodexRpc.Account.Logout` models the current no-params empty response. Login,
+rate-limit, usage, and add-credits descriptors remain deferred.
+
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
@@ -253,8 +259,8 @@ descriptors:
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
 - Remote control APIs: enable, disable, status, pairing, client list, and client
   revoke.
-- Auth/account APIs: account read, login, logout, rate limits, usage, and add
-  credits notification requests.
+- Auth/account APIs: login, rate limits, usage, and add credits notification
+  requests.
 
 Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method

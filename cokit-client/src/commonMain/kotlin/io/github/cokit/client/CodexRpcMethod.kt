@@ -1,5 +1,8 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.auth.AccountReadParams
+import io.github.cokit.client.auth.AccountReadResult
+import io.github.cokit.client.auth.LogoutAccountParams
 import io.github.cokit.client.commands.CommandExecParams
 import io.github.cokit.client.commands.CommandExecResizeParams
 import io.github.cokit.client.commands.CommandExecResult
@@ -510,6 +513,21 @@ object CodexRpc {
                 paramsSerializer = McpServerToolCallParams.serializer(),
                 resultSerializer = McpServerToolCallResult.serializer(),
             )
+    }
+
+    object Account {
+        val Read: CodexRpcMethod<AccountReadParams, AccountReadResult> = CodexRpcMethod(
+            method = "account/read",
+            paramsSerializer = AccountReadParams.serializer(),
+            resultSerializer = AccountReadResult.serializer(),
+        )
+
+        val Logout: CodexRpcMethod<LogoutAccountParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "account/logout",
+            paramsSerializer = null,
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
     }
 
     object PermissionProfile {

@@ -49,7 +49,7 @@ modeled coverage. They are compatibility behavior only.
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
 | Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | Deferred. Remote-control methods require explicit experimental opt-in and trust-boundary documentation. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
-| Account and auth | deferred | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | No typed descriptors yet. Future auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
+| Account and auth | partial | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.Logout` models the current no-params empty response. Login, rate-limit, usage, and add-credits descriptors remain deferred. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
 
 ## Notification Groups
 
@@ -161,6 +161,8 @@ without updating the public inventory.
 | `CodexRpc.Mcp.ListServerStatus` | `mcpServerStatus/list` | MCP server status and inventory descriptor; MCP API coverage is modeled. |
 | `CodexRpc.Mcp.ReadResource` | `mcpServer/resource/read` | MCP resource read descriptor; MCP API coverage is modeled. |
 | `CodexRpc.Mcp.CallTool` | `mcpServer/tool/call` | MCP tool call descriptor; MCP API coverage is modeled with raw result payload preservation. |
+| `CodexRpc.Account.Read` | `account/read` | Account read descriptor; account and auth coverage remains partial. |
+| `CodexRpc.Account.Logout` | `account/logout` | Account logout descriptor; account and auth coverage remains partial. |
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
 | `CodexRpc.Environment.Add` | `environment/add` | Experimental environment registration descriptor; group coverage remains experimental. |
@@ -230,6 +232,8 @@ Current public request descriptors:
 - `mcpServerStatus/list`
 - `mcpServer/resource/read`
 - `mcpServer/tool/call`
+- `account/read`
+- `account/logout`
 - `permissionProfile/list`
 - `collaborationMode/list`
 - `environment/add`
