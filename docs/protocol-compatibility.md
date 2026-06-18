@@ -478,6 +478,8 @@ Exit criteria:
 
 - `./gradlew check --stacktrace` and public exposure/security grep pass.
 - Docs include supported, experimental, deferred, and compatibility surfaces.
+- Release candidates follow the [Release Readiness](release-readiness.md)
+  checklist before tagging or publishing.
 - A new upstream README/schema update has a documented workflow for updating
   descriptors, DTOs, tests, sample code, and coverage tables together.
 

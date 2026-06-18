@@ -136,3 +136,6 @@ installed:
 ```bash
 COKIT_CODEX_INTEGRATION=1 ./gradlew :cokit-client:jvmTest
 ```
+
+Before publishing a release candidate, follow the
+[Release Readiness](docs/release-readiness.md) checklist.
