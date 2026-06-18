@@ -199,7 +199,7 @@ cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val clientInfo: ClientInfo,
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val scope: CoroutineScope,
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val capabilities: InitializeCapabilities? = null,
-cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val notifications: Flow<CodexNotification> = rpc.notifications.mapNotNull { notification ->
+cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val notifications: SharedFlow<CodexNotification> = mutableNotifications
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: val isInitialized: Boolean = true
 cokit-client/src/commonMain/kotlin/io/github/cokit/client/CodexRpcClient.kt: fun registerCommandApprovalHandler(handler: CommandApprovalHandler) {

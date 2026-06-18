@@ -14,11 +14,9 @@ import io.github.cokit.rpc.JsonRpcTransport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.encodeToJsonElement
 
@@ -37,6 +35,10 @@ class CodexRpcClient private constructor(
         extraBufferCapacity = 64,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+    private val mutableNotifications = MutableSharedFlow<CodexNotification>(
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
     private var commandApprovalHandler: CommandApprovalHandler? = null
     private var fileChangeApprovalHandler: FileChangeApprovalHandler? = null
     private var permissionApprovalHandler: PermissionApprovalHandler? = null
@@ -49,11 +51,13 @@ class CodexRpcClient private constructor(
             rpc.sendResponse(resolveServerRequest(request))
         }
     }
-
-    val notifications: Flow<CodexNotification> = rpc.notifications.mapNotNull { notification ->
-        notification.toCodexNotification()
+    private val notificationJob: Job = scope.launch {
+        rpc.notifications.collect { notification ->
+            mutableNotifications.tryEmit(notification.toCodexNotification())
+        }
     }
 
+    val notifications: SharedFlow<CodexNotification> = mutableNotifications
     val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
     val isInitialized: Boolean = true
 
@@ -87,6 +91,7 @@ class CodexRpcClient private constructor(
     }
 
     override fun close() {
+        notificationJob.cancel()
         serverRequestJob.cancel()
         rpc.close()
     }

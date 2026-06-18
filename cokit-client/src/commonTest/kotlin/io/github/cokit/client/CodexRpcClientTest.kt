@@ -10,9 +10,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -475,6 +479,31 @@ class CodexRpcClientTest {
             CodexNotification.ThreadStarted(ThreadId("thr_123")),
             notification.await(),
         )
+    }
+
+    @Test
+    fun notificationFlowKeepsBoundedHighRateTail() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val gate = CompletableDeferred<Unit>()
+        val received = mutableListOf<CodexNotification>()
+        val collector = launch {
+            fixture.client.notifications
+                .onEach { gate.await() }
+                .collect { notification -> received += notification }
+        }
+        runCurrent()
+
+        repeat(128) { index ->
+            fixture.transport.receive(JsonRpcNotification(method = "highRate/$index"))
+        }
+        runCurrent()
+        gate.complete(Unit)
+        runCurrent()
+        collector.cancel()
+
+        assertTrue(received.size <= 65)
+        assertTrue(received.none { notification -> notification == CodexNotification.Unknown("highRate/1") })
+        assertEquals(CodexNotification.Unknown("highRate/127"), received.last())
     }
 
     @Test

@@ -70,6 +70,15 @@ explicit attestation handler, and return only an opaque client-owned token in th
 `token` field. Malformed params and handler failures use the same JSON-RPC error
 behavior as command approvals.
 
+## Notification Backpressure
+
+CoKit bounds raw JSON-RPC notifications, server-initiated requests, and typed
+client notifications with 64-slot buffers that drop the oldest queued events
+when an application collector falls behind. Consumers should collect
+notifications promptly, treat high-rate streams as best-effort recent state, and
+re-read canonical thread, turn, filesystem, or account state after a burst when
+they need a complete snapshot.
+
 ## Host Semantics
 
 Paths, commands, process APIs, and filesystem APIs refer to the app-server host.

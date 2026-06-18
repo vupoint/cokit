@@ -7,10 +7,15 @@ import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.serialization.json.JsonObject
@@ -69,6 +74,32 @@ class JsonRpcSessionTest {
         transport.receive(JsonRpcNotification(method = "turn/completed"))
 
         assertEquals(JsonRpcNotification(method = "turn/completed"), received.await())
+    }
+
+    @Test
+    fun notificationFlowDropsOldestWhenSubscriberFallsBehind() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val session = JsonRpcSession(transport, backgroundScope)
+        val gate = CompletableDeferred<Unit>()
+        val received = mutableListOf<JsonRpcNotification>()
+        val collector = launch {
+            session.notifications
+                .onEach { gate.await() }
+                .collect { notification -> received += notification }
+        }
+        runCurrent()
+
+        repeat(128) { index ->
+            session.publishForTests(JsonRpcNotification(method = "highRate/$index"))
+        }
+        runCurrent()
+        gate.complete(Unit)
+        runCurrent()
+        collector.cancel()
+
+        assertTrue(received.size <= 65)
+        assertTrue(received.none { notification -> notification.method == "highRate/1" })
+        assertEquals("highRate/127", received.last().method)
     }
 
     private class FakeJsonRpcTransport : JsonRpcTransport {
