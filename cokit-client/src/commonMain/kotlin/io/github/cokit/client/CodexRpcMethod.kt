@@ -18,6 +18,10 @@ import io.github.cokit.client.filesystem.FilesystemUnwatchParams
 import io.github.cokit.client.filesystem.FilesystemWriteFileParams
 import io.github.cokit.client.filesystem.FilesystemWatchParams
 import io.github.cokit.client.filesystem.FilesystemWatchResult
+import io.github.cokit.client.models.ModelListParams
+import io.github.cokit.client.models.ModelListResult
+import io.github.cokit.client.models.ModelProviderCapabilities
+import io.github.cokit.client.models.ModelProviderCapabilitiesReadParams
 import io.github.cokit.client.process.ProcessKillParams
 import io.github.cokit.client.process.ProcessResizePtyParams
 import io.github.cokit.client.process.ProcessSpawnParams
@@ -289,5 +293,21 @@ object CodexRpc {
             paramsSerializer = ReviewStartParams.serializer(),
             resultSerializer = ReviewStartResult.serializer(),
         )
+    }
+
+    object Model {
+        val List: CodexRpcMethod<ModelListParams, ModelListResult> = CodexRpcMethod(
+            method = "model/list",
+            paramsSerializer = ModelListParams.serializer(),
+            resultSerializer = ModelListResult.serializer(),
+        )
+
+        val ReadProviderCapabilities:
+            CodexRpcMethod<ModelProviderCapabilitiesReadParams, ModelProviderCapabilities> =
+            CodexRpcMethod(
+                method = "modelProvider/capabilities/read",
+                paramsSerializer = ModelProviderCapabilitiesReadParams.serializer(),
+                resultSerializer = ModelProviderCapabilities.serializer(),
+            )
     }
 }

@@ -91,6 +91,34 @@ Identifiers and common options use lightweight SDK value types such as
 `ModelName`, and `TurnInput` so application code is explicit while preserving
 the upstream wire shape.
 
+## Inspect The Model Catalog
+
+```kotlin
+val page = client.request(
+    CodexRpc.Model.List,
+    ModelListParams(includeHidden = false),
+)
+
+val capabilities = client.request(
+    CodexRpc.Model.ReadProviderCapabilities,
+    ModelProviderCapabilitiesReadParams,
+)
+
+page.data.forEach { model ->
+    println("${model.displayName}: ${model.model.value}")
+}
+
+if (capabilities.webSearch) {
+    println("The configured provider supports web search.")
+}
+```
+
+Model catalog descriptors are read-only protocol surfaces. `CodexRpc.Model.List`
+returns typed catalog entries, pagination cursors, reasoning-effort options, and
+service-tier metadata. `CodexRpc.Model.ReadProviderCapabilities` reports
+provider-level feature flags such as web search, image generation, and namespace
+tools without requiring callers to build raw JSON-RPC requests.
+
 ## Observe Notifications
 
 ```kotlin

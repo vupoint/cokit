@@ -37,7 +37,7 @@ modeled coverage. They are compatibility behavior only.
 | Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.140.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | `CodexRpc.Process.Spawn`, `WriteStdin`, `ResizePty`, and `Kill` model the experimental unsandboxed process lifecycle descriptors behind `ExperimentalCodexApi`. |
 | Filesystem utilities | modeled | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, `Remove`, `Watch`, and `Unwatch` model host filesystem descriptors, including connection-scoped watch identifiers. |
-| Models and provider catalog | deferred | `model/list`, `modelProvider/capabilities/read` | No typed descriptors yet. |
+| Models and provider catalog | modeled | `model/list`, `modelProvider/capabilities/read` | `CodexRpc.Model.List` models typed catalog entries, cursors, display names, reasoning options, service tiers, and input modalities. `CodexRpc.Model.ReadProviderCapabilities` models provider-level web search, image generation, and namespace-tool capability flags. |
 | Feature and permission catalog | experimental | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | Deferred. Upstream marks permission profiles beta and feature enablement experimental. |
 | Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | Deferred. These methods affect execution context and must stay opt-in. |
 | Skills and hooks | deferred | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | No typed descriptors yet. |
@@ -137,6 +137,8 @@ without updating the public inventory.
 | `CodexRpc.Process.Kill` | `process/kill` | Experimental unsandboxed process termination descriptor; group coverage remains experimental. |
 | `CodexRpc.Process.ResizePty` | `process/resizePty` | Experimental unsandboxed process PTY resize descriptor; group coverage remains experimental. |
 | `CodexRpc.Review.Start` | `review/start` | Review start descriptor; group coverage is modeled without review UI. |
+| `CodexRpc.Model.List` | `model/list` | Read-only model catalog descriptor; group coverage is modeled. |
+| `CodexRpc.Model.ReadProviderCapabilities` | `modelProvider/capabilities/read` | Provider capability descriptor; group coverage is modeled. |
 
 ## Current Modeled Method Summary
 
@@ -179,6 +181,8 @@ Current public request descriptors:
 - `process/kill`
 - `process/resizePty`
 - `review/start`
+- `model/list`
+- `modelProvider/capabilities/read`
 
 Current typed notification:
 
