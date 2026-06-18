@@ -95,6 +95,11 @@ absolute paths on the app-server host, not paths on the Kotlin client process.
 direct child names rather than absolute paths. Applications should treat all
 returned paths, metadata, and file contents as untrusted host data and avoid
 requesting private files unless an explicit user or policy decision allows it.
+`CodexRpc.Filesystem.WriteFile`, `CreateDirectory`, `Copy`, and `Remove` mutate
+the app-server host filesystem. Exposing these descriptors does not approve
+side effects or grant permissions; applications should call them only after an
+explicit user or policy decision and should rely on app-server sandbox and
+permission enforcement for the active session.
 
 ## Secrets
 

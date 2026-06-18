@@ -1,8 +1,12 @@
 package io.github.cokit.client
 
+import io.github.cokit.client.filesystem.FilesystemCopyParams
+import io.github.cokit.client.filesystem.FilesystemCreateDirectoryParams
 import io.github.cokit.client.filesystem.FilesystemGetMetadataParams
+import io.github.cokit.client.filesystem.FilesystemRemoveParams
 import io.github.cokit.client.filesystem.FilesystemReadDirectoryParams
 import io.github.cokit.client.filesystem.FilesystemReadFileParams
+import io.github.cokit.client.filesystem.FilesystemWriteFileParams
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
 import io.github.cokit.testing.FakeJsonRpcTransport
@@ -14,6 +18,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -133,6 +138,91 @@ class FilesystemRpcTest {
         assertEquals("README.md", entries[1].fileName)
         assertEquals(false, entries[1].isDirectory)
         assertEquals(true, entries[1].isFile)
+    }
+
+    @Test
+    fun filesystemMutationDescriptorsUseHostPathsAndDecodeEmptyResults() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val writeFileResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.WriteFile,
+                FilesystemWriteFileParams(
+                    path = CodexHostPath("/path/to/project/README.md"),
+                    dataBase64 = "VXBkYXRlZAo=",
+                ),
+            )
+        }
+        runCurrent()
+
+        val writeFile = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/writeFile", writeFile.method)
+        val writeFileParams = writeFile.params!!.jsonObject
+        assertEquals("/path/to/project/README.md", writeFileParams["path"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("VXBkYXRlZAo=", writeFileParams["dataBase64"]?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(JsonRpcResponse(writeFile.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, writeFileResult.await())
+
+        val createDirectoryResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.CreateDirectory,
+                FilesystemCreateDirectoryParams(
+                    path = CodexHostPath("/path/to/project/generated"),
+                    recursive = false,
+                ),
+            )
+        }
+        runCurrent()
+
+        val createDirectory = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/createDirectory", createDirectory.method)
+        val createDirectoryParams = createDirectory.params!!.jsonObject
+        assertEquals("/path/to/project/generated", createDirectoryParams["path"]?.jsonPrimitive?.contentOrNull)
+        assertEquals(false, createDirectoryParams["recursive"]?.jsonPrimitive?.booleanOrNull)
+        fixture.transport.receive(JsonRpcResponse(createDirectory.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, createDirectoryResult.await())
+
+        val copyResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.Copy,
+                FilesystemCopyParams(
+                    sourcePath = CodexHostPath("/path/to/project/src"),
+                    destinationPath = CodexHostPath("/path/to/project/src-copy"),
+                    recursive = true,
+                ),
+            )
+        }
+        runCurrent()
+
+        val copy = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/copy", copy.method)
+        val copyParams = copy.params!!.jsonObject
+        assertEquals("/path/to/project/src", copyParams["sourcePath"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("/path/to/project/src-copy", copyParams["destinationPath"]?.jsonPrimitive?.contentOrNull)
+        assertEquals(true, copyParams["recursive"]?.jsonPrimitive?.booleanOrNull)
+        fixture.transport.receive(JsonRpcResponse(copy.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, copyResult.await())
+
+        val removeResult = async {
+            fixture.client.request(
+                CodexRpc.Filesystem.Remove,
+                FilesystemRemoveParams(
+                    path = CodexHostPath("/path/to/project/generated"),
+                    recursive = false,
+                    force = false,
+                ),
+            )
+        }
+        runCurrent()
+
+        val remove = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("fs/remove", remove.method)
+        val removeParams = remove.params!!.jsonObject
+        assertEquals("/path/to/project/generated", removeParams["path"]?.jsonPrimitive?.contentOrNull)
+        assertEquals(false, removeParams["recursive"]?.jsonPrimitive?.booleanOrNull)
+        assertEquals(false, removeParams["force"]?.jsonPrimitive?.booleanOrNull)
+        fixture.transport.receive(JsonRpcResponse(remove.id, result = JsonObject(emptyMap())))
+        assertEquals(CodexRpcUnit, removeResult.await())
     }
 
     private suspend fun TestScope.connectedRpcClientFixture(

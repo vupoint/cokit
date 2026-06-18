@@ -7,10 +7,14 @@ import io.github.cokit.client.commands.CommandExecTerminateParams
 import io.github.cokit.client.commands.CommandExecWriteParams
 import io.github.cokit.client.filesystem.FilesystemGetMetadataParams
 import io.github.cokit.client.filesystem.FilesystemGetMetadataResult
+import io.github.cokit.client.filesystem.FilesystemCopyParams
+import io.github.cokit.client.filesystem.FilesystemCreateDirectoryParams
 import io.github.cokit.client.filesystem.FilesystemReadDirectoryParams
 import io.github.cokit.client.filesystem.FilesystemReadDirectoryResult
 import io.github.cokit.client.filesystem.FilesystemReadFileParams
 import io.github.cokit.client.filesystem.FilesystemReadFileResult
+import io.github.cokit.client.filesystem.FilesystemRemoveParams
+import io.github.cokit.client.filesystem.FilesystemWriteFileParams
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -196,5 +200,33 @@ object CodexRpc {
                 paramsSerializer = FilesystemReadDirectoryParams.serializer(),
                 resultSerializer = FilesystemReadDirectoryResult.serializer(),
             )
+
+        val WriteFile: CodexRpcMethod<FilesystemWriteFileParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "fs/writeFile",
+            paramsSerializer = FilesystemWriteFileParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val CreateDirectory: CodexRpcMethod<FilesystemCreateDirectoryParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "fs/createDirectory",
+            paramsSerializer = FilesystemCreateDirectoryParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Copy: CodexRpcMethod<FilesystemCopyParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "fs/copy",
+            paramsSerializer = FilesystemCopyParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Remove: CodexRpcMethod<FilesystemRemoveParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "fs/remove",
+            paramsSerializer = FilesystemRemoveParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+        )
     }
 }

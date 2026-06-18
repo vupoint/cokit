@@ -38,6 +38,32 @@ data class FilesystemReadDirectoryResult(
 )
 
 @Serializable
+data class FilesystemWriteFileParams(
+    val path: CodexHostPath,
+    val dataBase64: String,
+)
+
+@Serializable
+data class FilesystemCreateDirectoryParams(
+    val path: CodexHostPath,
+    val recursive: Boolean? = null,
+)
+
+@Serializable
+data class FilesystemCopyParams(
+    val sourcePath: CodexHostPath,
+    val destinationPath: CodexHostPath,
+    val recursive: Boolean? = null,
+)
+
+@Serializable
+data class FilesystemRemoveParams(
+    val path: CodexHostPath,
+    val recursive: Boolean? = null,
+    val force: Boolean? = null,
+)
+
+@Serializable
 data class FilesystemDirectoryEntry(
     val fileName: String,
     val isDirectory: Boolean,

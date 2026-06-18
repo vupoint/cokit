@@ -36,7 +36,7 @@ modeled coverage. They are compatibility behavior only.
 | Review | deferred | `review/start` | No typed descriptor yet. Review item notifications are also deferred. |
 | Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.140.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | Deferred. Upstream marks this surface experimental and unsandboxed. |
-| Filesystem utilities | partial | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, and `ReadDirectory` model read-only host filesystem descriptors. Mutation and watch descriptors remain deferred. |
+| Filesystem utilities | partial | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, and `Remove` model host filesystem descriptors. Watch descriptors remain deferred. |
 | Models and provider catalog | deferred | `model/list`, `modelProvider/capabilities/read` | No typed descriptors yet. |
 | Feature and permission catalog | experimental | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | Deferred. Upstream marks permission profiles beta and feature enablement experimental. |
 | Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | Deferred. These methods affect execution context and must stay opt-in. |
@@ -126,6 +126,10 @@ without updating the public inventory.
 | `CodexRpc.Filesystem.ReadFile` | `fs/readFile` | Read-only host filesystem descriptor; group coverage remains partial. |
 | `CodexRpc.Filesystem.GetMetadata` | `fs/getMetadata` | Read-only host filesystem metadata descriptor; group coverage remains partial. |
 | `CodexRpc.Filesystem.ReadDirectory` | `fs/readDirectory` | Read-only host filesystem directory descriptor; group coverage remains partial. |
+| `CodexRpc.Filesystem.WriteFile` | `fs/writeFile` | Host filesystem mutation descriptor; group coverage remains partial. |
+| `CodexRpc.Filesystem.CreateDirectory` | `fs/createDirectory` | Host filesystem mutation descriptor; group coverage remains partial. |
+| `CodexRpc.Filesystem.Copy` | `fs/copy` | Host filesystem mutation descriptor; group coverage remains partial. |
+| `CodexRpc.Filesystem.Remove` | `fs/remove` | Host filesystem mutation descriptor; group coverage remains partial. |
 
 ## Current Modeled Method Summary
 
@@ -157,6 +161,10 @@ Current public request descriptors:
 - `fs/readFile`
 - `fs/getMetadata`
 - `fs/readDirectory`
+- `fs/writeFile`
+- `fs/createDirectory`
+- `fs/copy`
+- `fs/remove`
 
 Current typed notification:
 
