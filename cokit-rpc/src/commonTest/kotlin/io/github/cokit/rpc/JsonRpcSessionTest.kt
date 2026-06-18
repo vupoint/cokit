@@ -7,6 +7,7 @@ import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
@@ -100,6 +101,48 @@ class JsonRpcSessionTest {
         assertTrue(received.size <= 65)
         assertTrue(received.none { notification -> notification.method == "highRate/1" })
         assertEquals("highRate/127", received.last().method)
+    }
+
+    @Test
+    fun oversizedIncomingMessageIsRejectedBeforeNotificationBuffering() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val session = JsonRpcSession(
+            transport = transport,
+            scope = backgroundScope,
+            maxMessageBytes = 64,
+        )
+
+        val error = assertFailsWith<JsonRpcMessageSizeException> {
+            session.publishForTests(largeNotification())
+        }
+
+        assertEquals(64, error.maxMessageBytes)
+        assertTrue(error.actualMessageBytes > error.maxMessageBytes)
+    }
+
+    @Test
+    fun oversizedOutgoingRequestIsRejectedBeforeTransportSend() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val session = JsonRpcSession(
+            transport = transport,
+            scope = backgroundScope,
+            maxMessageBytes = 64,
+        )
+
+        assertFailsWith<JsonRpcMessageSizeException> {
+            session.sendRequest("thread/start", largeParams())
+        }
+
+        assertTrue(transport.sent.isEmpty())
+    }
+
+    private fun largeNotification(): JsonRpcNotification = JsonRpcNotification(
+        method = "large/payload",
+        params = largeParams(),
+    )
+
+    private fun largeParams(): JsonObject = buildJsonObject {
+        put("payload", "x".repeat(128))
     }
 
     private class FakeJsonRpcTransport : JsonRpcTransport {

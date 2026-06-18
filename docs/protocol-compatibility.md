@@ -461,6 +461,9 @@ Goal: make the API safe to publish and maintain as upstream evolves.
   baseline with `./gradlew updatePublicApiBaseline`.
 - Add high-rate notification, malformed message, oversized message, overload,
   retry, and shutdown tests across protocol, RPC, transport, and client modules.
+- Reject malformed JSON-RPC envelopes during protocol decode and enforce an
+  encoded-size limit in `JsonRpcSession` before messages enter request,
+  notification, or transport buffers.
 - Document retry behavior for app-server overload errors and connection
   lifecycle failures.
 - Keep sample CLI and getting-started docs aligned with the primary typed API.

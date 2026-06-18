@@ -2,8 +2,10 @@ package io.github.cokit.protocol
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -65,5 +67,50 @@ class JsonRpcMessageTest {
 
         assertTrue(stringId.contains(""""id":"123""""))
         assertTrue(numericId.contains(""""id":123"""))
+    }
+
+    @Test
+    fun rejectsMalformedRequestWithNonStringMethod() {
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<JsonRpcMessage>(
+                """{"id":1,"method":7,"params":{}}""",
+            )
+        }
+    }
+
+    @Test
+    fun rejectsMalformedResponseWithBothResultAndError() {
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<JsonRpcMessage>(
+                """{"id":1,"result":{"ok":true},"error":{"code":-32000,"message":"failed"}}""",
+            )
+        }
+    }
+
+    @Test
+    fun rejectsMalformedNotificationWithNonStringMethod() {
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<JsonRpcMessage>(
+                """{"method":7,"params":{}}""",
+            )
+        }
+    }
+
+    @Test
+    fun rejectsResultMessageMissingId() {
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<JsonRpcMessage>(
+                """{"result":{"ok":true}}""",
+            )
+        }
+    }
+
+    @Test
+    fun rejectsBadIdType() {
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<JsonRpcMessage>(
+                """{"id":{"value":1},"result":{"ok":true}}""",
+            )
+        }
     }
 }

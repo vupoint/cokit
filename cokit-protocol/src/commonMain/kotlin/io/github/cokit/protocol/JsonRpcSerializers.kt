@@ -33,6 +33,9 @@ object JsonRpcMessageSerializer : KSerializer<JsonRpcMessage> {
                 jsonDecoder.json.decodeFromJsonElement<JsonRpcRequest>(obj)
             }
             "id" in obj && ("result" in obj || "error" in obj) -> {
+                if ("result" in obj && "error" in obj) {
+                    throw SerializationException("JSON-RPC response must not contain both result and error")
+                }
                 jsonDecoder.json.decodeFromJsonElement<JsonRpcResponse>(obj)
             }
             "method" in obj -> {

@@ -1726,9 +1726,13 @@ cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: suspend f
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: suspend fun sendResponse(response: JsonRpcResponse) {
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: suspend fun publishForTests(message: JsonRpcMessage) {
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: override fun close() {
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: companion object {
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: class JsonRpcRemoteException(
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val error: JsonRpcErrorObject,
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: class JsonRpcMessageSizeException(
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val actualMessageBytes: Int,
+cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcSession.kt: val maxMessageBytes: Int,
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcTransport.kt: interface JsonRpcTransport : AutoCloseable {
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcTransport.kt: val incoming: Flow<JsonRpcMessage>
 cokit-rpc/src/commonMain/kotlin/io/github/cokit/rpc/JsonRpcTransport.kt: suspend fun send(message: JsonRpcMessage)

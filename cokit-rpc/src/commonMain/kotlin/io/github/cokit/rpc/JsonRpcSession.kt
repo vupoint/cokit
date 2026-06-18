@@ -1,5 +1,6 @@
 package io.github.cokit.rpc
 
+import io.github.cokit.protocol.CodexProtocolJson
 import io.github.cokit.protocol.JsonRpcErrorObject
 import io.github.cokit.protocol.JsonRpcId
 import io.github.cokit.protocol.JsonRpcMessage
@@ -17,11 +18,17 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.encodeToString
 
 class JsonRpcSession(
     private val transport: JsonRpcTransport,
     private val scope: CoroutineScope,
+    private val maxMessageBytes: Int = DEFAULT_MAX_MESSAGE_BYTES,
 ) : AutoCloseable {
+    init {
+        require(maxMessageBytes > 0) { "maxMessageBytes must be greater than zero" }
+    }
+
     private var nextRequestId = 1L
     private val mutex = Mutex()
     private val pendingRequests = mutableMapOf<JsonRpcId, CompletableDeferred<JsonElementResult>>()
@@ -45,26 +52,33 @@ class JsonRpcSession(
     val serverRequests: SharedFlow<JsonRpcRequest> = mutableServerRequests
 
     suspend fun notify(method: String) {
-        transport.send(JsonRpcNotification(method = method))
+        val message = JsonRpcNotification(method = method)
+        requireWithinMessageLimit(message)
+        transport.send(message)
     }
 
     suspend fun sendRequest(method: String, params: JsonElementResult = null): JsonRpcId {
         val id = nextId()
-        transport.send(JsonRpcRequest(id = id, method = method, params = params))
+        val message = JsonRpcRequest(id = id, method = method, params = params)
+        requireWithinMessageLimit(message)
+        transport.send(message)
         return id
     }
 
     suspend fun request(method: String, params: JsonElementResult = null): JsonElementResult {
         val id = nextId()
+        val message = JsonRpcRequest(id = id, method = method, params = params)
+        requireWithinMessageLimit(message)
         val deferred = CompletableDeferred<JsonElementResult>()
         mutex.withLock {
             pendingRequests[id] = deferred
         }
-        transport.send(JsonRpcRequest(id = id, method = method, params = params))
+        transport.send(message)
         return deferred.await()
     }
 
     suspend fun sendResponse(response: JsonRpcResponse) {
+        requireWithinMessageLimit(response)
         transport.send(response)
     }
 
@@ -77,6 +91,7 @@ class JsonRpcSession(
     }
 
     private suspend fun routeIncoming(message: JsonRpcMessage) {
+        requireWithinMessageLimit(message)
         when (message) {
             is JsonRpcResponse -> completeResponse(message)
             is JsonRpcNotification -> mutableNotifications.emit(message)
@@ -111,6 +126,20 @@ class JsonRpcSession(
         pendingRequests.values.forEach { it.completeExceptionally(cancellation) }
         pendingRequests.clear()
     }
+
+    private fun requireWithinMessageLimit(message: JsonRpcMessage) {
+        val actualMessageBytes = CodexProtocolJson.encodeToString(message).encodeToByteArray().size
+        if (actualMessageBytes > maxMessageBytes) {
+            throw JsonRpcMessageSizeException(
+                actualMessageBytes = actualMessageBytes,
+                maxMessageBytes = maxMessageBytes,
+            )
+        }
+    }
+
+    companion object {
+        const val DEFAULT_MAX_MESSAGE_BYTES: Int = 16 * 1024 * 1024
+    }
 }
 
 typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
@@ -118,3 +147,10 @@ typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
 class JsonRpcRemoteException(
     val error: JsonRpcErrorObject,
 ) : RuntimeException(error.message)
+
+class JsonRpcMessageSizeException(
+    val actualMessageBytes: Int,
+    val maxMessageBytes: Int,
+) : RuntimeException(
+    "JSON-RPC message is $actualMessageBytes bytes, exceeding the configured $maxMessageBytes byte limit",
+)

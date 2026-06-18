@@ -70,6 +70,21 @@ explicit attestation handler, and return only an opaque client-owned token in th
 `token` field. Malformed params and handler failures use the same JSON-RPC error
 behavior as command approvals.
 
+## JSON-RPC Message Limits
+
+CoKit rejects malformed JSON-RPC envelopes during protocol decode. Requests and
+notifications must carry a string `method`, responses must carry an `id` and
+exactly one of `result` or `error`, and request or response ids must be strings
+or integers that fit in a Kotlin `Long`.
+
+`JsonRpcSession` also validates the encoded UTF-8 size of incoming and outgoing
+messages before routing them into pending requests, notification buffers, or the
+transport send path. The default limit is 16 MiB, and applications that operate
+the low-level RPC session directly can lower or raise the limit through the
+session constructor. Oversized messages fail fast with
+`JsonRpcMessageSizeException`; CoKit does not silently truncate JSON-RPC
+messages.
+
 ## Notification Backpressure
 
 CoKit bounds raw JSON-RPC notifications, server-initiated requests, and typed
