@@ -75,6 +75,8 @@ import io.github.cokit.client.plugins.PluginReadResult
 import io.github.cokit.client.plugins.PluginSkillReadParams
 import io.github.cokit.client.plugins.PluginSkillReadResult
 import io.github.cokit.client.plugins.PluginUninstallParams
+import io.github.cokit.client.policy.ManagedPolicyReadParams
+import io.github.cokit.client.policy.ManagedPolicyReadResult
 import io.github.cokit.client.process.ProcessKillParams
 import io.github.cokit.client.process.ProcessResizePtyParams
 import io.github.cokit.client.process.ProcessSpawnParams
@@ -399,6 +401,13 @@ object CodexRpc {
             paramsSerializer = ConfigBatchWriteParams.serializer(),
             resultSerializer = ConfigWriteResult.serializer(),
         )
+
+        val ReadRequirements: CodexRpcMethod<ManagedPolicyReadParams, ManagedPolicyReadResult> =
+            CodexRpcMethod(
+                method = "configRequirements/read",
+                paramsSerializer = null,
+                resultSerializer = ManagedPolicyReadResult.serializer(),
+            )
     }
 
     object Skills {

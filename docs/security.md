@@ -129,6 +129,11 @@ config into loaded threads after writing. Exposing these descriptors does not
 approve config edits or policy changes; applications should show the target key
 path, file path, merge strategy, expected version, and reload behavior to a user
 or policy engine before calling them.
+`CodexRpc.Config.ReadRequirements` reads managed policy constraints from
+app-server as read-only state. CoKit surfaces approval, sandbox, permission
+profile, web-search, remote-control, feature, residency, computer-use, and
+network requirements so applications can explain disabled capabilities, but it
+does not bypass, relax, or locally reinterpret those constraints.
 
 `CodexRpc.Skills.List` reads skill metadata and parse errors for app-server host
 working directories. CoKit treats returned skill names, paths, descriptions,

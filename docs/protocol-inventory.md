@@ -45,7 +45,7 @@ modeled coverage. They are compatibility behavior only.
 | MCP APIs | modeled | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | `CodexRpc.Mcp.StartOauthLogin`, `ReloadConfig`, `ListServerStatus`, `ReadResource`, and `CallTool` model current MCP catalog, resource, OAuth, config-reload, and tool-call request shapes. MCP-provided schemas, annotations, content, `_meta`, and tool arguments stay behind `CodexJsonPayload` compatibility fields. Server-initiated MCP elicitation is tracked under server requests. |
 | Windows sandbox setup | deferred | `windowsSandbox/setupStart` | No typed descriptor yet. |
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
-| Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `configRequirements/read` remains deferred for managed-policy models. |
+| Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `CodexRpc.Config.ReadRequirements` models read-only managed policy constraints for approval, sandbox, permission profile, web search, remote control, feature, residency, computer-use, and network policy fields. Managed hooks remain compatibility-limited. |
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
 | Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl` models experimental status, enable/disable, pairing, client list, and client revoke descriptors behind `ExperimentalCodexApi`. Pairing codes and controller client ids are redacted from model string representations. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
@@ -142,6 +142,7 @@ without updating the public inventory.
 | `CodexRpc.Config.Read` | `config/read` | Effective config read descriptor; config group coverage remains partial. |
 | `CodexRpc.Config.WriteValue` | `config/value/write` | Single config value write descriptor; config group coverage remains partial. |
 | `CodexRpc.Config.BatchWrite` | `config/batchWrite` | Batch config write descriptor with reload flag; config group coverage remains partial. |
+| `CodexRpc.Config.ReadRequirements` | `configRequirements/read` | Read-only managed policy descriptor; config group coverage remains partial. |
 | `CodexRpc.Skills.List` | `skills/list` | Skills catalog descriptor; skills and hooks coverage is modeled. |
 | `CodexRpc.Skills.SetExtraRoots` | `skills/extraRoots/set` | Extra skill roots descriptor; skills and hooks coverage is modeled. |
 | `CodexRpc.Skills.WriteConfig` | `skills/config/write` | Skill enablement config descriptor; skills and hooks coverage is modeled. |
@@ -225,6 +226,7 @@ Current public request descriptors:
 - `config/read`
 - `config/value/write`
 - `config/batchWrite`
+- `configRequirements/read`
 - `skills/list`
 - `skills/extraRoots/set`
 - `skills/config/write`
