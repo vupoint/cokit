@@ -22,6 +22,8 @@ import io.github.cokit.client.process.ProcessKillParams
 import io.github.cokit.client.process.ProcessResizePtyParams
 import io.github.cokit.client.process.ProcessSpawnParams
 import io.github.cokit.client.process.ProcessWriteStdinParams
+import io.github.cokit.client.review.ReviewStartParams
+import io.github.cokit.client.review.ReviewStartResult
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -278,6 +280,14 @@ object CodexRpc {
             paramsSerializer = ProcessResizePtyParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
+        )
+    }
+
+    object Review {
+        val Start: CodexRpcMethod<ReviewStartParams, ReviewStartResult> = CodexRpcMethod(
+            method = "review/start",
+            paramsSerializer = ReviewStartParams.serializer(),
+            resultSerializer = ReviewStartResult.serializer(),
         )
     }
 }

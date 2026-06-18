@@ -33,7 +33,7 @@ modeled coverage. They are compatibility behavior only.
 | Advanced thread history and metadata | partial | `thread/loaded/list`, `thread/turns/list`, `thread/turns/items/list`, `thread/metadata/update`, `thread/settings/update`, `thread/memoryMode/set`, `memory/reset`, `thread/goal/set`, `thread/goal/get`, `thread/goal/clear`, `thread/delete`, `thread/compact/start`, `thread/shellCommand`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/rollback`, `thread/inject_items` | `CodexRpc.Thread.ListTurns` models the experimental turn-history page shape. `CodexRpc.Thread.UpdateMetadata` models the stable `gitInfo` metadata patch and refreshed thread response. `CodexRpc.Thread.SetGoal`, `GetGoal`, `ClearGoal`, `Delete`, and `StartCompaction` model stable lifecycle helpers. Other advanced, experimental, or currently unsupported entries remain deferred. |
 | Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors exist. Experimental params such as environment selection and some schema-shaped fields are not fully modeled. |
 | Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
-| Review | deferred | `review/start` | No typed descriptor yet. Review item notifications are also deferred. |
+| Review | modeled | `review/start` | `CodexRpc.Review.Start` models typed review targets, inline or detached delivery, and the returned review thread id plus turn. CoKit exposes review protocol data but does not render review UI. |
 | Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.140.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | `CodexRpc.Process.Spawn`, `WriteStdin`, `ResizePty`, and `Kill` model the experimental unsandboxed process lifecycle descriptors behind `ExperimentalCodexApi`. |
 | Filesystem utilities | modeled | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, `Remove`, `Watch`, and `Unwatch` model host filesystem descriptors, including connection-scoped watch identifiers. |
@@ -136,6 +136,7 @@ without updating the public inventory.
 | `CodexRpc.Process.WriteStdin` | `process/writeStdin` | Experimental unsandboxed process stdin descriptor; group coverage remains experimental. |
 | `CodexRpc.Process.Kill` | `process/kill` | Experimental unsandboxed process termination descriptor; group coverage remains experimental. |
 | `CodexRpc.Process.ResizePty` | `process/resizePty` | Experimental unsandboxed process PTY resize descriptor; group coverage remains experimental. |
+| `CodexRpc.Review.Start` | `review/start` | Review start descriptor; group coverage is modeled without review UI. |
 
 ## Current Modeled Method Summary
 
@@ -177,6 +178,7 @@ Current public request descriptors:
 - `process/writeStdin`
 - `process/kill`
 - `process/resizePty`
+- `review/start`
 
 Current typed notification:
 
