@@ -36,6 +36,23 @@ import io.github.cokit.client.models.ModelListParams
 import io.github.cokit.client.models.ModelListResult
 import io.github.cokit.client.models.ModelProviderCapabilities
 import io.github.cokit.client.models.ModelProviderCapabilitiesReadParams
+import io.github.cokit.client.plugins.MarketplaceAddParams
+import io.github.cokit.client.plugins.MarketplaceAddResult
+import io.github.cokit.client.plugins.MarketplaceRemoveParams
+import io.github.cokit.client.plugins.MarketplaceRemoveResult
+import io.github.cokit.client.plugins.MarketplaceUpgradeParams
+import io.github.cokit.client.plugins.MarketplaceUpgradeResult
+import io.github.cokit.client.plugins.PluginInstallParams
+import io.github.cokit.client.plugins.PluginInstallResult
+import io.github.cokit.client.plugins.PluginInstalledParams
+import io.github.cokit.client.plugins.PluginInstalledResult
+import io.github.cokit.client.plugins.PluginListParams
+import io.github.cokit.client.plugins.PluginListResult
+import io.github.cokit.client.plugins.PluginReadParams
+import io.github.cokit.client.plugins.PluginReadResult
+import io.github.cokit.client.plugins.PluginSkillReadParams
+import io.github.cokit.client.plugins.PluginSkillReadResult
+import io.github.cokit.client.plugins.PluginUninstallParams
 import io.github.cokit.client.process.ProcessKillParams
 import io.github.cokit.client.process.ProcessResizePtyParams
 import io.github.cokit.client.process.ProcessSpawnParams
@@ -387,6 +404,65 @@ object CodexRpc {
             method = "app/list",
             paramsSerializer = AppsListParams.serializer(),
             resultSerializer = AppsListResult.serializer(),
+        )
+    }
+
+    object Marketplace {
+        val Add: CodexRpcMethod<MarketplaceAddParams, MarketplaceAddResult> = CodexRpcMethod(
+            method = "marketplace/add",
+            paramsSerializer = MarketplaceAddParams.serializer(),
+            resultSerializer = MarketplaceAddResult.serializer(),
+        )
+
+        val Remove: CodexRpcMethod<MarketplaceRemoveParams, MarketplaceRemoveResult> = CodexRpcMethod(
+            method = "marketplace/remove",
+            paramsSerializer = MarketplaceRemoveParams.serializer(),
+            resultSerializer = MarketplaceRemoveResult.serializer(),
+        )
+
+        val Upgrade: CodexRpcMethod<MarketplaceUpgradeParams, MarketplaceUpgradeResult> = CodexRpcMethod(
+            method = "marketplace/upgrade",
+            paramsSerializer = MarketplaceUpgradeParams.serializer(),
+            resultSerializer = MarketplaceUpgradeResult.serializer(),
+        )
+    }
+
+    object Plugin {
+        val List: CodexRpcMethod<PluginListParams, PluginListResult> = CodexRpcMethod(
+            method = "plugin/list",
+            paramsSerializer = PluginListParams.serializer(),
+            resultSerializer = PluginListResult.serializer(),
+        )
+
+        val Installed: CodexRpcMethod<PluginInstalledParams, PluginInstalledResult> = CodexRpcMethod(
+            method = "plugin/installed",
+            paramsSerializer = PluginInstalledParams.serializer(),
+            resultSerializer = PluginInstalledResult.serializer(),
+        )
+
+        val Read: CodexRpcMethod<PluginReadParams, PluginReadResult> = CodexRpcMethod(
+            method = "plugin/read",
+            paramsSerializer = PluginReadParams.serializer(),
+            resultSerializer = PluginReadResult.serializer(),
+        )
+
+        val ReadSkill: CodexRpcMethod<PluginSkillReadParams, PluginSkillReadResult> = CodexRpcMethod(
+            method = "plugin/skill/read",
+            paramsSerializer = PluginSkillReadParams.serializer(),
+            resultSerializer = PluginSkillReadResult.serializer(),
+        )
+
+        val Install: CodexRpcMethod<PluginInstallParams, PluginInstallResult> = CodexRpcMethod(
+            method = "plugin/install",
+            paramsSerializer = PluginInstallParams.serializer(),
+            resultSerializer = PluginInstallResult.serializer(),
+        )
+
+        val Uninstall: CodexRpcMethod<PluginUninstallParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "plugin/uninstall",
+            paramsSerializer = PluginUninstallParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
         )
     }
 

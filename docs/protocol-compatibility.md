@@ -140,15 +140,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 4 | 8 | 5 | 5 | 50 public `CodexRpc` request descriptors |
+| Request groups | 4 | 8 | 5 | 5 | 59 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 4 | 8 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 50%
-of the full upstream request surface, or about 51% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 59%
+of the full upstream request surface, or about 60% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -224,6 +224,16 @@ branding, labels, enabled/accessibility flags, and optional app metadata. CoKit
 does not render app UI, authenticate apps, install plugins, or invoke app
 behavior through this descriptor.
 
+Plugin and marketplace APIs are partially modeled as catalog and installation
+descriptors. `CodexRpc.Plugin.List`, `Installed`, `Read`, and `ReadSkill` expose
+marketplace entries, plugin summaries, local/git/remote source metadata, skill
+content reads, app summaries, hook summaries, and MCP server names as protocol
+data. `CodexRpc.Plugin.Install` returns app-auth requirements and
+`CodexRpc.Plugin.Uninstall` models the current empty response shape.
+`CodexRpc.Marketplace.Add`, `Remove`, and `Upgrade` expose marketplace source
+and filesystem-root metadata while leaving policy and UI decisions to the
+calling application. Current plugin sharing methods remain deferred.
+
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
@@ -233,8 +243,7 @@ descriptors:
 - Catalog and configuration APIs: experimental feature flags, MCP
   status/resources/tools, config requirements, Windows sandbox setup, feedback
   upload, and external-agent import.
-- Marketplaces and plugins: marketplace operations, plugin
-  list/install/read/uninstall, and plugin skill reads.
+- Plugin sharing APIs: share save, update targets, list, checkout, and delete.
 - Remote control APIs: enable, disable, status, pairing, client list, and client
   revoke.
 - Auth/account APIs: account read, login, logout, rate limits, usage, and add

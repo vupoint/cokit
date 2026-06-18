@@ -41,7 +41,7 @@ modeled coverage. They are compatibility behavior only.
 | Feature and permission catalog | partial | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | `CodexRpc.PermissionProfile.List` models permission profile ids, descriptions, optional cwd scoping, and pagination. Experimental feature list and enablement methods remain deferred. |
 | Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.140.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
 | Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.140.0` schema does not define a `skills/config/read` request. |
-| Apps, marketplaces, and plugins | partial | `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall` | `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. Marketplace and plugin descriptors remain deferred. Plugin APIs marked under development upstream are treated as experimental. |
+| Apps, marketplaces, and plugins | partial | `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall`, `plugin/share/save`, `plugin/share/updateTargets`, `plugin/share/list`, `plugin/share/checkout`, `plugin/share/delete` | `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. `CodexRpc.Marketplace` and `CodexRpc.Plugin` model marketplace add/remove/upgrade, plugin list/installed/read/skill-read, install, and uninstall descriptors. Plugin sharing descriptors remain deferred. |
 | MCP APIs | deferred | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | No typed descriptors yet. Server-initiated MCP elicitation is tracked under server requests. |
 | Windows sandbox setup | deferred | `windowsSandbox/setupStart` | No typed descriptor yet. |
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
@@ -147,6 +147,15 @@ without updating the public inventory.
 | `CodexRpc.Skills.WriteConfig` | `skills/config/write` | Skill enablement config descriptor; skills and hooks coverage is modeled. |
 | `CodexRpc.Hooks.List` | `hooks/list` | Hook catalog descriptor; skills and hooks coverage is modeled. |
 | `CodexRpc.Apps.List` | `app/list` | Experimental app catalog descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Marketplace.Add` | `marketplace/add` | Marketplace add descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Marketplace.Remove` | `marketplace/remove` | Marketplace remove descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Marketplace.Upgrade` | `marketplace/upgrade` | Marketplace upgrade descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.List` | `plugin/list` | Plugin marketplace listing descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.Installed` | `plugin/installed` | Installed plugin listing descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.Read` | `plugin/read` | Plugin detail descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.ReadSkill` | `plugin/skill/read` | Plugin skill content descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.Install` | `plugin/install` | Plugin install descriptor; apps, marketplaces, and plugins coverage remains partial. |
+| `CodexRpc.Plugin.Uninstall` | `plugin/uninstall` | Plugin uninstall descriptor; apps, marketplaces, and plugins coverage remains partial. |
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
 | `CodexRpc.Environment.Add` | `environment/add` | Experimental environment registration descriptor; group coverage remains experimental. |
@@ -202,6 +211,15 @@ Current public request descriptors:
 - `skills/config/write`
 - `hooks/list`
 - `app/list`
+- `marketplace/add`
+- `marketplace/remove`
+- `marketplace/upgrade`
+- `plugin/list`
+- `plugin/installed`
+- `plugin/read`
+- `plugin/skill/read`
+- `plugin/install`
+- `plugin/uninstall`
 - `permissionProfile/list`
 - `collaborationMode/list`
 - `environment/add`

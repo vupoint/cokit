@@ -149,6 +149,17 @@ branding, labels, install URLs, and plugin display names for presentation by the
 calling application. CoKit does not render app UI, authenticate apps, install
 plugins, or invoke app behavior through the catalog descriptor.
 
+`CodexRpc.Plugin.List`, `Installed`, `Read`, and `ReadSkill` expose plugin
+marketplace data, plugin source metadata, app summaries, hook summaries, skill
+summaries, MCP server names, and optional skill file contents. CoKit treats this
+data as untrusted catalog content and does not load plugins, execute plugin
+code, run plugin hooks, or authenticate app integrations from read descriptors.
+`CodexRpc.Plugin.Install`, `Uninstall`, and the `CodexRpc.Marketplace` mutation
+descriptors may change local plugin or marketplace state through app-server.
+Applications should show source URLs, sparse paths, marketplace names, plugin
+ids, install auth policy, apps needing auth, and installed roots to a user or
+policy engine before invoking them.
+
 ## Secrets
 
 CoKit should not log secrets by default. Consumers should avoid logging:
