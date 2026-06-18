@@ -10,6 +10,11 @@ import io.github.cokit.client.config.ConfigReadParams
 import io.github.cokit.client.config.ConfigReadResult
 import io.github.cokit.client.config.ConfigValueWriteParams
 import io.github.cokit.client.config.ConfigWriteResult
+import io.github.cokit.client.environment.CollaborationModeListParams
+import io.github.cokit.client.environment.CollaborationModeListResult
+import io.github.cokit.client.environment.EnvironmentAddParams
+import io.github.cokit.client.environment.PermissionProfileListParams
+import io.github.cokit.client.environment.PermissionProfileListResult
 import io.github.cokit.client.filesystem.FilesystemGetMetadataParams
 import io.github.cokit.client.filesystem.FilesystemGetMetadataResult
 import io.github.cokit.client.filesystem.FilesystemCopyParams
@@ -333,6 +338,35 @@ object CodexRpc {
             method = "config/batchWrite",
             paramsSerializer = ConfigBatchWriteParams.serializer(),
             resultSerializer = ConfigWriteResult.serializer(),
+        )
+    }
+
+    object PermissionProfile {
+        val List: CodexRpcMethod<PermissionProfileListParams, PermissionProfileListResult> =
+            CodexRpcMethod(
+                method = "permissionProfile/list",
+                paramsSerializer = PermissionProfileListParams.serializer(),
+                resultSerializer = PermissionProfileListResult.serializer(),
+            )
+    }
+
+    @ExperimentalCodexApi
+    object CollaborationMode {
+        val List: CodexRpcMethod<CollaborationModeListParams, CollaborationModeListResult> =
+            CodexRpcMethod(
+                method = "collaborationMode/list",
+                paramsSerializer = CollaborationModeListParams.serializer(),
+                resultSerializer = CollaborationModeListResult.serializer(),
+            )
+    }
+
+    @ExperimentalCodexApi
+    object Environment {
+        val Add: CodexRpcMethod<EnvironmentAddParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "environment/add",
+            paramsSerializer = EnvironmentAddParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
         )
     }
 }

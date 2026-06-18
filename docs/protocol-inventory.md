@@ -38,8 +38,8 @@ modeled coverage. They are compatibility behavior only.
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | `CodexRpc.Process.Spawn`, `WriteStdin`, `ResizePty`, and `Kill` model the experimental unsandboxed process lifecycle descriptors behind `ExperimentalCodexApi`. |
 | Filesystem utilities | modeled | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, `Remove`, `Watch`, and `Unwatch` model host filesystem descriptors, including connection-scoped watch identifiers. |
 | Models and provider catalog | modeled | `model/list`, `modelProvider/capabilities/read` | `CodexRpc.Model.List` models typed catalog entries, cursors, display names, reasoning options, service tiers, and input modalities. `CodexRpc.Model.ReadProviderCapabilities` models provider-level web search, image generation, and namespace-tool capability flags. |
-| Feature and permission catalog | experimental | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | Deferred. Upstream marks permission profiles beta and feature enablement experimental. |
-| Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | Deferred. These methods affect execution context and must stay opt-in. |
+| Feature and permission catalog | partial | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | `CodexRpc.PermissionProfile.List` models permission profile ids, descriptions, optional cwd scoping, and pagination. Experimental feature list and enablement methods remain deferred. |
+| Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.140.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
 | Skills and hooks | deferred | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | No typed descriptors yet. |
 | Apps, marketplaces, and plugins | deferred | `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall` | No typed descriptors yet. Turn input mentions model app and plugin invocation payloads, but catalog, install, auth, and marketplace APIs are deferred. Plugin APIs marked under development upstream are treated as experimental. |
 | MCP APIs | deferred | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | No typed descriptors yet. Server-initiated MCP elicitation is tracked under server requests. |
@@ -142,6 +142,9 @@ without updating the public inventory.
 | `CodexRpc.Config.Read` | `config/read` | Effective config read descriptor; config group coverage remains partial. |
 | `CodexRpc.Config.WriteValue` | `config/value/write` | Single config value write descriptor; config group coverage remains partial. |
 | `CodexRpc.Config.BatchWrite` | `config/batchWrite` | Batch config write descriptor with reload flag; config group coverage remains partial. |
+| `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
+| `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
+| `CodexRpc.Environment.Add` | `environment/add` | Experimental environment registration descriptor; group coverage remains experimental. |
 
 ## Current Modeled Method Summary
 
@@ -189,6 +192,9 @@ Current public request descriptors:
 - `config/read`
 - `config/value/write`
 - `config/batchWrite`
+- `permissionProfile/list`
+- `collaborationMode/list`
+- `environment/add`
 
 Current typed notification:
 

@@ -145,6 +145,14 @@ CoKit should not log secrets by default. Consumers should avoid logging:
 Sandbox and permission profile values are passed through to app-server. CoKit
 does not weaken or reinterpret upstream sandbox semantics. Application-level
 policy should make approval decisions explicit and visible.
+`CodexRpc.PermissionProfile.List` only reports server-advertised permission
+profile identifiers and descriptions for an optional host `cwd`; it does not
+grant those permissions. `CodexRpc.CollaborationMode.List` and
+`CodexRpc.Environment.Add` are experimental. Collaboration modes are server
+presets, and environment registration passes an environment id plus execution
+server URL through to app-server. Applications should keep these experimental
+surfaces behind explicit opt-in and policy review, especially when registering
+remote execution endpoints.
 
 ## Experimental Transports
 
