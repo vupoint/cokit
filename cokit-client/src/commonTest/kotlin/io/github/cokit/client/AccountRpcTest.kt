@@ -2,15 +2,24 @@ package io.github.cokit.client
 
 import io.github.cokit.client.auth.AccountEmail
 import io.github.cokit.client.auth.AccountPlanType
+import io.github.cokit.client.auth.AccountRateLimitReachedType
+import io.github.cokit.client.auth.AccountRateLimitStatus
+import io.github.cokit.client.auth.AccountRateLimitWindow
+import io.github.cokit.client.auth.AccountRateLimitsReadParams
+import io.github.cokit.client.auth.AccountUsageReadParams
+import io.github.cokit.client.auth.AddCreditsNudgeCreditType
+import io.github.cokit.client.auth.AddCreditsNudgeEmailStatus
 import io.github.cokit.client.auth.AccountReadParams
 import io.github.cokit.client.auth.CancelLoginAccountParams
+import io.github.cokit.client.auth.CancelLoginAccountResult
 import io.github.cokit.client.auth.CancelLoginAccountStatus
 import io.github.cokit.client.auth.CodexAccount
 import io.github.cokit.client.auth.LoginAccountId
 import io.github.cokit.client.auth.LoginAccountParams
 import io.github.cokit.client.auth.LoginAccountResult
 import io.github.cokit.client.auth.LogoutAccountParams
-import io.github.cokit.client.auth.CancelLoginAccountResult
+import io.github.cokit.client.auth.SendAddCreditsNudgeEmailParams
+import io.github.cokit.client.auth.SendAddCreditsNudgeEmailResult
 import io.github.cokit.protocol.JsonRpcNotification
 import io.github.cokit.protocol.JsonRpcRequest
 import io.github.cokit.protocol.JsonRpcResponse
@@ -26,7 +35,9 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
@@ -262,6 +273,138 @@ class AccountRpcTest {
         assertEquals("Login was canceled.", failed.error)
     }
 
+    @Test
+    fun accountRateLimitsDescriptorSendsNoParamsAndDecodesSnapshots() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val rateLimitsResult = async {
+            fixture.client.request(CodexRpc.Account.ReadRateLimits, AccountRateLimitsReadParams)
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("account/rateLimits/read", request.method)
+        assertNull(request.params)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("rateLimits", rateLimitSnapshot())
+                    put(
+                        "rateLimitsByLimitId",
+                        buildJsonObject {
+                            put("codex", rateLimitSnapshot(limitId = "codex"))
+                        },
+                    )
+                },
+            ),
+        )
+
+        val decoded = rateLimitsResult.await()
+        assertEquals(42, decoded.rateLimits.primary?.usedPercent)
+        assertEquals(1_800L, decoded.rateLimits.primary?.windowDurationMins)
+        assertEquals(true, decoded.rateLimits.credits?.hasCredits)
+        assertEquals(AccountPlanType.Team, decoded.rateLimits.planType)
+        assertEquals(AccountRateLimitReachedType.WorkspaceMemberUsageLimitReached, decoded.rateLimits.rateLimitReachedType)
+        assertEquals(8, decoded.rateLimitsByLimitId?.get("codex")?.secondary?.usedPercent)
+    }
+
+    @Test
+    fun accountUsageDescriptorSendsNoParamsAndDecodesSummaryAndDailyBuckets() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val usageResult = async {
+            fixture.client.request(CodexRpc.Account.ReadUsage, AccountUsageReadParams)
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("account/usage/read", request.method)
+        assertNull(request.params)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put(
+                        "summary",
+                        buildJsonObject {
+                            put("lifetimeTokens", 1_000_000)
+                            put("peakDailyTokens", 50_000)
+                            put("currentStreakDays", 5)
+                            put("longestStreakDays", 9)
+                            put("longestRunningTurnSec", 120)
+                        },
+                    )
+                    put(
+                        "dailyUsageBuckets",
+                        buildJsonArray {
+                            add(
+                                buildJsonObject {
+                                    put("startDate", "2026-06-18")
+                                    put("tokens", 25_000)
+                                },
+                            )
+                        },
+                    )
+                },
+            ),
+        )
+
+        val decoded = usageResult.await()
+        assertEquals(1_000_000L, decoded.summary.lifetimeTokens)
+        assertEquals(50_000L, decoded.summary.peakDailyTokens)
+        assertEquals("2026-06-18", decoded.dailyUsageBuckets?.single()?.startDate)
+        assertEquals(25_000L, decoded.dailyUsageBuckets?.single()?.tokens)
+    }
+
+    @Test
+    fun accountAddCreditsNudgeDescriptorSendsCreditTypeAndDecodesStatus() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val addCreditsResult = async {
+            fixture.client.request(
+                CodexRpc.Account.SendAddCreditsNudgeEmail,
+                SendAddCreditsNudgeEmailParams(AddCreditsNudgeCreditType.UsageLimit),
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("account/sendAddCreditsNudgeEmail", request.method)
+        assertEquals("usage_limit", request.params!!.jsonObject["creditType"]?.jsonPrimitive?.contentOrNull)
+
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("status", "cooldown_active")
+                },
+            ),
+        )
+
+        assertEquals(
+            SendAddCreditsNudgeEmailResult(AddCreditsNudgeEmailStatus.CooldownActive),
+            addCreditsResult.await(),
+        )
+    }
+
+    @Test
+    fun decodesAccountRateLimitsUpdatedNotifications() {
+        val notification = JsonRpcNotification(
+            method = "account/rateLimits/updated",
+            params = buildJsonObject {
+                put("rateLimits", rateLimitSnapshot(limitId = "codex"))
+            },
+        ).toCodexNotification()
+
+        val updated = assertIs<CodexNotification.AccountRateLimitsUpdated>(notification)
+        assertEquals(AccountRateLimitWindow(usedPercent = 42, resetsAt = 1_900_000L, windowDurationMins = 1_800L), updated.rateLimits.primary)
+        assertEquals(AccountRateLimitStatus(hasCredits = true, unlimited = false, balance = "25.00"), updated.rateLimits.credits)
+        assertEquals("codex", updated.rateLimits.limitId)
+    }
+
     private suspend fun TestScope.connectedRpcClientFixture(
         scope: CoroutineScope,
     ): ConnectedRpcClientFixture {
@@ -285,4 +428,43 @@ class AccountRpcTest {
         val client: CodexRpcClient,
         val transport: FakeJsonRpcTransport,
     )
+
+    private fun rateLimitSnapshot(limitId: String? = null): JsonObject =
+        buildJsonObject {
+            put("limitId", limitId)
+            put("limitName", "Codex")
+            put("planType", "team")
+            put("rateLimitReachedType", "workspace_member_usage_limit_reached")
+            put(
+                "primary",
+                buildJsonObject {
+                    put("usedPercent", 42)
+                    put("resetsAt", 1_900_000)
+                    put("windowDurationMins", 1_800)
+                },
+            )
+            put(
+                "secondary",
+                buildJsonObject {
+                    put("usedPercent", 8)
+                },
+            )
+            put(
+                "credits",
+                buildJsonObject {
+                    put("hasCredits", true)
+                    put("unlimited", false)
+                    put("balance", "25.00")
+                },
+            )
+            put(
+                "individualLimit",
+                buildJsonObject {
+                    put("limit", "100.00")
+                    put("used", "42.00")
+                    put("remainingPercent", 58)
+                    put("resetsAt", 1_900_000)
+                },
+            )
+        }
 }

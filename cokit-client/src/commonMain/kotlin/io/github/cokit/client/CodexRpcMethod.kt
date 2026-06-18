@@ -2,11 +2,17 @@ package io.github.cokit.client
 
 import io.github.cokit.client.auth.AccountReadParams
 import io.github.cokit.client.auth.AccountReadResult
+import io.github.cokit.client.auth.AccountRateLimitsReadParams
+import io.github.cokit.client.auth.AccountRateLimitsResult
+import io.github.cokit.client.auth.AccountUsageReadParams
+import io.github.cokit.client.auth.AccountUsageResult
 import io.github.cokit.client.auth.CancelLoginAccountParams
 import io.github.cokit.client.auth.CancelLoginAccountResult
 import io.github.cokit.client.auth.LoginAccountParams
 import io.github.cokit.client.auth.LoginAccountResult
 import io.github.cokit.client.auth.LogoutAccountParams
+import io.github.cokit.client.auth.SendAddCreditsNudgeEmailParams
+import io.github.cokit.client.auth.SendAddCreditsNudgeEmailResult
 import io.github.cokit.client.commands.CommandExecParams
 import io.github.cokit.client.commands.CommandExecResizeParams
 import io.github.cokit.client.commands.CommandExecResult
@@ -544,6 +550,26 @@ object CodexRpc {
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
         )
+
+        val ReadRateLimits: CodexRpcMethod<AccountRateLimitsReadParams, AccountRateLimitsResult> = CodexRpcMethod(
+            method = "account/rateLimits/read",
+            paramsSerializer = null,
+            resultSerializer = AccountRateLimitsResult.serializer(),
+        )
+
+        val ReadUsage: CodexRpcMethod<AccountUsageReadParams, AccountUsageResult> = CodexRpcMethod(
+            method = "account/usage/read",
+            paramsSerializer = null,
+            resultSerializer = AccountUsageResult.serializer(),
+        )
+
+        val SendAddCreditsNudgeEmail:
+            CodexRpcMethod<SendAddCreditsNudgeEmailParams, SendAddCreditsNudgeEmailResult> =
+            CodexRpcMethod(
+                method = "account/sendAddCreditsNudgeEmail",
+                paramsSerializer = SendAddCreditsNudgeEmailParams.serializer(),
+                resultSerializer = SendAddCreditsNudgeEmailResult.serializer(),
+            )
     }
 
     object PermissionProfile {

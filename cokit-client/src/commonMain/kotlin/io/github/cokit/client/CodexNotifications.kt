@@ -1,6 +1,7 @@
 package io.github.cokit.client
 
 import io.github.cokit.client.auth.LoginAccountId
+import io.github.cokit.client.auth.AccountRateLimitSnapshot
 import io.github.cokit.client.commands.CommandExecOutputStream
 import io.github.cokit.client.commands.CommandProcessId
 import io.github.cokit.client.filesystem.FilesystemWatchId
@@ -143,6 +144,12 @@ sealed interface CodexNotification {
         val error: String? = null,
     ) : CodexNotification {
         override val method: String = "account/login/completed"
+    }
+
+    data class AccountRateLimitsUpdated(
+        val rateLimits: AccountRateLimitSnapshot,
+    ) : CodexNotification {
+        override val method: String = "account/rateLimits/updated"
     }
 
     data class Unknown(
@@ -371,6 +378,14 @@ internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
                 CodexNotification.Unknown(method)
             }
         }
+        "account/rateLimits/updated" -> {
+            val payload = params.decodeNotificationParams<AccountRateLimitsUpdatedPayload>()
+            if (payload != null) {
+                CodexNotification.AccountRateLimitsUpdated(payload.rateLimits)
+            } else {
+                CodexNotification.Unknown(method)
+            }
+        }
         else -> CodexNotification.Unknown(method)
     }
 }
@@ -470,6 +485,11 @@ private data class AccountLoginCompletedPayload(
     val loginId: LoginAccountId? = null,
     val success: Boolean,
     val error: String? = null,
+)
+
+@Serializable
+private data class AccountRateLimitsUpdatedPayload(
+    val rateLimits: AccountRateLimitSnapshot,
 )
 
 private inline fun <reified T> JsonElement?.decodeNotificationParams(): T? {

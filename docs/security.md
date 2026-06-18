@@ -183,9 +183,12 @@ string representations, but applications remain responsible for browser
 opening, user-consent UX, secure storage, and avoiding telemetry of raw
 properties. Account login completion notifications report success or failure;
 applications should not treat them as authorization to perform unrelated
-actions. `CodexRpc.Account` logout has no request parameters and returns no
-account payload; applications should still treat logout as a user-visible auth
-state change.
+actions. Rate-limit and usage descriptors expose plan type, usage windows,
+credit state, daily token buckets, and add-credits nudge status as account
+metadata; applications should avoid sending those values to telemetry without
+user or policy approval. `CodexRpc.Account` logout has no request parameters and
+returns no account payload; applications should still treat logout as a
+user-visible auth state change.
 
 ## Secrets
 

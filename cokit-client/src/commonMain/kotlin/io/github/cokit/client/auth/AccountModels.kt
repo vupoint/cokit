@@ -177,3 +177,110 @@ value class CancelLoginAccountStatus(val value: String) {
 data class CancelLoginAccountResult(
     val status: CancelLoginAccountStatus,
 )
+
+@Serializable
+data object AccountRateLimitsReadParams
+
+@Serializable
+data object AccountUsageReadParams
+
+@Serializable
+data class AccountRateLimitsResult(
+    val rateLimits: AccountRateLimitSnapshot,
+    val rateLimitsByLimitId: Map<String, AccountRateLimitSnapshot>? = null,
+)
+
+@Serializable
+data class AccountRateLimitSnapshot(
+    val primary: AccountRateLimitWindow? = null,
+    val secondary: AccountRateLimitWindow? = null,
+    val credits: AccountRateLimitStatus? = null,
+    val planType: AccountPlanType? = null,
+    val limitId: String? = null,
+    val limitName: String? = null,
+    val individualLimit: AccountSpendControlLimitSnapshot? = null,
+    val rateLimitReachedType: AccountRateLimitReachedType? = null,
+)
+
+@Serializable
+data class AccountRateLimitWindow(
+    val usedPercent: Int,
+    val resetsAt: Long? = null,
+    val windowDurationMins: Long? = null,
+)
+
+@Serializable
+data class AccountRateLimitStatus(
+    val hasCredits: Boolean,
+    val unlimited: Boolean,
+    val balance: String? = null,
+)
+
+@Serializable
+data class AccountSpendControlLimitSnapshot(
+    val limit: String,
+    val used: String,
+    val remainingPercent: Int,
+    val resetsAt: Long,
+)
+
+@Serializable
+@JvmInline
+value class AccountRateLimitReachedType(val value: String) {
+    companion object {
+        val RateLimitReached = AccountRateLimitReachedType("rate_limit_reached")
+        val WorkspaceOwnerCreditsDepleted = AccountRateLimitReachedType("workspace_owner_credits_depleted")
+        val WorkspaceMemberCreditsDepleted = AccountRateLimitReachedType("workspace_member_credits_depleted")
+        val WorkspaceOwnerUsageLimitReached = AccountRateLimitReachedType("workspace_owner_usage_limit_reached")
+        val WorkspaceMemberUsageLimitReached = AccountRateLimitReachedType("workspace_member_usage_limit_reached")
+    }
+}
+
+@Serializable
+data class AccountUsageResult(
+    val summary: AccountTokenUsageSummary,
+    val dailyUsageBuckets: List<AccountTokenUsageDailyBucket>? = null,
+)
+
+@Serializable
+data class AccountTokenUsageSummary(
+    val lifetimeTokens: Long? = null,
+    val peakDailyTokens: Long? = null,
+    val currentStreakDays: Long? = null,
+    val longestStreakDays: Long? = null,
+    val longestRunningTurnSec: Long? = null,
+)
+
+@Serializable
+data class AccountTokenUsageDailyBucket(
+    val startDate: String,
+    val tokens: Long,
+)
+
+@Serializable
+data class SendAddCreditsNudgeEmailParams(
+    val creditType: AddCreditsNudgeCreditType,
+)
+
+@Serializable
+@JvmInline
+value class AddCreditsNudgeCreditType(val value: String) {
+    companion object {
+        val Credits = AddCreditsNudgeCreditType("credits")
+        val UsageLimit = AddCreditsNudgeCreditType("usage_limit")
+    }
+}
+
+@Serializable
+data class SendAddCreditsNudgeEmailResult(
+    val status: AddCreditsNudgeEmailStatus,
+)
+
+@Serializable
+@JvmInline
+value class AddCreditsNudgeEmailStatus(val value: String) {
+    companion object {
+        val Sent = AddCreditsNudgeEmailStatus("sent")
+        val CooldownActive = AddCreditsNudgeEmailStatus("cooldown_active")
+    }
+}
