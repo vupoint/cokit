@@ -8,7 +8,7 @@ plugins {
 }
 
 allprojects {
-    group = "io.github.cokit"
+    group = "io.github.vupoint.cokit"
     version = "0.1.0-SNAPSHOT"
 }
 
@@ -196,7 +196,7 @@ val checkPublicApiBaseline = tasks.register("checkPublicApiBaseline") {
 val primaryDocsAlignmentFiles = listOf(
     "README.md",
     "docs/getting-started.md",
-    "cokit-sample-cli/src/main/kotlin/io/github/cokit/sample/cli/Main.kt",
+    "cokit-sample-cli/src/main/kotlin/io/github/vupoint/cokit/sample/cli/Main.kt",
 ).map { path -> layout.projectDirectory.file(path) }
 
 val checkPrimaryApiDocsAlignment = tasks.register("checkPrimaryApiDocsAlignment") {

@@ -18,9 +18,9 @@ class CokitPrimaryDocsAlignmentTest {
         )
         val sample = sourceFile(
             root,
-            "cokit-sample-cli/src/main/kotlin/io/github/cokit/sample/cli/Main.kt",
+            "cokit-sample-cli/src/main/kotlin/io/github/vupoint/cokit/sample/cli/Main.kt",
             """
-            package io.github.cokit.sample.cli
+            package io.github.vupoint.cokit.sample.cli
 
             val command = listOf("codex", "app-server", "--stdio")
             """.trimIndent(),
@@ -31,7 +31,7 @@ class CokitPrimaryDocsAlignmentTest {
         assertEquals(
             listOf(
                 "README.md:3 raw app-server method string: thread/start",
-                "cokit-sample-cli/src/main/kotlin/io/github/cokit/sample/cli/Main.kt:3 direct stdio command list: listOf(\"codex\", \"app-server\", \"--stdio\")",
+                "cokit-sample-cli/src/main/kotlin/io/github/vupoint/cokit/sample/cli/Main.kt:3 direct stdio command list: listOf(\"codex\", \"app-server\", \"--stdio\")",
             ),
             violations.map { violation ->
                 "${violation.relativePath}:${violation.lineNumber} ${violation.reason}: ${violation.match}"

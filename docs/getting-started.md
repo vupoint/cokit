@@ -11,7 +11,7 @@ dependencies {
 }
 ```
 
-Future published artifacts are expected to use the `io.github.cokit` group.
+Future published artifacts are expected to use the `io.github.vupoint.cokit` group.
 
 ## Run The Sample CLI
 

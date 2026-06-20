@@ -9,9 +9,9 @@ class CokitPublicApiChecksTest {
         val file = sourceFile(
             "BadModels.kt",
             """
-            package io.github.cokit.client
+            package io.github.vupoint.cokit.client
 
-            import io.github.cokit.protocol.JsonRpcResponse
+            import io.github.vupoint.cokit.protocol.JsonRpcResponse
             import kotlinx.serialization.json.JsonElement
 
             data class BadJsonModel(
@@ -48,7 +48,7 @@ class CokitPublicApiChecksTest {
         val file = sourceFile(
             "GoodModels.kt",
             """
-            package io.github.cokit.client
+            package io.github.vupoint.cokit.client
 
             import kotlinx.serialization.DeserializationStrategy
             import kotlinx.serialization.json.JsonContentPolymorphicSerializer

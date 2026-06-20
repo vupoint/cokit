@@ -14,5 +14,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("io.github.cokit.sample.cli.MainKt")
+    mainClass.set("io.github.vupoint.cokit.sample.cli.MainKt")
 }
