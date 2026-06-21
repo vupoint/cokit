@@ -23,6 +23,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
+internal val DefaultCodexAppServerStdioCommand = listOf("codex", "app-server", "--stdio")
+
 class StdioCodexTransport internal constructor(
     val command: List<String>,
     input: InputStream,
@@ -40,7 +42,7 @@ class StdioCodexTransport internal constructor(
     )
 
     constructor(
-        command: List<String> = listOf("codex", "app-server", "--stdio"),
+        command: List<String> = DefaultCodexAppServerStdioCommand,
         cwd: File? = null,
         env: Map<String, String> = emptyMap(),
     ) : this(command, startProcess(command, cwd, env))

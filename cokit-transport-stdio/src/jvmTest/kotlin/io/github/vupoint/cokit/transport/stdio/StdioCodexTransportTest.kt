@@ -16,9 +16,7 @@ import kotlinx.coroutines.test.runTest
 class StdioCodexTransportTest {
     @Test
     fun defaultsToCodexAppServerStdioCommand() {
-        val transport = StdioCodexTransport()
-
-        assertEquals(listOf("codex", "app-server", "--stdio"), transport.command)
+        assertEquals(listOf("codex", "app-server", "--stdio"), DefaultCodexAppServerStdioCommand)
     }
 
     @Test
