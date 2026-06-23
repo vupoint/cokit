@@ -51,8 +51,9 @@ Publish plugin, which Sonatype lists as a community Gradle option for the
 Central Portal. The repository avoids a manual bundle upload release path so the
 same Gradle tasks can run locally and from GitHub Actions.
 
-The published library modules are:
+The published artifacts are:
 
+- `cokit-bom`
 - `cokit-protocol`
 - `cokit-rpc`
 - `cokit-client`
@@ -61,7 +62,8 @@ The published library modules are:
 - `cokit-testing`
 
 The `cokit-sample-cli` module is intentionally excluded from Maven Central
-publications.
+publications. The `cokit-bom` artifact aligns both base Kotlin Multiplatform
+coordinates and their JVM target coordinates.
 
 Before publishing, complete the external setup:
 
@@ -81,6 +83,7 @@ Run the local pre-publish verification gate:
 
 ```bash
 ./gradlew checkMavenCentralPublishingConfiguration --stacktrace
+./gradlew checkCokitBomConstraints --stacktrace
 ./gradlew checkPomFileForJvmPublication checkPomFileForKotlinMultiplatformPublication --stacktrace
 ./gradlew check --stacktrace
 ```
@@ -93,7 +96,7 @@ tasks and generated publications:
 ```
 
 Actual Maven Central publication should run through
-`.github/workflows/maven-central.yml`. It publishes only library modules and can
+`.github/workflows/maven-central.yml`. It publishes only library artifacts and can
 be triggered in two ways:
 
 - Push a semantic release tag such as `0.1.0`; the workflow publishes version

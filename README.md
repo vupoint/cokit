@@ -26,8 +26,10 @@ for the current coverage snapshot and implementation roadmap.
 
 ## Modules
 
-Published library artifacts use the `io.github.vupoint.cokit` group and include:
+Published artifacts use the `io.github.vupoint.cokit` group and include:
 
+- `cokit-bom`: Maven BOM for aligning all published CoKit module and JVM target
+  artifact versions.
 - `cokit-protocol`: JSON-RPC messages, protocol serializers, and schema
   metadata. This module does not depend on client, runtime, or transport code.
 - `cokit-rpc`: request correlation, notification routing, and server request

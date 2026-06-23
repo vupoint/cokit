@@ -23,5 +23,6 @@ include(
     ":cokit-transport-stdio",
     ":cokit-transport-websocket",
     ":cokit-testing",
+    ":cokit-bom",
     ":cokit-sample-cli",
 )

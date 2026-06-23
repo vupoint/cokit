@@ -2,7 +2,8 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-
+import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Element
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.jvm) apply false
@@ -19,6 +20,8 @@ allprojects {
         .get()
 }
 
+val bomProjectPath = ":cokit-bom"
+
 // Publishing is opt-out: every library subproject ships unless it is listed here.
 val nonPublishedProjectPaths = setOf(
     ":cokit-sample-cli",
@@ -27,19 +30,25 @@ val nonPublishedProjectPaths = setOf(
 val publishedLibraryProjectPaths = provider {
     subprojects
         .map { subproject -> subproject.path }
-        .filterNot { projectPath -> projectPath in nonPublishedProjectPaths }
+        .filterNot { projectPath -> projectPath in nonPublishedProjectPaths || projectPath == bomProjectPath }
         .toSet()
 }
 
-val publishedLibraryProjects = provider {
-    publishedLibraryProjectPaths.get().map { path -> project(path) }
+val publishedArtifactProjectPaths = provider {
+    publishedLibraryProjectPaths.get() + bomProjectPath
+}
+
+val publishedArtifactProjects = provider {
+    publishedArtifactProjectPaths.get().map { path -> project(path) }
 }
 
 subprojects {
-    apply(plugin = "org.jetbrains.kotlinx.kover")
+    if (path != bomProjectPath) {
+        apply(plugin = "org.jetbrains.kotlinx.kover")
+    }
 }
 
-configure(publishedLibraryProjects.get()) {
+configure(publishedArtifactProjects.get()) {
     apply(plugin = "com.vanniktech.maven.publish")
 
     // Keep common Maven Central POM developer metadata in one root-owned block.
@@ -61,7 +70,9 @@ configure(publishedLibraryProjects.get()) {
 
 dependencies {
     subprojects.forEach { subproject ->
-        add("kover", project(subproject.path))
+        if (subproject.path != bomProjectPath) {
+            add("kover", project(subproject.path))
+        }
     }
 }
 
@@ -79,15 +90,111 @@ tasks.register("coverage") {
     dependsOn("test", "koverHtmlReport", "koverXmlReport", "koverLog")
 }
 
-// CI should publish every library module as a set while keeping samples excluded.
+// CI should publish every library artifact as a set while keeping samples excluded.
 tasks.register("publishAndReleaseLibrariesToMavenCentral") {
     group = "publishing"
-    description = "Publishes and automatically releases all CoKit library modules to Maven Central without publishing the sample CLI."
+    description = "Publishes and automatically releases all CoKit library artifacts to Maven Central without publishing the sample CLI."
     dependsOn(
-        publishedLibraryProjectPaths.get().map { projectPath ->
+        publishedArtifactProjectPaths.get().map { projectPath ->
             "$projectPath:publishAndReleaseToMavenCentral"
         },
     )
+}
+
+data class CokitBomConstraint(
+    val groupId: String,
+    val artifactId: String,
+    val version: String,
+)
+
+fun Element.childText(tagName: String): String {
+    val nodes = getElementsByTagName(tagName)
+    check(nodes.length > 0) {
+        "Missing <$tagName> in BOM dependency node."
+    }
+    return nodes.item(0).textContent.trim()
+}
+
+fun Element.directChildElements(tagName: String): List<Element> =
+    (0 until childNodes.length)
+        .mapNotNull { index -> childNodes.item(index) as? Element }
+        .filter { child -> child.tagName == tagName }
+
+fun Element.singleDirectChild(tagName: String): Element {
+    val children = directChildElements(tagName)
+    check(children.size == 1) {
+        "Expected exactly one direct <$tagName> child in <${this.tagName}>, found ${children.size}."
+    }
+    return children.single()
+}
+
+fun parseCokitBomConstraints(pomFile: File): Set<CokitBomConstraint> {
+    check(pomFile.isFile) {
+        "Generated BOM POM is missing: ${pomFile.relativeTo(rootDir)}"
+    }
+
+    val documentBuilderFactory = DocumentBuilderFactory.newInstance().apply {
+        setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+        setFeature("http://xml.org/sax/features/external-general-entities", false)
+        setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+        setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        isExpandEntityReferences = false
+    }
+    val document = documentBuilderFactory.newDocumentBuilder().parse(pomFile)
+    val projectElement = document.documentElement
+    val regularDependencies = projectElement
+        .directChildElements("dependencies")
+        .flatMap { dependencies -> dependencies.directChildElements("dependency") }
+    check(regularDependencies.isEmpty()) {
+        "CoKit BOM must not declare regular dependencies: ${regularDependencies.map { it.childText("artifactId") }}"
+    }
+
+    val managedDependencies = projectElement
+        .singleDirectChild("dependencyManagement")
+        .singleDirectChild("dependencies")
+        .directChildElements("dependency")
+
+    return managedDependencies
+        .map { dependency ->
+            CokitBomConstraint(
+                groupId = dependency.childText("groupId"),
+                artifactId = dependency.childText("artifactId"),
+                version = dependency.childText("version"),
+            )
+        }
+        .toSet()
+}
+
+val cokitBomPomFile = layout.projectDirectory.file("cokit-bom/build/publications/maven/pom-default.xml")
+
+tasks.register("checkCokitBomConstraints") {
+    group = "verification"
+    description = "Checks the generated CoKit BOM constrains exactly the published library modules."
+    dependsOn("$bomProjectPath:generatePomFileForMavenPublication")
+    inputs.file(cokitBomPomFile)
+
+    doLast {
+        val expected = publishedLibraryProjectPaths.get()
+            .flatMap { projectPath ->
+                val publishedProject = project(projectPath)
+                listOf(
+                    publishedProject.name,
+                    "${publishedProject.name}-jvm",
+                ).map { artifactId ->
+                    CokitBomConstraint(
+                        groupId = publishedProject.group.toString(),
+                        artifactId = artifactId,
+                        version = publishedProject.version.toString(),
+                    )
+                }
+            }
+            .toSet()
+        val actual = parseCokitBomConstraints(cokitBomPomFile.asFile)
+
+        check(actual == expected) {
+            "Unexpected CoKit BOM constraints. expected=${expected.sortedBy { it.artifactId }} actual=${actual.sortedBy { it.artifactId }}"
+        }
+    }
 }
 
 tasks.register("checkMavenCentralPublishingConfiguration") {
@@ -99,11 +206,11 @@ tasks.register("checkMavenCentralPublishingConfiguration") {
                 "$projectPath:checkPomFileForJvmPublication",
                 "$projectPath:checkPomFileForKotlinMultiplatformPublication",
             )
-        },
+        } + listOf("checkCokitBomConstraints"),
     )
 
     doLast {
-        val expected = publishedLibraryProjectPaths.get()
+        val expected = publishedArtifactProjectPaths.get()
         val actual = subprojects
             .filter { subproject -> subproject.plugins.hasPlugin("com.vanniktech.maven.publish") }
             .map { subproject -> subproject.path }
@@ -118,7 +225,11 @@ tasks.register("checkMavenCentralPublishingConfiguration") {
             }
         }
 
-        publishedLibraryProjects.get().forEach { publishedProject ->
+        check(bomProjectPath !in publishedLibraryProjectPaths.get()) {
+            "$bomProjectPath must be published as a BOM artifact, not treated as a Kotlin library module."
+        }
+
+        publishedArtifactProjects.get().forEach { publishedProject ->
             check(publishedProject.plugins.hasPlugin("maven-publish")) {
                 "${publishedProject.path} must have maven-publish applied by the publishing plugin."
             }
@@ -149,6 +260,7 @@ val allowedMainProjectDependencies = mapOf(
     ":cokit-transport-stdio" to setOf(":cokit-rpc"),
     ":cokit-transport-websocket" to setOf(":cokit-rpc"),
     ":cokit-testing" to setOf(":cokit-protocol", ":cokit-rpc"),
+    ":cokit-bom" to emptySet(),
     ":cokit-sample-cli" to setOf(":cokit-client", ":cokit-transport-stdio"),
 )
 

@@ -11,13 +11,16 @@ dependencies {
 }
 ```
 
-Published library artifacts use the `io.github.vupoint.cokit` group. The sample
-CLI is a repository example and is not published as a library artifact.
+Published artifacts use the `io.github.vupoint.cokit` group. Import the CoKit
+BOM to align module and JVM target artifact versions, then declare the CoKit
+modules you need without repeating the version. The sample CLI is a repository
+example and is not published as a library artifact.
 
 ```kotlin
 dependencies {
-    implementation("io.github.vupoint.cokit:cokit-client:<version>")
-    implementation("io.github.vupoint.cokit:cokit-transport-stdio:<version>")
+    implementation(platform("io.github.vupoint.cokit:cokit-bom:<version>"))
+    implementation("io.github.vupoint.cokit:cokit-client")
+    implementation("io.github.vupoint.cokit:cokit-transport-stdio")
 }
 ```
 
