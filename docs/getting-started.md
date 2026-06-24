@@ -46,9 +46,7 @@ Optional `--cwd` and `--message` flags can override the defaults:
 ./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
 ```
 
-The sample uses CoKit's default stdio app-server transport. Use
-`COKIT_CODEX_COMMAND` only when you need to point it at another local command
-during development.
+The sample uses CoKit's default stdio app-server transport.
 
 The command prints the created thread and turn ids before streaming assistant
 text from typed `CodexNotification.AgentMessageDelta` events. A completed turn

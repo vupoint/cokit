@@ -148,9 +148,7 @@ Override the default app-server host path or message when needed:
 ./gradlew :cokit-sample-cli:run --args='--cwd /path/to/project --message "Summarize this repository"'
 ```
 
-The sample uses `StdioCodexTransport` defaults. Set `COKIT_CODEX_COMMAND` to a
-whitespace-separated command when testing a different local app-server
-executable.
+The sample uses `StdioCodexTransport` defaults.
 
 The command prints the created thread and turn ids, then streams assistant text
 from typed `CodexNotification.AgentMessageDelta` events. If the turn completes

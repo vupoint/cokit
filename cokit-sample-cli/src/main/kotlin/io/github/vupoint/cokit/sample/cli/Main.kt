@@ -12,21 +12,15 @@ import io.github.vupoint.cokit.client.CodexNotification
 import io.github.vupoint.cokit.client.CodexRpc
 import io.github.vupoint.cokit.client.CodexRpcClient
 import io.github.vupoint.cokit.client.CodexRpcConnection
-import io.github.vupoint.cokit.client.ItemType
-import io.github.vupoint.cokit.client.Thread
-import io.github.vupoint.cokit.client.ThreadId
 import io.github.vupoint.cokit.client.ThreadStartParams
-import io.github.vupoint.cokit.client.Turn
-import io.github.vupoint.cokit.client.TurnId
 import io.github.vupoint.cokit.client.TurnInput
 import io.github.vupoint.cokit.client.TurnStartParams
+import io.github.vupoint.cokit.rpc.JsonRpcTransport
 import io.github.vupoint.cokit.transport.stdio.StdioCodexTransport
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -44,7 +38,7 @@ class SampleCliCommand(
         Run a minimal codex app-server thread and stream the assistant response.
 
         With no arguments, the sample uses the current working directory and a
-        default message. Set COKIT_CODEX_COMMAND to override the local app-server command.
+        default message.
     """.trimIndent()
 
     private val cwd by option(
@@ -55,7 +49,7 @@ class SampleCliCommand(
     private val message by option(
         "--message",
         help = "User message to send as turn input.",
-    ).default(SampleCliDefaults.message)
+    ).default(SampleCliDefaults.MESSAGE)
 
     override fun run() {
         try {
@@ -95,22 +89,24 @@ data class SampleOptions(
 )
 
 object SampleCliDefaults {
-    const val message: String = "Say hello from the CoKit sample CLI."
+    const val MESSAGE: String = "Say hello from the CoKit sample CLI."
 }
 
 internal class CodexSampleRunner(
-    conversationClientFactory: (suspend CoroutineScope.() -> SampleConversationClient)? = null,
+    private val transportFactory: () -> JsonRpcTransport = { StdioCodexTransport() },
 ) : SampleRunner {
-    private val createConversationClient: suspend CoroutineScope.() -> SampleConversationClient =
-        conversationClientFactory ?: {
-            StdioSampleConversationClient.connect(
-                transport = this@CodexSampleRunner.codexTransport(),
-                scope = this,
-            )
-        }
-
     override suspend fun run(options: SampleOptions, output: SampleOutput): Unit = coroutineScope {
-        createConversationClient().use { client ->
+        CodexRpcClient.connect(
+            CodexRpcConnection(
+                transport = transportFactory(),
+                clientInfo = ClientInfo(
+                    name = "cokit_sample_cli",
+                    title = "CoKit Sample CLI",
+                    version = "0.1.0",
+                ),
+                scope = this,
+            ),
+        ).use { client ->
             val events = Channel<CodexNotification>(Channel.UNLIMITED)
             val eventCollector = launch(start = CoroutineStart.UNDISPATCHED) {
                 try {
@@ -123,11 +119,17 @@ internal class CodexSampleRunner(
             }
 
             try {
-                val thread = client.startThread(CodexHostPath(options.cwd))
-                val turn = client.startTurn(
-                    threadId = thread.id,
-                    input = listOf(TurnInput.Text(options.message)),
-                )
+                val thread = client.request(
+                    CodexRpc.Thread.Start,
+                    ThreadStartParams(cwd = CodexHostPath(options.cwd)),
+                ).thread
+                val turn = client.request(
+                    CodexRpc.Turn.Start,
+                    TurnStartParams(
+                        threadId = thread.id,
+                        input = listOf(TurnInput.Text(options.message)),
+                    ),
+                ).turn
 
                 output.line("Started thread ${thread.id.value} and turn ${turn.id.value}")
                 output.line()
@@ -143,148 +145,4 @@ internal class CodexSampleRunner(
             }
         }
     }
-
-    private fun codexTransport(): StdioCodexTransport {
-        val overrideCommand = codexCommandOverride()
-        return if (overrideCommand == null) {
-            StdioCodexTransport()
-        } else {
-            StdioCodexTransport(command = overrideCommand)
-        }
-    }
-
-    private fun codexCommandOverride(): List<String>? {
-        return System.getenv("COKIT_CODEX_COMMAND")
-            ?.split(Regex("\\s+"))
-            ?.filter { it.isNotBlank() }
-            ?.takeIf { it.isNotEmpty() }
-    }
 }
-
-interface SampleConversationClient : AutoCloseable {
-    val notifications: Flow<CodexNotification>
-
-    suspend fun startThread(cwd: CodexHostPath): Thread
-
-    suspend fun startTurn(threadId: ThreadId, input: List<TurnInput>): Turn
-}
-
-private class StdioSampleConversationClient private constructor(
-    private val client: CodexRpcClient,
-) : SampleConversationClient {
-    override val notifications: Flow<CodexNotification> = client.notifications
-
-    override suspend fun startThread(cwd: CodexHostPath): Thread {
-        return client.request(
-            CodexRpc.Thread.Start,
-            ThreadStartParams(cwd = cwd),
-        ).thread
-    }
-
-    override suspend fun startTurn(threadId: ThreadId, input: List<TurnInput>): Turn {
-        return client.request(
-            CodexRpc.Turn.Start,
-            TurnStartParams(
-                threadId = threadId,
-                input = input,
-            ),
-        ).turn
-    }
-
-    override fun close() {
-        client.close()
-    }
-
-    companion object {
-        suspend fun connect(
-            transport: StdioCodexTransport,
-            scope: CoroutineScope,
-        ): StdioSampleConversationClient {
-            return try {
-                StdioSampleConversationClient(
-                    CodexRpcClient.connect(
-                        CodexRpcConnection(
-                            transport = transport,
-                            clientInfo = ClientInfo(
-                                name = "cokit_sample_cli",
-                                title = "CoKit Sample CLI",
-                                version = "0.1.0",
-                            ),
-                            scope = scope,
-                        ),
-                    ),
-                )
-            } catch (error: Throwable) {
-                transport.close()
-                throw error
-            }
-        }
-    }
-}
-
-private suspend fun streamAssistantResponse(
-    turnId: TurnId,
-    events: Channel<CodexNotification>,
-    output: SampleOutput,
-) {
-    var wroteAssistantText = false
-    while (true) {
-        val event = events.receiveCatching().getOrNull()
-            ?: throw SampleRunException("Turn ${turnId.value} ended before completion.")
-        when (event) {
-            is CodexNotification.AgentMessageDelta -> {
-                if (event.turnId == turnId) {
-                    output.text(event.delta)
-                    wroteAssistantText = true
-                }
-            }
-
-            is CodexNotification.ItemCompleted -> {
-                val text = event.item.text
-                if (
-                    event.turnId == turnId &&
-                    event.item.type == ItemType.AgentMessage &&
-                    !wroteAssistantText &&
-                    !text.isNullOrBlank()
-                ) {
-                    output.text(text)
-                    wroteAssistantText = true
-                }
-            }
-
-            is CodexNotification.TurnCompleted -> {
-                if (event.turn.id == turnId) {
-                    if (wroteAssistantText) {
-                        output.line()
-                    } else {
-                        output.line("(no assistant message)")
-                    }
-                    return
-                }
-            }
-
-            is CodexNotification.TurnFailed -> {
-                if (event.turn.id == turnId) {
-                    throw SampleRunException(event.turn.failureMessage())
-                }
-            }
-
-            is CodexNotification.Error -> {
-                if (event.turnId == turnId && !event.willRetry) {
-                    throw SampleRunException(
-                        "Turn ${turnId.value} failed: ${event.error.message}",
-                    )
-                }
-            }
-
-            else -> Unit
-        }
-    }
-}
-
-private fun Turn.failureMessage(): String {
-    val message = error?.message ?: "unknown error"
-    return "Turn ${id.value} failed: $message"
-}
-
-private class SampleRunException(message: String) : RuntimeException(message)

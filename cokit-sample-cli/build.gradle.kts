@@ -11,6 +11,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":cokit-testing"))
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 application {

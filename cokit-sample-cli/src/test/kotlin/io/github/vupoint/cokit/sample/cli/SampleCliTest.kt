@@ -1,21 +1,27 @@
 package io.github.vupoint.cokit.sample.cli
 
 import com.github.ajalt.clikt.testing.test
-import io.github.vupoint.cokit.client.CodexHostPath
-import io.github.vupoint.cokit.client.CodexNotification
-import io.github.vupoint.cokit.client.ItemId
-import io.github.vupoint.cokit.client.Thread
-import io.github.vupoint.cokit.client.ThreadId
-import io.github.vupoint.cokit.client.Turn
-import io.github.vupoint.cokit.client.TurnId
-import io.github.vupoint.cokit.client.TurnInput
-import io.github.vupoint.cokit.client.TurnStatus
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.flow.MutableSharedFlow
+import io.github.vupoint.cokit.protocol.JsonRpcNotification
+import io.github.vupoint.cokit.protocol.JsonRpcRequest
+import io.github.vupoint.cokit.protocol.JsonRpcResponse
+import io.github.vupoint.cokit.testing.FakeJsonRpcTransport
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SampleCliTest {
     @Test
     fun runsWithDefaultOptionsWhenNoArgumentsAreProvided() {
@@ -31,7 +37,7 @@ class SampleCliTest {
         assertEquals(
             SampleOptions(
                 cwd = "/path/to/project",
-                message = SampleCliDefaults.message,
+                message = SampleCliDefaults.MESSAGE,
             ),
             runner.options,
         )
@@ -74,39 +80,16 @@ class SampleCliTest {
         assertTrue(help.contains("Run a minimal codex app-server thread and stream the assistant response."))
         assertTrue(help.contains("--cwd"))
         assertTrue(help.contains("--message"))
-        assertTrue(help.contains("COKIT_CODEX_COMMAND"))
-        assertTrue(!help.contains("codex app-server --stdio"))
     }
 
     @Test
-    fun codexRunnerStreamsAssistantDeltasUntilTurnCompletes() {
-        val client = RecordingConversationClient(
-            events = listOf(
-                CodexNotification.AgentMessageDelta(
-                    threadId = ThreadId("thr_123"),
-                    turnId = TurnId("turn_123"),
-                    itemId = ItemId("item_msg"),
-                    delta = "Hello",
-                ),
-                CodexNotification.AgentMessageDelta(
-                    threadId = ThreadId("thr_123"),
-                    turnId = TurnId("turn_123"),
-                    itemId = ItemId("item_msg"),
-                    delta = " from Codex",
-                ),
-                CodexNotification.TurnCompleted(
-                    Turn(
-                        id = TurnId("turn_123"),
-                        status = TurnStatus.Completed,
-                    ),
-                ),
-            ),
-        )
+    fun codexRunnerUsesTypedRequestsAndStreamsAssistantDeltasUntilTurnCompletes() = runTest {
+        val transport = FakeJsonRpcTransport()
         val output = RecordingSampleOutput()
 
-        runBlocking {
+        val run = async {
             CodexSampleRunner(
-                conversationClientFactory = { client },
+                transportFactory = { transport },
             ).run(
                 SampleOptions(
                     cwd = "/path/to/project",
@@ -116,11 +99,50 @@ class SampleCliTest {
             )
         }
 
-        assertEquals(CodexHostPath("/path/to/project"), client.startedCwd)
+        runCurrent()
+        val initialize = transport.sent.single() as JsonRpcRequest
+        assertEquals("initialize", initialize.method)
+        transport.receive(JsonRpcResponse(initialize.id, result = JsonObject(emptyMap())))
+
+        runCurrent()
+        val threadStart = transport.sent.requests().last()
+        assertEquals("thread/start", threadStart.method)
         assertEquals(
-            listOf(TurnInput.Text("Say hello")),
-            client.startedInput,
+            "/path/to/project",
+            threadStart.params!!.jsonObject["cwd"]!!.jsonPrimitive.content,
         )
+        transport.receive(
+            JsonRpcResponse(
+                threadStart.id,
+                result = buildJsonObject {
+                    put("thread", buildJsonObject { put("id", "thr_123") })
+                },
+            ),
+        )
+
+        runCurrent()
+        val turnStart = transport.sent.requests().last()
+        assertEquals("turn/start", turnStart.method)
+        val turnParams = turnStart.params!!.jsonObject
+        assertEquals("thr_123", turnParams["threadId"]!!.jsonPrimitive.content)
+        assertEquals(
+            "Say hello",
+            turnParams["input"]!!.jsonArray.single().jsonObject["text"]!!.jsonPrimitive.content,
+        )
+
+        transport.receive(agentMessageDelta("Hello"))
+        transport.receive(agentMessageDelta(" from Codex"))
+        transport.receive(turnCompleted())
+        transport.receive(
+            JsonRpcResponse(
+                turnStart.id,
+                result = buildJsonObject {
+                    put("turn", turnPayload(id = "turn_123", status = "inProgress"))
+                },
+            ),
+        )
+
+        run.await()
         assertEquals(
             "Started thread thr_123 and turn turn_123\n\nAssistant:\nHello from Codex\n",
             output.content,
@@ -128,24 +150,14 @@ class SampleCliTest {
     }
 
     @Test
-    fun codexRunnerReportsTurnFailure() {
-        val client = RecordingConversationClient(
-            events = listOf(
-                CodexNotification.TurnFailed(
-                    Turn(
-                        id = TurnId("turn_123"),
-                        status = TurnStatus.Failed,
-                        error = io.github.vupoint.cokit.client.TurnError("model request failed"),
-                    ),
-                ),
-            ),
-        )
+    fun codexRunnerReportsTurnFailure() = runTest {
+        val transport = FakeJsonRpcTransport()
         val output = RecordingSampleOutput()
 
-        val result = runCatching {
-            runBlocking {
+        val result = supervisorScope {
+            val run = async {
                 CodexSampleRunner(
-                    conversationClientFactory = { client },
+                    transportFactory = { transport },
                 ).run(
                     SampleOptions(
                         cwd = "/path/to/project",
@@ -154,6 +166,35 @@ class SampleCliTest {
                     output,
                 )
             }
+
+            runCurrent()
+            val initialize = transport.sent.single() as JsonRpcRequest
+            transport.receive(JsonRpcResponse(initialize.id, result = JsonObject(emptyMap())))
+
+            runCurrent()
+            val threadStart = transport.sent.requests().last()
+            transport.receive(
+                JsonRpcResponse(
+                    threadStart.id,
+                    result = buildJsonObject {
+                        put("thread", buildJsonObject { put("id", "thr_123") })
+                    },
+                ),
+            )
+
+            runCurrent()
+            val turnStart = transport.sent.requests().last()
+            transport.receive(turnFailed())
+            transport.receive(
+                JsonRpcResponse(
+                    turnStart.id,
+                    result = buildJsonObject {
+                        put("turn", turnPayload(id = "turn_123", status = "inProgress"))
+                    },
+                ),
+            )
+
+            runCatching { run.await() }
         }
 
         assertTrue(result.isFailure)
@@ -192,31 +233,46 @@ class SampleCliTest {
         }
     }
 
-    private class RecordingConversationClient(
-        private val events: List<CodexNotification>,
-    ) : SampleConversationClient {
-        private val mutableNotifications = MutableSharedFlow<CodexNotification>(
-            extraBufferCapacity = 16,
-        )
-        var startedCwd: CodexHostPath? = null
-        var startedInput: List<TurnInput>? = null
+    private fun List<Any>.requests(): List<JsonRpcRequest> = filterIsInstance<JsonRpcRequest>()
 
-        override val notifications = mutableNotifications
+    private fun agentMessageDelta(delta: String) = JsonRpcNotification(
+        method = "item/agentMessage/delta",
+        params = buildJsonObject {
+            put("threadId", "thr_123")
+            put("turnId", "turn_123")
+            put("itemId", "item_msg")
+            put("delta", delta)
+        },
+    )
 
-        override suspend fun startThread(cwd: CodexHostPath): Thread {
-            startedCwd = cwd
-            return Thread(id = ThreadId("thr_123"))
-        }
+    private fun turnCompleted() = JsonRpcNotification(
+        method = "turn/completed",
+        params = buildJsonObject {
+            put("turn", turnPayload(id = "turn_123", status = "completed"))
+        },
+    )
 
-        override suspend fun startTurn(threadId: ThreadId, input: List<TurnInput>): Turn {
-            startedInput = input
-            events.forEach { mutableNotifications.emit(it) }
-            return Turn(
-                id = TurnId("turn_123"),
-                status = TurnStatus.InProgress,
+    private fun turnFailed() = JsonRpcNotification(
+        method = "turn/completed",
+        params = buildJsonObject {
+            put(
+                "turn",
+                buildJsonObject {
+                    put("id", "turn_123")
+                    put("status", "failed")
+                    put("items", buildJsonArray {})
+                    put(
+                        "error",
+                        buildJsonObject { put("message", "model request failed") },
+                    )
+                },
             )
-        }
+        },
+    )
 
-        override fun close() = Unit
+    private fun turnPayload(id: String, status: String) = buildJsonObject {
+        put("id", id)
+        put("status", status)
+        put("items", buildJsonArray {})
     }
 }
