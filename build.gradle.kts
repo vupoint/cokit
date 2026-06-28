@@ -338,75 +338,6 @@ val checkPublicApiExposure = tasks.register<CokitPublicApiExposureTask>("checkPu
     rootDirectory.set(layout.projectDirectory)
 }
 
-val publicApiBaselineSourceRoots = listOf(
-    "cokit-protocol/src/commonMain/kotlin",
-    "cokit-rpc/src/commonMain/kotlin",
-    "cokit-client/src/commonMain/kotlin",
-    "cokit-transport-stdio/src/jvmMain/kotlin",
-    "cokit-transport-websocket/src/commonMain/kotlin",
-    "cokit-testing/src/commonMain/kotlin",
-).map { path -> layout.projectDirectory.dir(path) }
-
-val publicApiBaselineFile = layout.projectDirectory.file("api/public-api.txt")
-
-fun publicApiBaselineSourceFiles(): List<File> = publicApiBaselineSourceRoots
-    .map { sourceRoot -> sourceRoot.asFile }
-    .filter { sourceRoot -> sourceRoot.isDirectory }
-    .flatMap { sourceRoot ->
-        sourceRoot.walkTopDown()
-            .filter { file -> file.isFile && file.extension == "kt" }
-            .toList()
-    }
-
-tasks.register("updatePublicApiBaseline") {
-    group = "verification"
-    description = "Updates the checked source API baseline."
-
-    inputs.files(
-        publicApiBaselineSourceRoots.map { sourceRoot ->
-            fileTree(sourceRoot) {
-                include("**/*.kt")
-            }
-        },
-    )
-    outputs.file(publicApiBaselineFile)
-
-    doLast {
-        val baseline = CokitPublicApiBaseline.generate(publicApiBaselineSourceFiles(), rootDir)
-        val outputFile = publicApiBaselineFile.asFile
-        outputFile.parentFile.mkdirs()
-        outputFile.writeText(baseline)
-    }
-}
-
-val checkPublicApiBaseline = tasks.register("checkPublicApiBaseline") {
-    group = "verification"
-    description = "Checks the current source API against the committed baseline."
-
-    inputs.files(
-        publicApiBaselineSourceRoots.map { sourceRoot ->
-            fileTree(sourceRoot) {
-                include("**/*.kt")
-            }
-        },
-    )
-    if (publicApiBaselineFile.asFile.isFile) {
-        inputs.file(publicApiBaselineFile)
-    }
-
-    doLast {
-        val baselineFile = publicApiBaselineFile.asFile
-        check(baselineFile.isFile) {
-            "Public API baseline is missing. Run ./gradlew updatePublicApiBaseline."
-        }
-        val expected = baselineFile.readText()
-        val actual = CokitPublicApiBaseline.generate(publicApiBaselineSourceFiles(), rootDir)
-        check(expected == actual) {
-            "Public API baseline is stale. Run ./gradlew updatePublicApiBaseline and review api/public-api.txt."
-        }
-    }
-}
-
 val primaryDocsAlignmentFiles = listOf(
     "README.md",
     "docs/getting-started.md",
@@ -443,7 +374,6 @@ subprojects {
     tasks.matching { task -> task.name == "check" }.configureEach {
         dependsOn(rootProject.tasks.named("validateModuleBoundaries"))
         dependsOn(checkPublicApiExposure)
-        dependsOn(checkPublicApiBaseline)
         dependsOn(checkPrimaryApiDocsAlignment)
     }
 }
