@@ -1,0 +1,47 @@
+public final class io/github/vupoint/cokit/rpc/JsonRpcMessageSizeException : java/lang/RuntimeException {
+	public fun <init> (II)V
+	public final fun getActualMessageBytes ()I
+	public final fun getMaxMessageBytes ()I
+}
+
+public final class io/github/vupoint/cokit/rpc/JsonRpcRemoteException : java/lang/RuntimeException {
+	public static final field Companion Lio/github/vupoint/cokit/rpc/JsonRpcRemoteException$Companion;
+	public static final field SERVER_OVERLOADED_CODE I
+	public fun <init> (Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;)V
+	public final fun getError ()Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public final fun isRetryableOverload ()Z
+}
+
+public final class io/github/vupoint/cokit/rpc/JsonRpcRemoteException$Companion {
+}
+
+public final class io/github/vupoint/cokit/rpc/JsonRpcSession : java/lang/AutoCloseable {
+	public static final field Companion Lio/github/vupoint/cokit/rpc/JsonRpcSession$Companion;
+	public static final field DEFAULT_MAX_MESSAGE_BYTES I
+	public fun <init> (Lio/github/vupoint/cokit/rpc/JsonRpcTransport;Lkotlinx/coroutines/CoroutineScope;I)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/rpc/JsonRpcTransport;Lkotlinx/coroutines/CoroutineScope;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public final fun getNotifications ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getServerRequests ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun notify (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun publishForTests (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun request (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun request$default (Lio/github/vupoint/cokit/rpc/JsonRpcSession;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendRequest (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendRequest$default (Lio/github/vupoint/cokit/rpc/JsonRpcSession;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendResponse (Lio/github/vupoint/cokit/protocol/JsonRpcResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/vupoint/cokit/rpc/JsonRpcSession$Companion {
+}
+
+public abstract interface class io/github/vupoint/cokit/rpc/JsonRpcTransport : java/lang/AutoCloseable {
+	public abstract fun close ()V
+	public abstract fun getIncoming ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun send (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class io/github/vupoint/cokit/rpc/ServerRequestHandler {
+	public abstract fun handle (Lio/github/vupoint/cokit/protocol/JsonRpcRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

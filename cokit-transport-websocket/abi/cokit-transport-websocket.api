@@ -1,0 +1,11 @@
+public abstract interface annotation class io/github/vupoint/cokit/transport/websocket/ExperimentalCodexWebSocketTransport : java/lang/annotation/Annotation {
+}
+
+public final class io/github/vupoint/cokit/transport/websocket/WebSocketCodexTransport : io/github/vupoint/cokit/rpc/JsonRpcTransport {
+	public fun <init> (Ljava/lang/String;)V
+	public fun close ()V
+	public fun getIncoming ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun send (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

@@ -1,0 +1,10 @@
+public final class io/github/vupoint/cokit/testing/FakeJsonRpcTransport : io/github/vupoint/cokit/rpc/JsonRpcTransport {
+	public fun <init> ()V
+	public fun close ()V
+	public synthetic fun getIncoming ()Lkotlinx/coroutines/flow/Flow;
+	public fun getIncoming ()Lkotlinx/coroutines/flow/SharedFlow;
+	public final fun getSent ()Ljava/util/List;
+	public final fun receive (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun send (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

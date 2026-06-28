@@ -1,0 +1,16 @@
+public final class io/github/vupoint/cokit/transport/stdio/StdioCodexTransport : io/github/vupoint/cokit/rpc/JsonRpcTransport {
+	public static final field Companion Lio/github/vupoint/cokit/transport/stdio/StdioCodexTransport$Companion;
+	public fun <init> (Ljava/util/List;Ljava/io/File;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/io/File;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public final fun getCommand ()Ljava/util/List;
+	public synthetic fun getIncoming ()Lkotlinx/coroutines/flow/Flow;
+	public fun getIncoming ()Lkotlinx/coroutines/flow/SharedFlow;
+	public fun send (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/vupoint/cokit/transport/stdio/StdioCodexTransport$Companion {
+	public final fun proxy (Ljava/lang/String;)Lio/github/vupoint/cokit/transport/stdio/StdioCodexTransport;
+	public static synthetic fun proxy$default (Lio/github/vupoint/cokit/transport/stdio/StdioCodexTransport$Companion;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/transport/stdio/StdioCodexTransport;
+}
+

@@ -81,6 +81,8 @@ configure(publishedLibraryProjects.get()) {
             extensions.configure<AbiValidationMultiplatformExtension>("abiValidation") {
                 @OptIn(ExperimentalAbiValidation::class)
                 enabled.set(true)
+                @OptIn(ExperimentalAbiValidation::class)
+                legacyDump.referenceDumpDir.set(layout.projectDirectory.dir("abi"))
             }
         }
     }

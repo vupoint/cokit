@@ -1,0 +1,198 @@
+public final class io/github/vupoint/cokit/protocol/JsonRpcErrorObject {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject$Companion;
+	public fun <init> (ILjava/lang/String;Lkotlinx/serialization/json/JsonElement;)V
+	public synthetic fun <init> (ILjava/lang/String;Lkotlinx/serialization/json/JsonElement;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lkotlinx/serialization/json/JsonElement;
+	public final fun copy (ILjava/lang/String;Lkotlinx/serialization/json/JsonElement;)Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;ILjava/lang/String;Lkotlinx/serialization/json/JsonElement;ILjava/lang/Object;)Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()I
+	public final fun getData ()Lkotlinx/serialization/json/JsonElement;
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/protocol/JsonRpcErrorObject$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcErrorObject$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/vupoint/cokit/protocol/JsonRpcId {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcId$Companion;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcId$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcId$Number : io/github/vupoint/cokit/protocol/JsonRpcId {
+	public static final synthetic fun box-impl (J)Lio/github/vupoint/cokit/protocol/JsonRpcId$Number;
+	public static fun constructor-impl (J)J
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (JLjava/lang/Object;)Z
+	public static final fun equals-impl0 (JJ)Z
+	public final fun getValue ()J
+	public fun hashCode ()I
+	public static fun hashCode-impl (J)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (J)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()J
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcId$StringId : io/github/vupoint/cokit/protocol/JsonRpcId {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/protocol/JsonRpcId$StringId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcIdSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcIdSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcId;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcId;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public abstract interface class io/github/vupoint/cokit/protocol/JsonRpcMessage {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcMessage$Companion;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcMessageSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcMessageSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcMessage;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcMessage;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcNotification : io/github/vupoint/cokit/protocol/JsonRpcMessage {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcNotification$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonElement;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;)Lio/github/vupoint/cokit/protocol/JsonRpcNotification;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/protocol/JsonRpcNotification;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;ILjava/lang/Object;)Lio/github/vupoint/cokit/protocol/JsonRpcNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMethod ()Ljava/lang/String;
+	public final fun getParams ()Lkotlinx/serialization/json/JsonElement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/protocol/JsonRpcNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcRequest : io/github/vupoint/cokit/protocol/JsonRpcMessage {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcRequest$Companion;
+	public fun <init> (Lio/github/vupoint/cokit/protocol/JsonRpcId;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/protocol/JsonRpcId;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/protocol/JsonRpcId;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lkotlinx/serialization/json/JsonElement;
+	public final fun copy (Lio/github/vupoint/cokit/protocol/JsonRpcId;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;)Lio/github/vupoint/cokit/protocol/JsonRpcRequest;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/protocol/JsonRpcRequest;Lio/github/vupoint/cokit/protocol/JsonRpcId;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;ILjava/lang/Object;)Lio/github/vupoint/cokit/protocol/JsonRpcRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Lio/github/vupoint/cokit/protocol/JsonRpcId;
+	public final fun getMethod ()Ljava/lang/String;
+	public final fun getParams ()Lkotlinx/serialization/json/JsonElement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/protocol/JsonRpcRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcResponse : io/github/vupoint/cokit/protocol/JsonRpcMessage {
+	public static final field Companion Lio/github/vupoint/cokit/protocol/JsonRpcResponse$Companion;
+	public fun <init> (Lio/github/vupoint/cokit/protocol/JsonRpcId;Lkotlinx/serialization/json/JsonElement;Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/protocol/JsonRpcId;Lkotlinx/serialization/json/JsonElement;Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/protocol/JsonRpcId;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonElement;
+	public final fun component3 ()Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public final fun copy (Lio/github/vupoint/cokit/protocol/JsonRpcId;Lkotlinx/serialization/json/JsonElement;Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;)Lio/github/vupoint/cokit/protocol/JsonRpcResponse;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/protocol/JsonRpcResponse;Lio/github/vupoint/cokit/protocol/JsonRpcId;Lkotlinx/serialization/json/JsonElement;Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;ILjava/lang/Object;)Lio/github/vupoint/cokit/protocol/JsonRpcResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Lio/github/vupoint/cokit/protocol/JsonRpcErrorObject;
+	public final fun getId ()Lio/github/vupoint/cokit/protocol/JsonRpcId;
+	public final fun getResult ()Lkotlinx/serialization/json/JsonElement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/protocol/JsonRpcResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/JsonRpcResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/protocol/JsonRpcResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/protocol/JsonRpcResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/protocol/JsonRpcSerializersKt {
+	public static final fun getCodexProtocolJson ()Lkotlinx/serialization/json/Json;
+}
+
+public final class io/github/vupoint/cokit/protocol/generated/SchemaMetadata {
+	public static final field INSTANCE Lio/github/vupoint/cokit/protocol/generated/SchemaMetadata;
+	public static final field generatedBy Ljava/lang/String;
+	public static final field includesExperimental Z
+}
+
