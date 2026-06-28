@@ -5,8 +5,6 @@ import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import javax.xml.parsers.DocumentBuilderFactory
-import org.w3c.dom.Element
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.jvm) apply false
@@ -121,100 +119,26 @@ tasks.register("publishAndReleaseLibrariesToMavenCentral") {
     )
 }
 
-data class CokitBomConstraint(
-    val groupId: String,
-    val artifactId: String,
-    val version: String,
-)
-
-fun Element.childText(tagName: String): String {
-    val nodes = getElementsByTagName(tagName)
-    check(nodes.length > 0) {
-        "Missing <$tagName> in BOM dependency node."
-    }
-    return nodes.item(0).textContent.trim()
-}
-
-fun Element.directChildElements(tagName: String): List<Element> =
-    (0 until childNodes.length)
-        .mapNotNull { index -> childNodes.item(index) as? Element }
-        .filter { child -> child.tagName == tagName }
-
-fun Element.singleDirectChild(tagName: String): Element {
-    val children = directChildElements(tagName)
-    check(children.size == 1) {
-        "Expected exactly one direct <$tagName> child in <${this.tagName}>, found ${children.size}."
-    }
-    return children.single()
-}
-
-fun parseCokitBomConstraints(pomFile: File): Set<CokitBomConstraint> {
-    check(pomFile.isFile) {
-        "Generated BOM POM is missing: ${pomFile.relativeTo(rootDir)}"
-    }
-
-    val documentBuilderFactory = DocumentBuilderFactory.newInstance().apply {
-        setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        setFeature("http://xml.org/sax/features/external-general-entities", false)
-        setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-        setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        isExpandEntityReferences = false
-    }
-    val document = documentBuilderFactory.newDocumentBuilder().parse(pomFile)
-    val projectElement = document.documentElement
-    val regularDependencies = projectElement
-        .directChildElements("dependencies")
-        .flatMap { dependencies -> dependencies.directChildElements("dependency") }
-    check(regularDependencies.isEmpty()) {
-        "CoKit BOM must not declare regular dependencies: ${regularDependencies.map { it.childText("artifactId") }}"
-    }
-
-    val managedDependencies = projectElement
-        .singleDirectChild("dependencyManagement")
-        .singleDirectChild("dependencies")
-        .directChildElements("dependency")
-
-    return managedDependencies
-        .map { dependency ->
-            CokitBomConstraint(
-                groupId = dependency.childText("groupId"),
-                artifactId = dependency.childText("artifactId"),
-                version = dependency.childText("version"),
-            )
-        }
-        .toSet()
-}
-
 val cokitBomPomFile = layout.projectDirectory.file("cokit-bom/build/publications/maven/pom-default.xml")
 
-tasks.register("checkCokitBomConstraints") {
+val expectedCokitBomConstraints = publishedLibraryProjects.map { projects ->
+    projects.flatMap { publishedProject ->
+        listOf(
+            publishedProject.name,
+            "${publishedProject.name}-jvm",
+        ).map { artifactId ->
+            "${publishedProject.group}:$artifactId:${publishedProject.version}"
+        }
+    }
+}
+
+tasks.register<CokitBomConstraintsTask>("checkCokitBomConstraints") {
     group = "verification"
     description = "Checks the generated CoKit BOM constrains exactly the published library modules."
     dependsOn("$bomProjectPath:generatePomFileForMavenPublication")
-    inputs.file(cokitBomPomFile)
 
-    doLast {
-        val expected = publishedLibraryProjectPaths.get()
-            .flatMap { projectPath ->
-                val publishedProject = project(projectPath)
-                listOf(
-                    publishedProject.name,
-                    "${publishedProject.name}-jvm",
-                ).map { artifactId ->
-                    CokitBomConstraint(
-                        groupId = publishedProject.group.toString(),
-                        artifactId = artifactId,
-                        version = publishedProject.version.toString(),
-                    )
-                }
-            }
-            .toSet()
-        val actual = parseCokitBomConstraints(cokitBomPomFile.asFile)
-
-        check(actual == expected) {
-            "Unexpected CoKit BOM constraints. expected=${expected.sortedBy { it.artifactId }} actual=${actual.sortedBy { it.artifactId }}"
-        }
-    }
+    pomFile.set(cokitBomPomFile)
+    expectedConstraints.set(expectedCokitBomConstraints)
 }
 
 tasks.register("checkMavenCentralPublishingConfiguration") {
