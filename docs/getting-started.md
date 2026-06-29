@@ -24,6 +24,9 @@ dependencies {
 }
 ```
 
+Use `cokit-client-api` directly only for API contracts and models without the
+default `CodexClients` factory.
+
 ## Run The Sample CLI
 
 The repository includes a small JVM CLI sample in `:cokit-sample-cli`.
@@ -58,8 +61,8 @@ app-server error message.
 ```kotlin
 val transport = StdioCodexTransport()
 
-val client = CodexRpcClient.connect(
-    CodexRpcConnection(
+val client = CodexClients.connect(
+    CodexClientConnection(
         transport = transport,
         clientInfo = ClientInfo(
             name = "my_kotlin_client",

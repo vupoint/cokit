@@ -31,7 +31,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class CodexRpcClientTest {
+class CodexClientTest {
     @Test
     fun typedMethodDescriptorSendsMethodAndDecodesResult() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
@@ -542,8 +542,8 @@ class CodexRpcClientTest {
     ): ConnectedRpcClientFixture {
         val transport = FakeJsonRpcTransport()
         val client = async {
-            CodexRpcClient.connect(
-                CodexRpcConnection(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
@@ -580,7 +580,7 @@ class CodexRpcClientTest {
     }
 
     private data class ConnectedRpcClientFixture(
-        val client: CodexRpcClient,
+        val client: CodexClient,
         val transport: FakeJsonRpcTransport,
     ) {
         suspend fun <P : Any, R : Any> requestThreadResult(

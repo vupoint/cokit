@@ -2,43 +2,43 @@ package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.rpc.JsonRpcSession
 
-class ThreadsApi internal constructor(
+internal class DefaultThreadsApi(
     private val rpc: JsonRpcSession,
-) {
-    suspend fun start(request: StartThreadRequest = StartThreadRequest()): Thread {
+) : ThreadsApi {
+    override suspend fun start(request: StartThreadRequest): Thread {
         return rpc.request(CodexRpc.Thread.Start, request.toRpcParams()).thread
     }
 
-    suspend fun resume(request: ResumeThreadRequest): Thread {
+    override suspend fun resume(request: ResumeThreadRequest): Thread {
         return rpc.request(CodexRpc.Thread.Resume, request.toRpcParams()).thread
     }
 
-    suspend fun fork(request: ForkThreadRequest): Thread {
+    override suspend fun fork(request: ForkThreadRequest): Thread {
         return rpc.request(CodexRpc.Thread.Fork, request.toRpcParams()).thread
     }
 
-    suspend fun list(request: ListThreadsRequest = ListThreadsRequest()): ThreadList {
+    override suspend fun list(request: ListThreadsRequest): ThreadList {
         val decoded = rpc.request(CodexRpc.Thread.List, request.toRpcParams())
         return ThreadList(decoded.threads, decoded.cursor)
     }
 
-    suspend fun read(request: ReadThreadRequest): Thread {
+    override suspend fun read(request: ReadThreadRequest): Thread {
         return rpc.request(CodexRpc.Thread.Read, request.toRpcParams()).thread
     }
 
-    suspend fun archive(threadId: ThreadId) {
+    override suspend fun archive(threadId: ThreadId) {
         rpc.request(CodexRpc.Thread.Archive, ThreadArchiveParams(threadId))
     }
 
-    suspend fun unarchive(threadId: ThreadId) {
+    override suspend fun unarchive(threadId: ThreadId) {
         rpc.request(CodexRpc.Thread.Unarchive, ThreadUnarchiveParams(threadId))
     }
 
-    suspend fun unsubscribe(threadId: ThreadId) {
+    override suspend fun unsubscribe(threadId: ThreadId) {
         rpc.request(CodexRpc.Thread.Unsubscribe, ThreadUnsubscribeParams(threadId))
     }
 
-    suspend fun setName(request: SetThreadNameRequest) {
+    override suspend fun setName(request: SetThreadNameRequest) {
         rpc.request(CodexRpc.Thread.SetName, request.toRpcParams())
     }
 }

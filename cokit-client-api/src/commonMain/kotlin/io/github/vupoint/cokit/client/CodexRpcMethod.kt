@@ -104,9 +104,9 @@ import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
     val method: String,
-    internal val paramsSerializer: KSerializer<P>?,
-    internal val resultSerializer: KSerializer<R>,
-    internal val emptyResult: R? = null,
+    val paramsSerializer: KSerializer<P>?,
+    val resultSerializer: KSerializer<R>,
+    val emptyResult: R? = null,
 )
 
 object CodexRpc {

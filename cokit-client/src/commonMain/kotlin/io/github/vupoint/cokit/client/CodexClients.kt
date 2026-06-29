@@ -10,7 +10,6 @@ import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import io.github.vupoint.cokit.rpc.JsonRpcSession
-import io.github.vupoint.cokit.rpc.JsonRpcTransport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -20,17 +19,31 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.encodeToJsonElement
 
-data class CodexRpcConnection(
-    val transport: JsonRpcTransport,
-    val clientInfo: ClientInfo,
-    val scope: CoroutineScope,
-    val capabilities: InitializeCapabilities? = null,
-)
+object CodexClients {
+    suspend fun connect(connection: CodexClientConnection): CodexClient {
+        val session = JsonRpcSession(connection.transport, connection.scope)
+        return try {
+            val params = InitializeParams(
+                clientInfo = connection.clientInfo,
+                capabilities = connection.capabilities,
+            )
+            session.request(
+                method = "initialize",
+                params = CodexProtocolJson.encodeToJsonElement(InitializeParams.serializer(), params),
+            )
+            session.notify("initialized")
+            DefaultCodexClient(session, connection.scope)
+        } catch (error: Throwable) {
+            session.close()
+            throw error
+        }
+    }
+}
 
-class CodexRpcClient private constructor(
+internal class DefaultCodexClient(
     private val rpc: JsonRpcSession,
     scope: CoroutineScope,
-) : AutoCloseable {
+) : CodexClient {
     private val mutableServerRequests = MutableSharedFlow<CodexServerRequest>(
         extraBufferCapacity = 64,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -57,36 +70,38 @@ class CodexRpcClient private constructor(
         }
     }
 
-    val notifications: SharedFlow<CodexNotification> = mutableNotifications
-    val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
-    val isInitialized: Boolean = true
+    override val notifications: SharedFlow<CodexNotification> = mutableNotifications
+    override val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
+    override val threads: ThreadsApi = DefaultThreadsApi(rpc)
+    override val turns: TurnsApi = DefaultTurnsApi(rpc)
+    override val isInitialized: Boolean = true
 
-    suspend fun <P : Any, R : Any> request(
+    override suspend fun <P : Any, R : Any> request(
         method: CodexRpcMethod<P, R>,
         params: P,
     ): R = rpc.request(method, params)
 
-    fun registerCommandApprovalHandler(handler: CommandApprovalHandler) {
+    override fun registerCommandApprovalHandler(handler: CommandApprovalHandler) {
         commandApprovalHandler = handler
     }
 
-    fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler) {
+    override fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler) {
         fileChangeApprovalHandler = handler
     }
 
-    fun registerPermissionApprovalHandler(handler: PermissionApprovalHandler) {
+    override fun registerPermissionApprovalHandler(handler: PermissionApprovalHandler) {
         permissionApprovalHandler = handler
     }
 
-    fun registerUserInputRequestHandler(handler: UserInputRequestHandler) {
+    override fun registerUserInputRequestHandler(handler: UserInputRequestHandler) {
         userInputRequestHandler = handler
     }
 
-    fun registerMcpElicitationHandler(handler: McpElicitationHandler) {
+    override fun registerMcpElicitationHandler(handler: McpElicitationHandler) {
         mcpElicitationHandler = handler
     }
 
-    fun registerAttestationGenerateHandler(handler: AttestationGenerateHandler) {
+    override fun registerAttestationGenerateHandler(handler: AttestationGenerateHandler) {
         attestationGenerateHandler = handler
     }
 
@@ -98,7 +113,7 @@ class CodexRpcClient private constructor(
 
     private suspend fun resolveServerRequest(request: JsonRpcRequest): JsonRpcResponse {
         val handler = commandApprovalHandler
-        if (request.method == COMMAND_APPROVAL_METHOD && handler != null) {
+        if (request.method == "item/commandExecution/requestApproval" && handler != null) {
             val commandRequest = try {
                 request.decodeCommandApprovalRequest()
             } catch (error: Throwable) {
@@ -121,7 +136,7 @@ class CodexRpcClient private constructor(
         }
 
         val fileChangeHandler = fileChangeApprovalHandler
-        if (request.method == FILE_CHANGE_APPROVAL_METHOD && fileChangeHandler != null) {
+        if (request.method == "item/fileChange/requestApproval" && fileChangeHandler != null) {
             val fileChangeRequest = try {
                 request.decodeFileChangeApprovalRequest()
             } catch (error: Throwable) {
@@ -144,7 +159,7 @@ class CodexRpcClient private constructor(
         }
 
         val permissionHandler = permissionApprovalHandler
-        if (request.method == PERMISSION_APPROVAL_METHOD && permissionHandler != null) {
+        if (request.method == "item/permissions/requestApproval" && permissionHandler != null) {
             val permissionRequest = try {
                 request.decodePermissionApprovalRequest()
             } catch (error: Throwable) {
@@ -167,7 +182,7 @@ class CodexRpcClient private constructor(
         }
 
         val userInputHandler = userInputRequestHandler
-        if (request.method == USER_INPUT_REQUEST_METHOD && userInputHandler != null) {
+        if (request.method == "item/tool/requestUserInput" && userInputHandler != null) {
             val userInputRequest = try {
                 request.decodeUserInputRequest()
             } catch (error: Throwable) {
@@ -190,7 +205,7 @@ class CodexRpcClient private constructor(
         }
 
         val mcpHandler = mcpElicitationHandler
-        if (request.method == MCP_ELICITATION_REQUEST_METHOD && mcpHandler != null) {
+        if (request.method == "mcpServer/elicitation/request" && mcpHandler != null) {
             val mcpRequest = try {
                 request.decodeMcpElicitationRequest()
             } catch (error: Throwable) {
@@ -213,7 +228,7 @@ class CodexRpcClient private constructor(
         }
 
         val attestationHandler = attestationGenerateHandler
-        if (request.method == ATTESTATION_GENERATE_METHOD && attestationHandler != null) {
+        if (request.method == "attestation/generate" && attestationHandler != null) {
             val attestationRequest = try {
                 request.decodeAttestationGenerateRequest()
             } catch (error: Throwable) {
@@ -240,27 +255,6 @@ class CodexRpcClient private constructor(
             JsonRpcResponse(id = request.id, result = defaultResult.toJsonElement())
         } else {
             JsonRpcResponse(id = request.id, error = noHandlerError(request.method))
-        }
-    }
-
-    companion object {
-        suspend fun connect(connection: CodexRpcConnection): CodexRpcClient {
-            val session = JsonRpcSession(connection.transport, connection.scope)
-            return try {
-                val params = InitializeParams(
-                    clientInfo = connection.clientInfo,
-                    capabilities = connection.capabilities,
-                )
-                session.request(
-                    method = "initialize",
-                    params = CodexProtocolJson.encodeToJsonElement(InitializeParams.serializer(), params),
-                )
-                session.notify("initialized")
-                CodexRpcClient(session, connection.scope)
-            } catch (error: Throwable) {
-                session.close()
-                throw error
-            }
         }
     }
 }

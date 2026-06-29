@@ -183,8 +183,8 @@ class ThreadTurnApiTest {
     ): ConnectedClientFixture {
         val transport = FakeJsonRpcTransport()
         val client = async {
-            CodexAppServerClient.connect(
-                CodexClientOptions(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
@@ -198,7 +198,7 @@ class ThreadTurnApiTest {
     }
 
     private data class ConnectedClientFixture(
-        val client: CodexAppServerClient,
+        val client: CodexClient,
         val transport: FakeJsonRpcTransport,
     )
 }

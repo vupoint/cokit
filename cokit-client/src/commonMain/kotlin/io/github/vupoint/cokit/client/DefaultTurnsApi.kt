@@ -2,18 +2,18 @@ package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.rpc.JsonRpcSession
 
-class TurnsApi internal constructor(
+internal class DefaultTurnsApi(
     private val rpc: JsonRpcSession,
-) {
-    suspend fun start(request: StartTurnRequest): Turn {
+) : TurnsApi {
+    override suspend fun start(request: StartTurnRequest): Turn {
         return rpc.request(CodexRpc.Turn.Start, request.toRpcParams()).turn
     }
 
-    suspend fun steer(request: SteerTurnRequest) {
+    override suspend fun steer(request: SteerTurnRequest) {
         rpc.request(CodexRpc.Turn.Steer, request.toRpcParams())
     }
 
-    suspend fun interrupt(request: InterruptTurnRequest) {
+    override suspend fun interrupt(request: InterruptTurnRequest) {
         rpc.request(CodexRpc.Turn.Interrupt, request.toRpcParams())
     }
 }

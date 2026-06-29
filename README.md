@@ -13,8 +13,8 @@ CoKit is in early development. The current codebase includes:
 - JSON-RPC protocol envelopes and serializers.
 - A coroutine JSON-RPC session with response correlation and notification flows.
 - A high-level app-server client initialization handshake.
-- A JSON-RPC-first `CodexRpcClient` with typed descriptors for the currently
-  modeled thread and turn request APIs.
+- A `CodexClient` facade with typed descriptors for the currently modeled
+  app-server request APIs.
 - Default handling for server-initiated approval-like requests.
 - JVM stdio JSONL transport.
 - A guarded integration smoke test for a real local `codex app-server`.
@@ -34,8 +34,10 @@ Published artifacts use the `io.github.vupoint.cokit` group and include:
   metadata. This module does not depend on client, runtime, or transport code.
 - `cokit-rpc`: request correlation, notification routing, and server request
   flow. This module depends on protocol types only.
-- `cokit-client`: high-level Codex app-server client APIs. Public operations use
-  typed option and request models while the raw JSON-RPC session stays internal.
+- `cokit-client-api`: public client contracts, typed request descriptors,
+  notifications, server-request models, and shared option/value models.
+- `cokit-client`: default `CodexClient` implementation and `CodexClients`
+  factory. The raw JSON-RPC session stays internal.
 - `cokit-transport-stdio`: JVM stdio transport for the local Codex app-server.
 - `cokit-transport-websocket`: experimental WebSocket transport placeholder.
 - `cokit-testing`: fake transports and protocol test helpers for consumers and
@@ -85,8 +87,11 @@ dependencies {
 ```
 
 The BOM also aligns JVM target artifacts such as `cokit-client-jvm` and
-`cokit-transport-stdio-jvm`. Gradle builds should normally use the base module
+`cokit-client-api-jvm`. Gradle builds should normally use the base module
 coordinates above so Gradle module metadata can select the right variant.
+
+Use `cokit-client-api` directly only when you need the public contracts and
+models without the default client implementation.
 
 Add `cokit-testing` only to test configurations:
 
@@ -102,8 +107,8 @@ dependencies {
 ```kotlin
 val transport = StdioCodexTransport()
 
-val client = CodexRpcClient.connect(
-    CodexRpcConnection(
+val client = CodexClients.connect(
+    CodexClientConnection(
         transport = transport,
         clientInfo = ClientInfo(
             name = "cokit_sample",

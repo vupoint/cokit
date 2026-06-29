@@ -337,7 +337,7 @@ class CodexNotificationTest {
 
         val resolved = assertIs<CodexNotification.ServerRequestResolved>(notification)
         assertEquals(ThreadId("thr_123"), resolved.threadId)
-        assertEquals(JsonRpcId.Number(99), resolved.requestId)
+        assertEquals(CodexServerRequestId.Number(99), resolved.requestId)
 
         val stringIdNotification = JsonRpcNotification(
             method = "serverRequest/resolved",
@@ -348,7 +348,7 @@ class CodexNotificationTest {
         ).toCodexNotification()
 
         val stringIdResolved = assertIs<CodexNotification.ServerRequestResolved>(stringIdNotification)
-        assertEquals(JsonRpcId.StringId("req_abc"), stringIdResolved.requestId)
+        assertEquals(CodexServerRequestId.StringId("req_abc"), stringIdResolved.requestId)
     }
 
     @Test

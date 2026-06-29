@@ -10,8 +10,8 @@ import io.github.vupoint.cokit.client.ClientInfo
 import io.github.vupoint.cokit.client.CodexHostPath
 import io.github.vupoint.cokit.client.CodexNotification
 import io.github.vupoint.cokit.client.CodexRpc
-import io.github.vupoint.cokit.client.CodexRpcClient
-import io.github.vupoint.cokit.client.CodexRpcConnection
+import io.github.vupoint.cokit.client.CodexClients
+import io.github.vupoint.cokit.client.CodexClientConnection
 import io.github.vupoint.cokit.client.ThreadStartParams
 import io.github.vupoint.cokit.client.TurnInput
 import io.github.vupoint.cokit.client.TurnStartParams
@@ -96,8 +96,8 @@ internal class CodexSampleRunner(
     private val transportFactory: () -> JsonRpcTransport = { StdioCodexTransport() },
 ) : SampleRunner {
     override suspend fun run(options: SampleOptions, output: SampleOutput): Unit = coroutineScope {
-        CodexRpcClient.connect(
-            CodexRpcConnection(
+        CodexClients.connect(
+            CodexClientConnection(
                 transport = transportFactory(),
                 clientInfo = ClientInfo(
                     name = "cokit_sample_cli",

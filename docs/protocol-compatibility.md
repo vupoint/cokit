@@ -146,7 +146,7 @@ methods:
 - `remoteControl/client/list`
 - `remoteControl/client/revoke`
 
-`CodexRpcClient.connect()` also performs the required `initialize` request and
+`CodexClients.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
 
 The following summary is checked by `CodexRpcCoverageTest`. Inventory group

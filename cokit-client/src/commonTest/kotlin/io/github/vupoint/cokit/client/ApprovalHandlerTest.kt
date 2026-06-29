@@ -299,13 +299,8 @@ class ApprovalHandlerTest {
     }
 
     @Test
-    fun serverRequestHandlersUseSdkRequestAndResponseTypes() = runTest {
-        val fixture = connectedClientFixture(backgroundScope)
-        fixture.client.registerServerRequestHandler("custom/request") { request ->
-            assertEquals("custom/request", request.method)
-            assertEquals("""{"value":"kept"}""", request.params?.toJsonString())
-            CodexServerResponse.Result(CodexJsonPayload.parse("""{"decision":"decline"}"""))
-        }
+    fun unsupportedServerRequestsReturnNoHandlerError() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
 
         fixture.transport.receive(
             JsonRpcRequest(
@@ -320,7 +315,8 @@ class ApprovalHandlerTest {
 
         val response = fixture.transport.sent.last() as JsonRpcResponse
         assertEquals(JsonRpcId.Number(99), response.id)
-        assertTrue(response.result.toString().contains("decline"))
+        assertEquals(-32601, response.error?.code)
+        assertEquals("No handler registered for custom/request", response.error?.message)
     }
 
     @Test
@@ -394,10 +390,10 @@ class ApprovalHandlerTest {
     }
 
     @Test
-    fun eventsExposeTypedNotificationEnvelope() = runTest {
-        val fixture = connectedClientFixture(backgroundScope)
-        val event = async {
-            fixture.client.events.first()
+    fun notificationsExposeTypedThreadStartedModel() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val notification = async {
+            fixture.client.notifications.first()
         }
 
         fixture.transport.receive(
@@ -410,9 +406,8 @@ class ApprovalHandlerTest {
         )
         runCurrent()
 
-        val notification = event.await() as CodexEvent.Notification
-        assertEquals("thread/started", notification.method)
-        assertEquals("""{"threadId":"thr_123"}""", notification.params?.toJsonString())
+        val started = assertIs<CodexNotification.ThreadStarted>(notification.await())
+        assertEquals(ThreadId("thr_123"), started.threadId)
     }
 
     private suspend fun TestScope.connectedClientFixture(
@@ -420,8 +415,8 @@ class ApprovalHandlerTest {
     ): ConnectedClientFixture {
         val transport = FakeJsonRpcTransport()
         val client = async {
-            CodexAppServerClient.connect(
-                CodexClientOptions(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
@@ -439,8 +434,8 @@ class ApprovalHandlerTest {
     ): ConnectedRpcClientFixture {
         val transport = FakeJsonRpcTransport()
         val client = async {
-            CodexRpcClient.connect(
-                CodexRpcConnection(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
@@ -532,12 +527,12 @@ class ApprovalHandlerTest {
     )
 
     private data class ConnectedClientFixture(
-        val client: CodexAppServerClient,
+        val client: CodexClient,
         val transport: FakeJsonRpcTransport,
     )
 
     private data class ConnectedRpcClientFixture(
-        val client: CodexRpcClient,
+        val client: CodexClient,
         val transport: FakeJsonRpcTransport,
     )
 }

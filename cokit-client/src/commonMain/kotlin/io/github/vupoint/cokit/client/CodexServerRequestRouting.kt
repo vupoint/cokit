@@ -14,70 +14,21 @@ import io.github.vupoint.cokit.client.server.UserInputResponse
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.protocol.JsonRpcErrorObject
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 
-internal const val COMMAND_APPROVAL_METHOD = "item/commandExecution/requestApproval"
-internal const val FILE_CHANGE_APPROVAL_METHOD = "item/fileChange/requestApproval"
-internal const val PERMISSION_APPROVAL_METHOD = "item/permissions/requestApproval"
-internal const val USER_INPUT_REQUEST_METHOD = "item/tool/requestUserInput"
-internal const val MCP_ELICITATION_REQUEST_METHOD = "mcpServer/elicitation/request"
-internal const val ATTESTATION_GENERATE_METHOD = "attestation/generate"
-
-sealed interface CodexServerRequest {
-    val method: String
-
-    data class CommandApproval(
-        val request: CommandApprovalRequest,
-    ) : CodexServerRequest {
-        override val method: String = COMMAND_APPROVAL_METHOD
-    }
-
-    data class FileChangeApproval(
-        val request: FileChangeApprovalRequest,
-    ) : CodexServerRequest {
-        override val method: String = FILE_CHANGE_APPROVAL_METHOD
-    }
-
-    data class PermissionApproval(
-        val request: PermissionApprovalRequest,
-    ) : CodexServerRequest {
-        override val method: String = PERMISSION_APPROVAL_METHOD
-    }
-
-    data class UserInput(
-        val request: UserInputRequest,
-    ) : CodexServerRequest {
-        override val method: String = USER_INPUT_REQUEST_METHOD
-    }
-
-    data class McpElicitation(
-        val request: McpElicitationRequest,
-    ) : CodexServerRequest {
-        override val method: String = MCP_ELICITATION_REQUEST_METHOD
-    }
-
-    data class AttestationGenerate(
-        val request: AttestationGenerateRequest,
-    ) : CodexServerRequest {
-        override val method: String = ATTESTATION_GENERATE_METHOD
-    }
-
-    data class Unsupported(
-        override val method: String,
-    ) : CodexServerRequest
-}
-
-data class CodexRawServerRequest(
-    val method: String,
-    val params: CodexJsonPayload? = null,
-)
+private const val COMMAND_APPROVAL_METHOD = "item/commandExecution/requestApproval"
+private const val FILE_CHANGE_APPROVAL_METHOD = "item/fileChange/requestApproval"
+private const val PERMISSION_APPROVAL_METHOD = "item/permissions/requestApproval"
+private const val USER_INPUT_REQUEST_METHOD = "item/tool/requestUserInput"
+private const val MCP_ELICITATION_REQUEST_METHOD = "mcpServer/elicitation/request"
+private const val ATTESTATION_GENERATE_METHOD = "attestation/generate"
 
 internal fun JsonRpcRequest.toCodexServerRequest(): CodexServerRequest {
     return when (method) {

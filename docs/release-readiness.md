@@ -56,6 +56,7 @@ The published artifacts are:
 - `cokit-bom`
 - `cokit-protocol`
 - `cokit-rpc`
+- `cokit-client-api`
 - `cokit-client`
 - `cokit-transport-stdio`
 - `cokit-transport-websocket`

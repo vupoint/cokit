@@ -19,6 +19,7 @@ rootProject.name = "cokit"
 include(
     ":cokit-protocol",
     ":cokit-rpc",
+    ":cokit-client-api",
     ":cokit-client",
     ":cokit-transport-stdio",
     ":cokit-transport-websocket",

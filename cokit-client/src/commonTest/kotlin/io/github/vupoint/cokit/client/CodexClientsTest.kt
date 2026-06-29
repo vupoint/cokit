@@ -14,14 +14,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class CodexAppServerClientTest {
+class CodexClientsTest {
     @Test
     fun connectInitializesThenSendsInitializedNotification() = runTest {
         val transport = FakeJsonRpcTransport()
 
         val client = async {
-            CodexAppServerClient.connect(
-                CodexClientOptions(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = backgroundScope,

@@ -43,3 +43,9 @@ internal suspend fun <P : Any, R : Any> JsonRpcSession.request(
     )
     return result.decodeResult(method)
 }
+
+internal fun JsonElement.toCodexPayload(): CodexJsonPayload =
+    CodexJsonPayload.parse(CodexProtocolJson.encodeToString(JsonElement.serializer(), this))
+
+internal fun CodexJsonPayload?.toJsonElement(): JsonElement? =
+    this?.let { CodexProtocolJson.parseToJsonElement(it.toJsonString()) }

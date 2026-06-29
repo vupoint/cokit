@@ -229,8 +229,8 @@ class RemoteControlRpcTest {
     ): ConnectedRpcClientFixture {
         val transport = FakeJsonRpcTransport()
         val client = async {
-            CodexRpcClient.connect(
-                CodexRpcConnection(
+            CodexClients.connect(
+                CodexClientConnection(
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
@@ -285,7 +285,7 @@ class RemoteControlRpcTest {
         }
 
     private data class ConnectedRpcClientFixture(
-        val client: CodexRpcClient,
+        val client: CodexClient,
         val transport: FakeJsonRpcTransport,
     )
 }

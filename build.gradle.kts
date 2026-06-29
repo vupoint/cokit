@@ -200,7 +200,8 @@ tasks.register("checkMavenCentralPublishingConfiguration") {
 val allowedMainProjectDependencies = mapOf(
     ":cokit-protocol" to emptySet<String>(),
     ":cokit-rpc" to setOf(":cokit-protocol"),
-    ":cokit-client" to setOf(":cokit-protocol", ":cokit-rpc"),
+    ":cokit-client-api" to setOf(":cokit-protocol", ":cokit-rpc"),
+    ":cokit-client" to setOf(":cokit-client-api", ":cokit-protocol", ":cokit-rpc"),
     ":cokit-transport-stdio" to setOf(":cokit-rpc"),
     ":cokit-transport-websocket" to setOf(":cokit-rpc"),
     ":cokit-testing" to setOf(":cokit-protocol", ":cokit-rpc"),
@@ -246,8 +247,8 @@ tasks.register("validateModuleBoundaries") {
 }
 
 val publicApiSourceRoots = listOf(
-    "cokit-client/src/commonMain/kotlin",
-    "cokit-client/src/jvmMain/kotlin",
+    "cokit-client-api/src/commonMain/kotlin",
+    "cokit-client-api/src/jvmMain/kotlin",
 ).map { path -> layout.projectDirectory.dir(path) }
 
 val checkPublicApiExposure = tasks.register<CokitPublicApiExposureTask>("checkPublicApiExposure") {

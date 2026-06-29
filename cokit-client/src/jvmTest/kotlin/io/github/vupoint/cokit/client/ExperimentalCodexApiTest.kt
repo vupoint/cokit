@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 class ExperimentalCodexApiTest {
     @Test
     fun markerRequiresExplicitErrorLevelOptIn() {
-        val source = loadDocument("cokit-client/src/commonMain/kotlin/io/github/vupoint/cokit/client/ExperimentalCodexApi.kt")
+        val source = loadDocument("cokit-client-api/src/commonMain/kotlin/io/github/vupoint/cokit/client/ExperimentalCodexApi.kt")
 
         assertTrue(
             source.contains("@RequiresOptIn("),
