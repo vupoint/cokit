@@ -6,8 +6,12 @@ import io.github.vupoint.cokit.client.auth.AccountRateLimitsReadParams
 import io.github.vupoint.cokit.client.auth.AccountRateLimitsResult
 import io.github.vupoint.cokit.client.auth.AccountUsageReadParams
 import io.github.vupoint.cokit.client.auth.AccountUsageResult
+import io.github.vupoint.cokit.client.auth.AccountWorkspaceMessagesReadParams
+import io.github.vupoint.cokit.client.auth.AccountWorkspaceMessagesResult
 import io.github.vupoint.cokit.client.auth.CancelLoginAccountParams
 import io.github.vupoint.cokit.client.auth.CancelLoginAccountResult
+import io.github.vupoint.cokit.client.auth.ConsumeAccountRateLimitResetCreditParams
+import io.github.vupoint.cokit.client.auth.ConsumeAccountRateLimitResetCreditResult
 import io.github.vupoint.cokit.client.auth.LoginAccountParams
 import io.github.vupoint.cokit.client.auth.LoginAccountResult
 import io.github.vupoint.cokit.client.auth.LogoutAccountParams
@@ -597,6 +601,24 @@ object CodexRpc {
             paramsSerializer = null,
             resultSerializer = AccountUsageResult.serializer(),
         )
+
+        val ReadWorkspaceMessages:
+            CodexRpcMethod<AccountWorkspaceMessagesReadParams, AccountWorkspaceMessagesResult> =
+            CodexRpcMethod(
+                method = "account/workspaceMessages/read",
+                paramsSerializer = null,
+                resultSerializer = AccountWorkspaceMessagesResult.serializer(),
+            )
+
+        val ConsumeRateLimitResetCredit:
+            CodexRpcMethod<
+                ConsumeAccountRateLimitResetCreditParams,
+                ConsumeAccountRateLimitResetCreditResult,
+                > = CodexRpcMethod(
+                method = "account/rateLimitResetCredit/consume",
+                paramsSerializer = ConsumeAccountRateLimitResetCreditParams.serializer(),
+                resultSerializer = ConsumeAccountRateLimitResetCreditResult.serializer(),
+            )
 
         val SendAddCreditsNudgeEmail:
             CodexRpcMethod<SendAddCreditsNudgeEmailParams, SendAddCreditsNudgeEmailResult> =

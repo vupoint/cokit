@@ -607,10 +607,12 @@ public final class io/github/vupoint/cokit/client/CodexRpc {
 public final class io/github/vupoint/cokit/client/CodexRpc$Account {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Account;
 	public final fun getCancelLogin ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getConsumeRateLimitResetCredit ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getLogout ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getRead ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getReadRateLimits ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getReadUsage ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getReadWorkspaceMessages ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getSendAddCreditsNudgeEmail ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getStartLogin ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
@@ -5198,6 +5200,43 @@ public final class io/github/vupoint/cokit/client/auth/AccountUsageResult$Compan
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesReadParams {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesReadParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult$Companion;
+	public fun <init> (ZLjava/util/List;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ZLjava/util/List;)Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult;ZLjava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFeatureEnabled ()Z
+	public final fun getMessages ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountWorkspaceMessagesResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/auth/AddCreditsNudgeCreditType {
 	public static final field Companion Lio/github/vupoint/cokit/client/auth/AddCreditsNudgeCreditType$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AddCreditsNudgeCreditType;
@@ -5398,6 +5437,97 @@ public final class io/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt$Comp
 }
 
 public final class io/github/vupoint/cokit/client/auth/CodexAccount$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-T7lFUhM (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-Y9bG67s (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome$Companion {
+	public final fun getAlreadyRedeemed-i3sXgYM ()Ljava/lang/String;
+	public final fun getNoCredit-i3sXgYM ()Ljava/lang/String;
+	public final fun getNothingToReset-i3sXgYM ()Ljava/lang/String;
+	public final fun getReset-i3sXgYM ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCreditId ()Ljava/lang/String;
+	public final fun getIdempotencyKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-i3sXgYM ()Ljava/lang/String;
+	public final fun copy-T8M8Y6Q (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult;
+	public static synthetic fun copy-T8M8Y6Q$default (Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOutcome-i3sXgYM ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -5678,6 +5808,75 @@ public final synthetic class io/github/vupoint/cokit/client/auth/SendAddCreditsN
 }
 
 public final class io/github/vupoint/cokit/client/auth/SendAddCreditsNudgeEmailResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/WorkspaceMessage {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/WorkspaceMessage$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexTimestamp;Lio/github/vupoint/cokit/client/CodexTimestamp;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexTimestamp;Lio/github/vupoint/cokit/client/CodexTimestamp;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-GxIeBIM ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4-NQNrhFg ()Lio/github/vupoint/cokit/client/CodexTimestamp;
+	public final fun component5-NQNrhFg ()Lio/github/vupoint/cokit/client/CodexTimestamp;
+	public final fun copy-I_CsQCM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexTimestamp;Lio/github/vupoint/cokit/client/CodexTimestamp;)Lio/github/vupoint/cokit/client/auth/WorkspaceMessage;
+	public static synthetic fun copy-I_CsQCM$default (Lio/github/vupoint/cokit/client/auth/WorkspaceMessage;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexTimestamp;Lio/github/vupoint/cokit/client/CodexTimestamp;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/WorkspaceMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArchivedAt-NQNrhFg ()Lio/github/vupoint/cokit/client/CodexTimestamp;
+	public final fun getCreatedAt-NQNrhFg ()Lio/github/vupoint/cokit/client/CodexTimestamp;
+	public final fun getMessageBody ()Ljava/lang/String;
+	public final fun getMessageId ()Ljava/lang/String;
+	public final fun getMessageType-GxIeBIM ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/WorkspaceMessage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/WorkspaceMessage$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/WorkspaceMessage;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/WorkspaceMessage;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/WorkspaceMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/WorkspaceMessageType {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/WorkspaceMessageType$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/WorkspaceMessageType;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/WorkspaceMessageType$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/WorkspaceMessageType$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-T7QhXD0 (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-MaXGtsU (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/WorkspaceMessageType$Companion {
+	public final fun getAnnouncement-GxIeBIM ()Ljava/lang/String;
+	public final fun getHeadline-GxIeBIM ()Ljava/lang/String;
+	public final fun getUnknown-GxIeBIM ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

@@ -14,12 +14,16 @@ import io.github.vupoint.cokit.client.auth.CancelLoginAccountParams
 import io.github.vupoint.cokit.client.auth.CancelLoginAccountResult
 import io.github.vupoint.cokit.client.auth.CancelLoginAccountStatus
 import io.github.vupoint.cokit.client.auth.CodexAccount
+import io.github.vupoint.cokit.client.auth.AccountWorkspaceMessagesReadParams
+import io.github.vupoint.cokit.client.auth.ConsumeAccountRateLimitResetCreditOutcome
+import io.github.vupoint.cokit.client.auth.ConsumeAccountRateLimitResetCreditParams
 import io.github.vupoint.cokit.client.auth.LoginAccountId
 import io.github.vupoint.cokit.client.auth.LoginAccountParams
 import io.github.vupoint.cokit.client.auth.LoginAccountResult
 import io.github.vupoint.cokit.client.auth.LogoutAccountParams
 import io.github.vupoint.cokit.client.auth.SendAddCreditsNudgeEmailParams
 import io.github.vupoint.cokit.client.auth.SendAddCreditsNudgeEmailResult
+import io.github.vupoint.cokit.client.auth.WorkspaceMessageType
 import io.github.vupoint.cokit.protocol.JsonRpcNotification
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
@@ -46,6 +50,88 @@ import kotlinx.serialization.json.put
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class, ExperimentalCodexApi::class)
 class AccountRpcTest {
+    @Test
+    fun accountWorkspaceMessagesDescriptorSendsNoParamsAndDecodesMessages() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val result = async {
+            fixture.client.request(
+                CodexRpc.Account.ReadWorkspaceMessages,
+                AccountWorkspaceMessagesReadParams,
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("account/workspaceMessages/read", request.method)
+        assertNull(request.params)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("featureEnabled", true)
+                    put("messages", buildJsonArray {
+                        add(
+                            buildJsonObject {
+                                put("messageId", "message_123")
+                                put("messageType", "futureType")
+                                put("messageBody", "Workspace maintenance starts soon.")
+                                put("createdAt", 1_776_000_000)
+                                put("archivedAt", null)
+                                put("futureField", "kept")
+                            },
+                        )
+                    })
+                },
+            ),
+        )
+
+        val decoded = result.await()
+        assertEquals(true, decoded.featureEnabled)
+        val message = decoded.messages.single()
+        assertEquals("message_123", message.messageId)
+        assertEquals(WorkspaceMessageType("futureType"), message.messageType)
+        assertEquals("Workspace maintenance starts soon.", message.messageBody)
+        assertEquals(CodexTimestamp(1_776_000_000), message.createdAt)
+        assertNull(message.archivedAt)
+    }
+
+    @Test
+    fun accountRateLimitResetCreditDescriptorPreservesAllOutcomes() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val outcomes = listOf(
+            ConsumeAccountRateLimitResetCreditOutcome.Reset,
+            ConsumeAccountRateLimitResetCreditOutcome.NothingToReset,
+            ConsumeAccountRateLimitResetCreditOutcome.NoCredit,
+            ConsumeAccountRateLimitResetCreditOutcome.AlreadyRedeemed,
+        )
+
+        outcomes.forEachIndexed { index, expected ->
+            val result = async {
+                fixture.client.request(
+                    CodexRpc.Account.ConsumeRateLimitResetCredit,
+                    ConsumeAccountRateLimitResetCreditParams(
+                        idempotencyKey = "attempt_$index",
+                        creditId = "credit_123",
+                    ),
+                )
+            }
+            runCurrent()
+
+            val request = fixture.transport.sent.last() as JsonRpcRequest
+            assertEquals("account/rateLimitResetCredit/consume", request.method)
+            assertEquals("attempt_$index", request.params?.jsonObject?.get("idempotencyKey")?.jsonPrimitive?.contentOrNull)
+            assertEquals("credit_123", request.params?.jsonObject?.get("creditId")?.jsonPrimitive?.contentOrNull)
+            fixture.transport.receive(
+                JsonRpcResponse(
+                    request.id,
+                    result = buildJsonObject { put("outcome", expected.value) },
+                ),
+            )
+
+            assertEquals(expected, result.await().outcome)
+        }
+    }
+
     @Test
     fun accountReadDescriptorSendsRefreshFlagAndDecodesChatGptAccountWithoutLoggingIdentifier() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)

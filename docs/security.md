@@ -256,6 +256,13 @@ user or policy approval. `CodexRpc.Account` logout has no request parameters and
 returns no account payload; applications should still treat logout as a
 user-visible auth state change.
 
+`CodexRpc.Account.ConsumeRateLimitResetCredit` is an explicit account mutation.
+CoKit never invokes it during initialization, account reads, notification
+handling, or retry middleware. Callers must supply an idempotency key and may
+retry one logical attempt only by reusing that same key. A successful JSON-RPC
+response can report `nothingToReset`, `noCredit`, or `alreadyRedeemed`; callers
+must not infer that a credit was consumed unless the outcome is `reset`.
+
 `CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` are experimental
 remote-control descriptors. They expose app-server remote-control state,
 installation id, local server name, and nullable environment id as protocol data

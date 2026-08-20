@@ -166,15 +166,15 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 81 public `CodexRpc` request descriptors |
+| Request groups | 6 | 8 | 3 | 5 | 83 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The upstream README currently documents roughly 100 request methods when the
 main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 81%
-of the full upstream request surface, or about 82% if the internal initialize
+together. On that basis, CoKit's typed request descriptor coverage is about 83%
+of the full upstream request surface, or about 84% if the internal initialize
 handshake is counted as implemented coverage.
 
 Typed notification and server-request coverage is intentionally smaller than the

@@ -1,5 +1,6 @@
 package io.github.vupoint.cokit.client.auth
 
+import io.github.vupoint.cokit.client.CodexTimestamp
 import io.github.vupoint.cokit.client.ExperimentalCodexApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -183,6 +184,56 @@ data object AccountRateLimitsReadParams
 
 @Serializable
 data object AccountUsageReadParams
+
+@Serializable
+data object AccountWorkspaceMessagesReadParams
+
+@Serializable
+data class AccountWorkspaceMessagesResult(
+    val featureEnabled: Boolean,
+    val messages: List<WorkspaceMessage>,
+)
+
+@Serializable
+data class WorkspaceMessage(
+    val messageId: String,
+    val messageType: WorkspaceMessageType,
+    val messageBody: String,
+    val createdAt: CodexTimestamp? = null,
+    val archivedAt: CodexTimestamp? = null,
+)
+
+@Serializable
+@JvmInline
+value class WorkspaceMessageType(val value: String) {
+    companion object {
+        val Headline = WorkspaceMessageType("headline")
+        val Announcement = WorkspaceMessageType("announcement")
+        val Unknown = WorkspaceMessageType("unknown")
+    }
+}
+
+@Serializable
+data class ConsumeAccountRateLimitResetCreditParams(
+    val idempotencyKey: String,
+    val creditId: String? = null,
+)
+
+@Serializable
+data class ConsumeAccountRateLimitResetCreditResult(
+    val outcome: ConsumeAccountRateLimitResetCreditOutcome,
+)
+
+@Serializable
+@JvmInline
+value class ConsumeAccountRateLimitResetCreditOutcome(val value: String) {
+    companion object {
+        val Reset = ConsumeAccountRateLimitResetCreditOutcome("reset")
+        val NothingToReset = ConsumeAccountRateLimitResetCreditOutcome("nothingToReset")
+        val NoCredit = ConsumeAccountRateLimitResetCreditOutcome("noCredit")
+        val AlreadyRedeemed = ConsumeAccountRateLimitResetCreditOutcome("alreadyRedeemed")
+    }
+}
 
 @Serializable
 data class AccountRateLimitsResult(

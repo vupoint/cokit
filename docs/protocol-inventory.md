@@ -49,7 +49,7 @@ modeled coverage. They are compatibility behavior only.
 | External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
 | Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl` models experimental status, enable/disable, pairing, client list, and client revoke descriptors behind `ExperimentalCodexApi`. Pairing codes and controller client ids are redacted from model string representations. |
 | Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
-| Account and auth | modeled | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. `ReadRateLimits`, `ReadUsage`, and `SendAddCreditsNudgeEmail` model current rate-limit snapshots, usage summaries, daily buckets, and add-credits nudge status. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
+| Account and auth | modeled | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/workspaceMessages/read`, `account/rateLimitResetCredit/consume`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. `ReadRateLimits`, `ReadUsage`, `ReadWorkspaceMessages`, `ConsumeRateLimitResetCredit`, and `SendAddCreditsNudgeEmail` model current rate-limit snapshots, usage summaries, workspace messages, explicit idempotent reset-credit outcomes, and add-credits nudge status. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
 
 ## Notification Groups
 
@@ -170,6 +170,8 @@ without updating the public inventory.
 | `CodexRpc.Account.Logout` | `account/logout` | Account logout descriptor; account and auth coverage remains partial. |
 | `CodexRpc.Account.ReadRateLimits` | `account/rateLimits/read` | Account rate-limit descriptor; account and auth request coverage is modeled. |
 | `CodexRpc.Account.ReadUsage` | `account/usage/read` | Account usage descriptor; account and auth request coverage is modeled. |
+| `CodexRpc.Account.ReadWorkspaceMessages` | `account/workspaceMessages/read` | Read-only workspace message descriptor; account and auth request coverage is modeled. |
+| `CodexRpc.Account.ConsumeRateLimitResetCredit` | `account/rateLimitResetCredit/consume` | Explicit idempotency-key-driven account mutation descriptor; account and auth request coverage is modeled. |
 | `CodexRpc.Account.SendAddCreditsNudgeEmail` | `account/sendAddCreditsNudgeEmail` | Account add-credits nudge descriptor; account and auth request coverage is modeled. |
 | `CodexRpc.PermissionProfile.List` | `permissionProfile/list` | Permission profile catalog descriptor; feature and permission catalog coverage remains partial. |
 | `CodexRpc.CollaborationMode.List` | `collaborationMode/list` | Experimental collaboration mode descriptor; group coverage remains experimental. |
@@ -256,6 +258,8 @@ Current public request descriptors:
 - `account/logout`
 - `account/rateLimits/read`
 - `account/usage/read`
+- `account/workspaceMessages/read`
+- `account/rateLimitResetCredit/consume`
 - `account/sendAddCreditsNudgeEmail`
 - `permissionProfile/list`
 - `collaborationMode/list`
