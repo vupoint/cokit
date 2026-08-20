@@ -139,6 +139,28 @@ service-tier metadata. `CodexRpc.Model.ReadProviderCapabilities` reports
 provider-level feature flags such as web search, image generation, and namespace
 tools without requiring callers to build raw JSON-RPC requests.
 
+## Inspect Stable Runtime State
+
+```kotlin
+val loadedThreads = client.threads.listLoaded(ListLoadedThreadsRequest(limit = 20))
+
+val installedApps = client.request(
+    CodexRpc.App.Installed,
+    AppsInstalledParams(forceRefresh = false),
+)
+
+val workspaceMessages = client.request(
+    CodexRpc.Account.ReadWorkspaceMessages,
+    AccountWorkspaceMessagesReadParams,
+)
+```
+
+These stable, read-only calls expose the app-server's loaded thread ids,
+installed app snapshot, and workspace messages without importing experimental
+connector metadata. Reset-credit consumption is intentionally omitted from the
+read-only quickstart: callers must supply an explicit idempotency key and handle
+all documented outcomes before invoking that mutation.
+
 ## Observe Notifications
 
 ```kotlin

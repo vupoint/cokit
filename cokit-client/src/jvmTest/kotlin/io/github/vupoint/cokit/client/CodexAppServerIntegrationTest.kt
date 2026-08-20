@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 
 class CodexAppServerIntegrationTest {
     @Test
-    fun initializesRealAppServerOverStdioWhenEnabled() = runTest {
+    fun initializesAndListsThreadsFromRealAppServerOverStdioWhenEnabled() = runTest {
         if (System.getenv("COKIT_CODEX_INTEGRATION") != "1") {
             return@runTest
         }
@@ -22,6 +22,8 @@ class CodexAppServerIntegrationTest {
             )
 
             assertTrue(client.isInitialized)
+            val threads = client.threads.list(ListThreadsRequest(limit = 1))
+            assertTrue(threads.threads.size <= 1)
         }
     }
 }

@@ -30,7 +30,7 @@ enable the matching upstream experimental capability before use.
 Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
 status models require `@ExperimentalCodexApi`, and applications should enable
 the matching upstream experimental capability before use. Current local
-`codex-cli 0.140.0` generated schema exposes the enable/disable params and
+`codex-cli 0.146.0` generated schema exposes the enable/disable params and
 status-changed notification shape; the upstream README also documents the
 `remoteControl/enable`, `remoteControl/disable`, and
 `remoteControl/status/read` request methods.
@@ -62,6 +62,15 @@ backward cursors, `thread/unarchive` returns its refreshed thread, and
 client-message scalar fields should likewise use wrappers such as `CodexCursor`,
 `CodexTimestamp`, `ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`,
 and `ItemStatus`.
+
+Because CoKit is still in the `0.0.x` development series, the 0.146.0 alignment
+intentionally corrects previously inaccurate public contracts instead of
+retaining stable-looking aliases that are invalid on the wire. Applications
+should replace removed thread-start `permissions` and thread-level `effort`
+arguments with the current stable fields, stop sending `excludeTurns` and
+`initialTurnsPage`, handle `thread/unarchive` as a thread result, and handle
+`turn/steer` as an accepted turn-id result.
+
 Prefer value classes with documented constants over closed enums when upstream
 may add new string values.
 
@@ -84,8 +93,8 @@ remain deny-by-default unless a typed handler is registered.
 
 ## Upstream Coverage Snapshot
 
-This snapshot was reviewed against the upstream app-server README on
-2026-06-18:
+This snapshot was reviewed against the upstream app-server README and generated
+`codex-cli 0.146.0` stable and experimental schemas on 2026-08-20:
 
 https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md
 
@@ -238,7 +247,7 @@ Permission profile and environment catalog APIs are modeled according to the
 current generated schema. `CodexRpc.PermissionProfile.List` reads server-defined
 permission profile ids and descriptions for an optional host cwd.
 `CodexRpc.CollaborationMode.List` and `CodexRpc.Environment.Add` are
-experimental and require `ExperimentalCodexApi`; current `codex-cli 0.140.0`
+experimental and require `ExperimentalCodexApi`; current `codex-cli 0.146.0`
 schema defines collaboration mode listing and environment registration, but not
 environment list/read or collaboration mode read descriptors.
 
@@ -247,7 +256,7 @@ Skills and hooks APIs are modeled as data-oriented protocol descriptors.
 declarations, and optional interface metadata without loading or executing skill
 content in CoKit. `CodexRpc.Skills.SetExtraRoots` updates the app-server skill
 search roots, and `CodexRpc.Skills.WriteConfig` changes a skill's enabled state
-by name or path. Current `codex-cli 0.140.0` schema defines
+by name or path. Current `codex-cli 0.146.0` schema defines
 `skills/config/write` but not a `skills/config/read` request.
 `CodexRpc.Hooks.List` returns per-cwd hook metadata, warnings, and parse errors
 without executing hook handlers in CoKit.
@@ -288,6 +297,9 @@ response, and `CodexRpc.Account.Logout` models the current no-params empty
 response. `CodexRpc.Account.ReadRateLimits`, `ReadUsage`, and
 `SendAddCreditsNudgeEmail` model rate-limit snapshots, usage summaries, daily
 usage buckets, and add-credits nudge email status.
+`CodexRpc.Account.ReadWorkspaceMessages` exposes stable workspace messages, and
+`ConsumeRateLimitResetCredit` requires an explicit idempotency key and returns
+one of the four stable reset-credit outcomes.
 
 Remote-control APIs are modeled behind experimental opt-in.
 `CodexRpc.RemoteControl.Enable`, `Disable`, and `ReadStatus` return the current
@@ -303,15 +315,22 @@ revoked.
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
-- Advanced thread APIs: loaded-thread listing, turn-item hydration, settings,
-  memory mode, shell command, background terminals, rollback, realtime, and raw
-  item injection.
+- Advanced thread APIs: turn-item hydration, settings, memory mode, shell
+  command, background terminals, rollback, realtime, and raw item injection.
 - Catalog and configuration APIs: experimental feature flags, Windows sandbox
   setup, feedback upload, and external-agent import.
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
 Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.
+
+The stable 0.146.0 additions implemented in this snapshot include
+`thread/loaded/list`, `app/installed`, `account/workspaceMessages/read`, reset
+credit consumption, and OpenAI form elicitation capability negotiation. APIs
+documented only on upstream `main`, including projects, thread sections, queue,
+diagnostics, plugin search, and thread revert, remain deferred until a pinned
+stable release schema includes them. The experimental `app/read` method and
+deprecated or under-development fields remain outside the primary stable API.
 
 ## Implementation Roadmap
 

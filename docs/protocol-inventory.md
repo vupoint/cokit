@@ -7,7 +7,8 @@ publishing generated schema artifacts.
 Source of truth:
 https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md
 
-Reviewed against the upstream README on 2026-06-18.
+Reviewed against the upstream README and the `codex-cli 0.146.0` generated
+stable and experimental schemas on 2026-08-20.
 
 ## Status Legend
 
@@ -24,6 +25,16 @@ Reviewed against the upstream README on 2026-06-18.
 Unknown notifications and unsupported server requests are not counted as
 modeled coverage. They are compatibility behavior only.
 
+## 0.146.0 Release Classification
+
+| Classification | Reviewed surface | CoKit decision |
+| --- | --- | --- |
+| Supported stable | Corrected thread start/resume/fork/list and turn-start fields; `thread/unarchive` and `turn/steer` results; `thread/loaded/list`; `app/installed`; `account/workspaceMessages/read`; `account/rateLimitResetCredit/consume`; OpenAI form elicitation capability and server requests; command approval request fields | Typed in the public API and covered by release-pinned fixtures. |
+| Supported experimental | Existing descriptors annotated with `ExperimentalCodexApi`, including process, remote-control, collaboration-mode, environment-add, and `app/list` surfaces | Remain opt-in and are not promoted by this stable alignment. |
+| Deferred stable | Stable methods and payload details still marked `partial` or `deferred` in the group tables below | Deferred until their complete schemas, security boundaries, and public API value are implemented together. |
+| Main-only/unreleased | Project APIs, thread sections, queue APIs, diagnostics APIs, plugin search, and `thread/revert` observed on upstream `main` but absent from the 0.146.0 release schema | Not implemented and not counted as release support. |
+| Deprecated or under development | Legacy `ApprovalPolicy.OnFailure`; broad-bundle fields such as `excludeTurns` and `initialTurnsPage`; experimental `app/read` and experimental-feature mutation | Legacy decode compatibility stays deprecated where already public. Other entries remain excluded from the stable surface and require explicit experimental design before adoption. |
+
 ## Request Groups
 
 | Group | Status | Upstream methods | CoKit coverage |
@@ -34,13 +45,13 @@ modeled coverage. They are compatibility behavior only.
 | Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors model all 0.146.0 stable start fields and the accepted turn id returned by steer. Experimental params such as environment selection remain deferred. |
 | Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
 | Review | modeled | `review/start` | `CodexRpc.Review.Start` models typed review targets, inline or detached delivery, and the returned review thread id plus turn. CoKit exposes review protocol data but does not render review UI. |
-| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.140.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
+| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.146.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | `CodexRpc.Process.Spawn`, `WriteStdin`, `ResizePty`, and `Kill` model the experimental unsandboxed process lifecycle descriptors behind `ExperimentalCodexApi`. |
 | Filesystem utilities | modeled | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, `Remove`, `Watch`, and `Unwatch` model host filesystem descriptors, including connection-scoped watch identifiers. |
 | Models and provider catalog | modeled | `model/list`, `modelProvider/capabilities/read` | `CodexRpc.Model.List` models typed catalog entries, cursors, display names, reasoning options, service tiers, and input modalities. `CodexRpc.Model.ReadProviderCapabilities` models provider-level web search, image generation, and namespace-tool capability flags. |
 | Feature and permission catalog | partial | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | `CodexRpc.PermissionProfile.List` models permission profile ids, descriptions, optional cwd scoping, and pagination. Experimental feature list and enablement methods remain deferred. |
-| Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.140.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
-| Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.140.0` schema does not define a `skills/config/read` request. |
+| Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.146.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
+| Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.146.0` schema does not define a `skills/config/read` request. |
 | Apps, marketplaces, and plugins | partial | `app/installed`, `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall`, `plugin/share/save`, `plugin/share/updateTargets`, `plugin/share/list`, `plugin/share/checkout`, `plugin/share/delete` | `CodexRpc.App.Installed` models the stable committed runtime snapshot with identity, enabled, callable, and runtime-name state only. `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. `CodexRpc.Marketplace` and `CodexRpc.Plugin` model marketplace add/remove/upgrade, plugin list/installed/read/skill-read, install, and uninstall descriptors. Plugin sharing descriptors remain deferred. |
 | MCP APIs | modeled | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | `CodexRpc.Mcp.StartOauthLogin`, `ReloadConfig`, `ListServerStatus`, `ReadResource`, and `CallTool` model current MCP catalog, resource, OAuth, config-reload, and tool-call request shapes. MCP-provided schemas, annotations, content, `_meta`, and tool arguments stay behind `CodexJsonPayload` compatibility fields. Server-initiated MCP elicitation is tracked under server requests. |
 | Windows sandbox setup | deferred | `windowsSandbox/setupStart` | No typed descriptor yet. |

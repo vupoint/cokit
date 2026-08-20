@@ -17,7 +17,19 @@ generated-schema provenance, docs, and examples all describe the same surface.
 - Run the real app-server smoke test on a machine with `codex` installed:
 
 ```bash
-COKIT_CODEX_INTEGRATION=1 ./gradlew :cokit-client:jvmTest --stacktrace
+COKIT_CODEX_INTEGRATION=1 ./gradlew :cokit-client:jvmTest \
+  --tests '*CodexAppServerIntegrationTest' --stacktrace
+```
+
+The real integration test must initialize the stdio client and complete at
+least one read-only stable request. It must not create, mutate, or archive a
+thread as part of release validation.
+
+- Regenerate and verify the tracked Kotlin ABI declarations:
+
+```bash
+./gradlew updateKotlinAbi --stacktrace
+./gradlew checkKotlinAbi checkPublicApiExposure --stacktrace
 ```
 
 - Run the sample CLI help path and verify that it still uses public CoKit APIs:
