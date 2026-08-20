@@ -32,6 +32,40 @@ import kotlinx.serialization.json.putJsonObject
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class McpServerRequestTest {
     @Test
+    fun openAiFormElicitationPreservesSchemaAndDeclinesByDefault() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val serverRequest = async { fixture.client.serverRequests.first() }
+
+        fixture.transport.receive(mcpOpenAiFormElicitationRequest(id = 98))
+        runCurrent()
+
+        val elicitation = assertIs<CodexServerRequest.McpElicitation>(serverRequest.await())
+        val form = assertIs<McpElicitationRequest.OpenAiForm>(elicitation.request)
+        assertEquals("github", form.serverName)
+        assertEquals(ThreadId("thr_123"), form.threadId)
+        assertEquals("Approve extended lookup details.", form.message)
+        val schema = form.requestedSchema.toJsonElement()?.jsonObject
+        assertEquals(false, schema?.get("additionalProperties")?.jsonPrimitive?.content?.toBooleanStrict())
+        assertEquals(
+            0,
+            schema
+                ?.get("properties")
+                ?.jsonObject
+                ?.get("count")
+                ?.jsonObject
+                ?.get("exclusiveMinimum")
+                ?.jsonPrimitive
+                ?.content
+                ?.toInt(),
+        )
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(98), response.id)
+        assertEquals("decline", response.result?.jsonObject?.get("action")?.jsonPrimitive?.content)
+        assertEquals(JsonNull, response.result?.jsonObject?.get("content"))
+    }
+
+    @Test
     fun mcpElicitationServerRequestsAreTypedAndDeclineByDefault() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
         val serverRequest = async { fixture.client.serverRequests.first() }
@@ -150,6 +184,36 @@ class McpServerRequestTest {
     }
 
     @Test
+    fun unknownMcpElicitationModeReturnsInvalidParamsWithoutCallingTypedHandler() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        var handlerCalled = false
+        fixture.client.registerMcpElicitationHandler {
+            handlerCalled = true
+            McpElicitationResponse.Decline
+        }
+
+        fixture.transport.receive(
+            JsonRpcRequest(
+                id = JsonRpcId.Number(101),
+                method = "mcpServer/elicitation/request",
+                params = buildJsonObject {
+                    put("serverName", "github")
+                    put("threadId", "thr_123")
+                    put("mode", "future/form")
+                    put("message", "Unknown form mode.")
+                    putJsonObject("requestedSchema") { put("type", "object") }
+                },
+            ),
+        )
+        runCurrent()
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals(JsonRpcId.Number(101), response.id)
+        assertEquals(-32602, response.error?.code)
+        assertFalse(handlerCalled)
+    }
+
+    @Test
     fun mcpElicitationHandlerExceptionsReturnGenericJsonRpcError() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
         fixture.client.registerMcpElicitationHandler {
@@ -230,6 +294,28 @@ class McpServerRequestTest {
             put("message", "Open OAuth approval.")
             put("url", "https://example.invalid/oauth")
             put("elicitationId", "elicit_123")
+        },
+    )
+
+    private fun mcpOpenAiFormElicitationRequest(id: Long): JsonRpcRequest = JsonRpcRequest(
+        id = JsonRpcId.Number(id),
+        method = "mcpServer/elicitation/request",
+        params = buildJsonObject {
+            put("serverName", "github")
+            put("threadId", "thr_123")
+            put("turnId", "turn_123")
+            put("mode", "openai/form")
+            put("message", "Approve extended lookup details.")
+            putJsonObject("requestedSchema") {
+                put("type", "object")
+                put("additionalProperties", false)
+                putJsonObject("properties") {
+                    putJsonObject("count") {
+                        put("type", "integer")
+                        put("exclusiveMinimum", 0)
+                    }
+                }
+            }
         },
     )
 

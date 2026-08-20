@@ -12,6 +12,7 @@ data class ClientInfo(
 @Serializable
 data class InitializeCapabilities(
     val experimentalApi: Boolean = false,
+    val mcpServerOpenaiFormElicitation: Boolean? = null,
     val optOutNotificationMethods: List<String> = emptyList(),
     val requestAttestation: Boolean = false,
 )

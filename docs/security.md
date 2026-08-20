@@ -68,6 +68,13 @@ fields as untrusted input. Handler responses must return explicit accept,
 decline, or cancel actions. Malformed params and handler failures use the same
 JSON-RPC error behavior as command approvals.
 
+The `mcpServerOpenaiFormElicitation` initialize capability only enables receipt
+of OpenAI extended form requests. Their broader requested schema is preserved as
+opaque protocol data, and capability negotiation does not authorize acceptance,
+form submission, tool execution, or any other side effect. OpenAI form requests
+use the same explicit handler and decline-by-default policy as standard MCP form
+and URL elicitations.
+
 Attestation generation requests are unsupported by default. Without a registered
 typed attestation handler, CoKit responds with `{"status":"unsupported"}` and
 never creates or fabricates an attestation token. Applications that provide

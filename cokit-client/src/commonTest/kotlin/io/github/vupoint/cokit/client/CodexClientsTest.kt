@@ -12,9 +12,43 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class CodexClientsTest {
+    @Test
+    fun connectAdvertisesOpenAiFormElicitationCapability() = runTest {
+        val transport = FakeJsonRpcTransport()
+        val client = async {
+            CodexClients.connect(
+                CodexClientConnection(
+                    transport = transport,
+                    clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
+                    capabilities = InitializeCapabilities(mcpServerOpenaiFormElicitation = true),
+                    scope = backgroundScope,
+                ),
+            )
+        }
+        runCurrent()
+
+        val initialize = transport.sent.single() as JsonRpcRequest
+        assertEquals(
+            true,
+            initialize.params
+                ?.jsonObject
+                ?.get("capabilities")
+                ?.jsonObject
+                ?.get("mcpServerOpenaiFormElicitation")
+                ?.jsonPrimitive
+                ?.content
+                ?.toBooleanStrict(),
+        )
+
+        transport.receive(JsonRpcResponse(initialize.id, result = JsonObject(emptyMap())))
+        client.await()
+    }
+
     @Test
     fun connectInitializesThenSendsInitializedNotification() = runTest {
         val transport = FakeJsonRpcTransport()

@@ -32,6 +32,17 @@ sealed interface McpElicitationRequest {
     ) : McpElicitationRequest
 
     @Serializable
+    data class OpenAiForm(
+        override val serverName: String,
+        override val threadId: ThreadId,
+        override val turnId: TurnId? = null,
+        override val message: String,
+        @SerialName("_meta")
+        val meta: CodexJsonPayload? = null,
+        val requestedSchema: CodexJsonPayload,
+    ) : McpElicitationRequest
+
+    @Serializable
     data class Url(
         override val serverName: String,
         override val threadId: ThreadId,
@@ -51,6 +62,7 @@ object McpElicitationRequestSerializer :
     ): DeserializationStrategy<McpElicitationRequest> {
         return when (element.jsonObject["mode"]?.jsonPrimitive?.contentOrNull) {
             "form" -> McpElicitationRequest.Form.serializer()
+            "openai/form" -> McpElicitationRequest.OpenAiForm.serializer()
             "url" -> McpElicitationRequest.Url.serializer()
             else -> throw SerializationException("Unknown MCP elicitation request mode")
         }
