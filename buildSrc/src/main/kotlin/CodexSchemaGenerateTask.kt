@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream
 import java.util.Properties
 import javax.inject.Inject
 import org.gradle.api.DefaultTask
@@ -33,7 +34,8 @@ abstract class CodexSchemaGenerateTask @Inject constructor(
 
     @TaskAction
     fun generate() {
-        validateProvenance()
+        val provenance = validateProvenance()
+        validateInstalledCodexVersion(provenance.getProperty("codexVersion"))
 
         val outputDir = outputDirectory.get().asFile
         outputDir.mkdirs()
@@ -54,7 +56,7 @@ abstract class CodexSchemaGenerateTask @Inject constructor(
         }
     }
 
-    private fun validateProvenance() {
+    private fun validateProvenance(): Properties {
         val file = provenanceFile.get().asFile
         check(file.isFile) {
             "Schema provenance file is missing: ${file.path}"
@@ -74,6 +76,20 @@ abstract class CodexSchemaGenerateTask @Inject constructor(
         check(actualCommand == recordedCommand.get()) {
             "Schema provenance $commandKey is stale. Expected '${recordedCommand.get()}' but found '$actualCommand'."
         }
+        return properties
+    }
+
+    private fun validateInstalledCodexVersion(recordedVersion: String) {
+        val standardOutput = ByteArrayOutputStream()
+        execOperations.exec {
+            executable = "codex"
+            args("--version")
+            this.standardOutput = standardOutput
+        }
+        requireMatchingCodexVersion(
+            recordedVersion = recordedVersion,
+            installedVersion = standardOutput.toString(Charsets.UTF_8.name()).trim(),
+        )
     }
 
     private companion object {
@@ -83,6 +99,17 @@ abstract class CodexSchemaGenerateTask @Inject constructor(
             "stableCommand",
             "experimentalCommand",
             "generatedAt",
+            "stableSchemaSha256",
+            "experimentalSchemaSha256",
         )
+    }
+}
+
+internal fun requireMatchingCodexVersion(
+    recordedVersion: String,
+    installedVersion: String,
+) {
+    check(recordedVersion == installedVersion) {
+        "Recorded Codex version '$recordedVersion' does not match installed version '$installedVersion'."
     }
 }
