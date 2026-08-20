@@ -104,7 +104,7 @@ class ManagedPolicyTest {
 
         val requirements = result.await().requirements!!
         assertEquals(listOf(ApprovalPolicy.OnRequest, ApprovalPolicy.Never), requirements.allowedApprovalPolicies)
-        assertEquals(listOf(SandboxPolicy.ReadOnly, SandboxPolicy.WorkspaceWrite), requirements.allowedSandboxModes)
+        assertEquals(listOf(SandboxMode.ReadOnly, SandboxMode.WorkspaceWrite), requirements.allowedSandboxModes)
         assertEquals(listOf(ManagedWebSearchMode.Disabled, ManagedWebSearchMode.Live), requirements.allowedWebSearchModes)
         assertEquals(
             listOf(ManagedWindowsSandboxSetupMode.Elevated),

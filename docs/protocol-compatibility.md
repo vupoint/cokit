@@ -48,9 +48,13 @@ helpers should delegate through those descriptors instead of carrying separate
 method strings.
 
 Client APIs should accept request objects instead of long parameter lists.
-Identifiers and common options should use small value classes such as
-`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`, and
-`ModelName`. Thread, turn, item, pagination, and client-message scalar fields
+Identifiers and common options should use focused types such as `ThreadId`,
+`TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxMode`, `SandboxPolicy`, and
+`ModelName`. `thread/start.sandbox` is a kebab-case `SandboxMode` string;
+`turn/start.sandboxPolicy` and `command/exec.sandboxPolicy` are structured
+`SandboxPolicy` objects. `ApprovalPolicy` accepts the current stable string
+values and the granular stable object, while the legacy `on-failure` value is
+decode-compatible but deprecated. Thread, turn, item, pagination, and client-message scalar fields
 should likewise use wrappers such as `CodexCursor`, `CodexTimestamp`,
 `ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`, and `ItemStatus`.
 Prefer value classes with documented constants over closed enums when upstream

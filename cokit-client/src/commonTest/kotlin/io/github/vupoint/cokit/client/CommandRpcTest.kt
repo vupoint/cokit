@@ -6,7 +6,6 @@ import io.github.vupoint.cokit.client.commands.CommandExecTerminalSize
 import io.github.vupoint.cokit.client.commands.CommandExecTerminateParams
 import io.github.vupoint.cokit.client.commands.CommandExecWriteParams
 import io.github.vupoint.cokit.client.commands.CommandProcessId
-import io.github.vupoint.cokit.client.commands.CommandSandboxPolicy
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import io.github.vupoint.cokit.testing.FakeJsonRpcTransport
@@ -51,7 +50,7 @@ class CommandRpcTest {
                     streamStdoutStderr = true,
                     tty = true,
                     size = CommandExecTerminalSize(cols = 120, rows = 40),
-                    sandboxPolicy = CommandSandboxPolicy.WorkspaceWrite(
+                    sandboxPolicy = SandboxPolicy.WorkspaceWrite(
                         writableRoots = listOf(CodexHostPath("/path/to/project")),
                         networkAccess = true,
                         excludeTmpdirEnvVar = true,

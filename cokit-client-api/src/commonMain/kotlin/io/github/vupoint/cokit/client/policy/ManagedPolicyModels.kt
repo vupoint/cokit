@@ -1,7 +1,7 @@
 package io.github.vupoint.cokit.client.policy
 
 import io.github.vupoint.cokit.client.ApprovalPolicy
-import io.github.vupoint.cokit.client.SandboxPolicy
+import io.github.vupoint.cokit.client.SandboxMode
 import io.github.vupoint.cokit.client.environment.PermissionProfileId
 import kotlinx.serialization.Serializable
 
@@ -16,7 +16,7 @@ data class ManagedPolicyReadResult(
 @Serializable
 data class ManagedPolicyRequirements(
     val allowedApprovalPolicies: List<ApprovalPolicy>? = null,
-    val allowedSandboxModes: List<SandboxPolicy>? = null,
+    val allowedSandboxModes: List<SandboxMode>? = null,
     val allowedWindowsSandboxImplementations: List<ManagedWindowsSandboxSetupMode>? = null,
     val allowedPermissionProfiles: Map<PermissionProfileId, Boolean>? = null,
     val defaultPermissions: PermissionProfileId? = null,

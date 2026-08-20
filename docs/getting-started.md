@@ -85,7 +85,7 @@ val thread = client.request(
     ThreadStartParams(
         cwd = CodexHostPath("/path/to/project"),
         approvalPolicy = ApprovalPolicy.OnRequest,
-        sandbox = SandboxPolicy.WorkspaceWrite,
+        sandbox = SandboxMode.WorkspaceWrite,
     ),
 ).thread
 
@@ -105,9 +105,11 @@ one result type, so `CodexRpc.Thread.Start` accepts `ThreadStartParams` and
 returns `ThreadStartResult`.
 
 Identifiers and common options use lightweight SDK value types such as
-`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxPolicy`,
-`ModelName`, and `TurnInput` so application code is explicit while preserving
-the upstream wire shape.
+`ThreadId`, `TurnId`, `CodexHostPath`, `ApprovalPolicy`, `SandboxMode`,
+`SandboxPolicy`, `ModelName`, and `TurnInput` so application code is explicit
+while preserving the upstream wire shape. `StartThreadRequest.sandbox` uses the
+kebab-case `SandboxMode` string, while turn and command overrides use the
+structured `SandboxPolicy` object.
 
 ## Inspect The Model Catalog
 

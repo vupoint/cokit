@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class ThreadStartParams(
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
-    val sandbox: SandboxPolicy? = null,
+    val sandbox: SandboxMode? = null,
     val permissions: CodexJsonPayload? = null,
     val model: ModelName? = null,
     val effort: ReasoningEffort? = null,

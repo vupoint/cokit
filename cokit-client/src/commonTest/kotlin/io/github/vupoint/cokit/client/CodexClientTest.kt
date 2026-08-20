@@ -42,7 +42,7 @@ class CodexClientTest {
                 ThreadStartParams(
                     cwd = CodexHostPath("/path/to/project"),
                     approvalPolicy = ApprovalPolicy.OnRequest,
-                    sandbox = SandboxPolicy.WorkspaceWrite,
+                    sandbox = SandboxMode.WorkspaceWrite,
                 ),
             )
         }

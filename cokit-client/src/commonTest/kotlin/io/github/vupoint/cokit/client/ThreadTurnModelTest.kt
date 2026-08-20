@@ -1,8 +1,11 @@
 package io.github.vupoint.cokit.client
 
+import io.github.vupoint.cokit.client.commands.CommandNetworkAccess
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.decodeFromString
@@ -14,6 +17,53 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class ThreadTurnModelTest {
+    @Test
+    fun approvalPolicyRoundTripsGranularStableShape() {
+        val fixture =
+            """{"granular":{"mcp_elicitations":false,"request_permissions":true,"rules":false,"sandbox_approval":true,"skill_approval":true}}"""
+
+        val decoded = runCatching {
+            CodexProtocolJson.decodeFromString(ApprovalPolicy.serializer(), fixture)
+        }
+
+        assertTrue(decoded.isSuccess, "Granular stable approval policy should decode.")
+        assertEquals(
+            CodexJsonPayload.parse(fixture).toJsonElement(),
+            CodexProtocolJson.encodeToJsonElement(ApprovalPolicy.serializer(), decoded.getOrThrow()),
+        )
+        val granular = assertIs<ApprovalPolicy.Granular>(decoded.getOrThrow()).granular
+        assertEquals(true, granular.requestPermissions)
+        assertEquals(true, granular.skillApproval)
+    }
+
+    @Test
+    fun sandboxModeAndStructuredPoliciesUseDistinctWireShapes() {
+        assertStringScalar(
+            "workspace-write",
+            SandboxMode.serializer(),
+            SandboxMode.WorkspaceWrite,
+        )
+
+        val policies = listOf(
+            SandboxPolicy.DangerFullAccess to "dangerFullAccess",
+            SandboxPolicy.ReadOnly(networkAccess = false) to "readOnly",
+            SandboxPolicy.ExternalSandbox(networkAccess = CommandNetworkAccess.Restricted) to "externalSandbox",
+            SandboxPolicy.WorkspaceWrite(
+                writableRoots = listOf(CodexHostPath("/path/to/project")),
+                networkAccess = true,
+            ) to "workspaceWrite",
+        )
+
+        policies.forEach { (policy, expectedType) ->
+            val encoded = CodexProtocolJson.encodeToJsonElement(SandboxPolicy.serializer(), policy).jsonObject
+            assertEquals(expectedType, encoded["type"]?.jsonPrimitive?.contentOrNull)
+            assertEquals(
+                policy,
+                CodexProtocolJson.decodeFromJsonElement(SandboxPolicy.serializer(), encoded),
+            )
+        }
+    }
+
     @Test
     fun serializesThreadTurnAndItemScalarModelsAsProtocolPrimitives() {
         assertStringScalar("item_123", ItemId.serializer(), ItemId("item_123"))

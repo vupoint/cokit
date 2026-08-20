@@ -30,7 +30,7 @@ class ThreadTurnApiTest {
                 StartThreadRequest(
                     cwd = CodexHostPath("/path/to/project"),
                     approvalPolicy = ApprovalPolicy.OnRequest,
-                    sandbox = SandboxPolicy.WorkspaceWrite,
+                    sandbox = SandboxMode.WorkspaceWrite,
                     model = ModelName("gpt-5"),
                     effort = ReasoningEffort.Medium,
                 ),
@@ -68,8 +68,8 @@ class ThreadTurnApiTest {
                 StartTurnRequest(
                     threadId = ThreadId("thr_123"),
                     input = listOf(TurnInput.Text("Run tests")),
-                    approvalPolicy = ApprovalPolicy.OnFailure,
-                    sandboxPolicy = SandboxPolicy.WorkspaceWrite,
+                    approvalPolicy = ApprovalPolicy.OnRequest,
+                    sandboxPolicy = SandboxPolicy.WorkspaceWrite(),
                     outputSchema = CodexJsonPayload.parse("""{"type":"object"}"""),
                 ),
             )
@@ -80,8 +80,11 @@ class ThreadTurnApiTest {
         assertEquals("turn/start", request.method)
         val params = request.params!!.jsonObject
         assertEquals("thr_123", params["threadId"]?.jsonPrimitive?.contentOrNull)
-        assertEquals("on-failure", params["approvalPolicy"]?.jsonPrimitive?.contentOrNull)
-        assertEquals("workspace-write", params["sandboxPolicy"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("on-request", params["approvalPolicy"]?.jsonPrimitive?.contentOrNull)
+        assertEquals(
+            "workspaceWrite",
+            params["sandboxPolicy"]?.jsonObject?.get("type")?.jsonPrimitive?.contentOrNull,
+        )
         assertTrue(params.containsKey("input"))
         val inputItem = params["input"]
             ?.jsonArray

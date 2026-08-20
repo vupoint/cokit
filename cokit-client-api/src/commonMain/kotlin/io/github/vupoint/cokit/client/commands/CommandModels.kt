@@ -1,7 +1,7 @@
 package io.github.vupoint.cokit.client.commands
 
 import io.github.vupoint.cokit.client.CodexHostPath
-import kotlinx.serialization.SerialName
+import io.github.vupoint.cokit.client.SandboxPolicy
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +14,7 @@ data class CommandExecParams(
     val outputBytesCap: Long? = null,
     val tty: Boolean? = null,
     val processId: CommandProcessId? = null,
-    val sandboxPolicy: CommandSandboxPolicy? = null,
+    val sandboxPolicy: SandboxPolicy? = null,
     val size: CommandExecTerminalSize? = null,
     val streamStdin: Boolean? = null,
     val streamStdoutStderr: Boolean? = null,
@@ -64,34 +64,6 @@ data class CommandExecTerminalSize(
     val cols: Int,
     val rows: Int,
 )
-
-@Serializable
-sealed interface CommandSandboxPolicy {
-    @Serializable
-    @SerialName("dangerFullAccess")
-    data object DangerFullAccess : CommandSandboxPolicy
-
-    @Serializable
-    @SerialName("readOnly")
-    data class ReadOnly(
-        val networkAccess: Boolean? = null,
-    ) : CommandSandboxPolicy
-
-    @Serializable
-    @SerialName("externalSandbox")
-    data class ExternalSandbox(
-        val networkAccess: CommandNetworkAccess? = null,
-    ) : CommandSandboxPolicy
-
-    @Serializable
-    @SerialName("workspaceWrite")
-    data class WorkspaceWrite(
-        val writableRoots: List<CodexHostPath> = emptyList(),
-        val networkAccess: Boolean? = null,
-        val excludeTmpdirEnvVar: Boolean? = null,
-        val excludeSlashTmp: Boolean? = null,
-    ) : CommandSandboxPolicy
-}
 
 @Serializable
 @JvmInline
