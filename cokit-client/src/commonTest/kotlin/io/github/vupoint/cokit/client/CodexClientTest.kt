@@ -571,6 +571,7 @@ class CodexClientTest {
             put("threadId", "thr_123")
             put("turnId", "turn_123")
             put("itemId", "item_123")
+            put("startedAtMs", 1_776_000_000_000)
             put("command", "git status")
             put("cwd", "/path/to/project")
         },

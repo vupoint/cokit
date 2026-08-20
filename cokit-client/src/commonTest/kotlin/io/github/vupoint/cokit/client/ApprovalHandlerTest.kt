@@ -1,6 +1,8 @@
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.approvals.ApprovalDecision
+import io.github.vupoint.cokit.client.approvals.CommandAction
+import io.github.vupoint.cokit.client.approvals.CommandApprovalId
 import io.github.vupoint.cokit.client.approvals.CommandApprovalRequest
 import io.github.vupoint.cokit.client.approvals.FileChangeApprovalRequest
 import io.github.vupoint.cokit.client.approvals.FileChangeKind
@@ -15,6 +17,9 @@ import io.github.vupoint.cokit.client.approvals.PermissionFileSystem
 import io.github.vupoint.cokit.client.approvals.PermissionGrantScope
 import io.github.vupoint.cokit.client.approvals.PermissionNetwork
 import io.github.vupoint.cokit.client.approvals.PermissionProfile
+import io.github.vupoint.cokit.client.approvals.NetworkApprovalProtocol
+import io.github.vupoint.cokit.client.approvals.NetworkPolicyRuleAction
+import io.github.vupoint.cokit.client.environment.EnvironmentId
 import io.github.vupoint.cokit.protocol.JsonRpcId
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
@@ -46,14 +51,95 @@ class ApprovalHandlerTest {
         val request = CommandApprovalRequest(
             threadId = ThreadId("thr_123"),
             turnId = TurnId("turn_123"),
-            itemId = "item_123",
+            itemId = ItemId("item_123"),
+            startedAtMs = 1_776_000_000_000,
             command = "git status",
             cwd = CodexHostPath("/path/to/project"),
         )
 
         assertEquals(ThreadId("thr_123"), request.threadId)
         assertEquals(TurnId("turn_123"), request.turnId)
+        assertEquals(ItemId("item_123"), request.itemId)
+        assertEquals(1_776_000_000_000, request.startedAtMs)
         assertEquals(CodexHostPath("/path/to/project"), request.cwd)
+    }
+
+    @Test
+    fun networkOnlyCommandApprovalIsTypedAndDeclinesByDefault() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        val serverRequest = async { fixture.client.serverRequests.first() }
+
+        fixture.transport.receive(
+            JsonRpcRequest(
+                id = JsonRpcId.Number(99),
+                method = "item/commandExecution/requestApproval",
+                params = buildJsonObject {
+                    put("threadId", "thr_123")
+                    put("turnId", "turn_123")
+                    put("itemId", "item_123")
+                    put("startedAtMs", 1_776_000_000_000)
+                    put("approvalId", "approval_123")
+                    put("environmentId", "local")
+                    put("reason", "Allow package metadata lookup")
+                    put("futureField", "kept")
+                    put(
+                        "networkApprovalContext",
+                        buildJsonObject {
+                            put("host", "example.invalid")
+                            put("protocol", "https")
+                        },
+                    )
+                    putJsonArray("commandActions") {
+                        add(
+                            buildJsonObject {
+                                put("type", "read")
+                                put("command", "cat README.md")
+                                put("name", "README.md")
+                                put("path", "/path/to/project/README.md")
+                            },
+                        )
+                        add(
+                            buildJsonObject {
+                                put("type", "futureAction")
+                                put("command", "custom")
+                                put("value", "kept")
+                            },
+                        )
+                    }
+                    putJsonArray("proposedExecpolicyAmendment") {
+                        add("git")
+                        add("status")
+                    }
+                    putJsonArray("proposedNetworkPolicyAmendments") {
+                        add(
+                            buildJsonObject {
+                                put("action", "allow")
+                                put("host", "example.invalid")
+                            },
+                        )
+                    }
+                },
+            ),
+        )
+        runCurrent()
+
+        val approval = assertIs<CodexServerRequest.CommandApproval>(serverRequest.await()).request
+        assertEquals(null, approval.command)
+        assertEquals(CommandApprovalId("approval_123"), approval.approvalId)
+        assertEquals(EnvironmentId("local"), approval.environmentId)
+        assertEquals("example.invalid", approval.networkApprovalContext?.host)
+        assertEquals(NetworkApprovalProtocol.Https, approval.networkApprovalContext?.protocol)
+        assertEquals(CodexHostPath("/path/to/project/README.md"), assertIs<CommandAction.Read>(approval.commandActions[0]).path)
+        assertEquals("kept", assertIs<CommandAction.Custom>(approval.commandActions[1]).payload.toJsonElement()?.jsonObject?.get("value")?.jsonPrimitive?.content)
+        assertEquals(listOf("git", "status"), approval.proposedExecpolicyAmendment)
+        assertEquals(NetworkPolicyRuleAction.Allow, approval.proposedNetworkPolicyAmendments?.single()?.action)
+        assertEquals("Allow package metadata lookup", approval.reason)
+        assertFalse(approval.toString().contains("example.invalid"))
+        assertFalse(approval.toString().contains("local"))
+        assertFalse(approval.toString().contains("README.md"))
+
+        val response = fixture.transport.sent.last() as JsonRpcResponse
+        assertEquals("decline", response.result?.jsonObject?.get("decision")?.jsonPrimitive?.content)
     }
 
     @Test
@@ -126,6 +212,7 @@ class ApprovalHandlerTest {
                     put("threadId", "thr_123")
                     put("turnId", "turn_123")
                     put("itemId", "item_123")
+                    put("startedAtMs", 1_776_000_000_000)
                     put("command", "git status")
                     put("cwd", "/tmp/project")
                 },
@@ -455,6 +542,7 @@ class ApprovalHandlerTest {
             put("threadId", "thr_123")
             put("turnId", "turn_123")
             put("itemId", "item_123")
+            put("startedAtMs", 1_776_000_000_000)
             put("command", "git status")
             put("cwd", "/path/to/project")
         },

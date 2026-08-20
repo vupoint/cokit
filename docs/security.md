@@ -19,6 +19,12 @@ Command execution approval requests are deny-by-default. Without a registered
 command approval handler, CoKit responds with `{"decision":"decline"}` without
 attempting to approve or execute the command. With a typed command approval
 handler, CoKit decodes the upstream params before invoking application code.
+Both command-backed and network-only prompts are supported. The typed request
+includes parsed command actions, network protocol context, and proposed exec or
+network policy amendments for application review, but these fields never grant
+authority by themselves. Request string rendering reports only presence and
+counts for environment, path, command, and network context rather than their
+private values.
 Malformed params return JSON-RPC `-32602` and do not call the handler. Handler
 exceptions return JSON-RPC `-32000` with a generic failure message so exception
 text is not sent back to app-server.
