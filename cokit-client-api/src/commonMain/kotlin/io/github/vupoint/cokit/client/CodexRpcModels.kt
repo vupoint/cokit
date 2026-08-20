@@ -96,6 +96,19 @@ data class ThreadListResult(
 )
 
 @Serializable
+data class ThreadLoadedListParams(
+    val cursor: CodexCursor? = null,
+    val limit: Int? = null,
+)
+
+@Serializable
+data class ThreadLoadedListResult(
+    @SerialName("data")
+    val threadIds: List<ThreadId>,
+    val nextCursor: CodexCursor? = null,
+)
+
+@Serializable
 data class ThreadReadParams(
     val threadId: ThreadId,
     val includeTurns: Boolean? = null,

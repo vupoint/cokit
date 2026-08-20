@@ -30,7 +30,7 @@ modeled coverage. They are compatibility behavior only.
 | --- | --- | --- | --- |
 | Connection lifecycle | partial | `initialize`, `initialized` | `CodexClients.connect()` performs the handshake internally with typed `InitializeParams` and `InitializeCapabilities`. There is no public `CodexRpc` descriptor for `initialize`. |
 | Core thread lifecycle | partial | `thread/start`, `thread/resume`, `thread/fork`, `thread/list`, `thread/read`, `thread/archive`, `thread/unarchive`, `thread/unsubscribe`, `thread/name/set` | Typed `CodexRpc.Thread` descriptors exist. Stable start, resume, fork, and list params match the 0.146.0 schema; list results preserve both cursor directions and unarchive returns the refreshed thread. Thread payload details remain intentionally narrow. |
-| Advanced thread history and metadata | partial | `thread/loaded/list`, `thread/turns/list`, `thread/turns/items/list`, `thread/metadata/update`, `thread/settings/update`, `thread/memoryMode/set`, `memory/reset`, `thread/goal/set`, `thread/goal/get`, `thread/goal/clear`, `thread/delete`, `thread/compact/start`, `thread/shellCommand`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/rollback`, `thread/inject_items` | `CodexRpc.Thread.ListTurns` models the experimental turn-history page shape. `CodexRpc.Thread.UpdateMetadata` models the stable `gitInfo` metadata patch and refreshed thread response. `CodexRpc.Thread.SetGoal`, `GetGoal`, `ClearGoal`, `Delete`, and `StartCompaction` model stable lifecycle helpers. Other advanced, experimental, or currently unsupported entries remain deferred. |
+| Advanced thread history and metadata | partial | `thread/loaded/list`, `thread/turns/list`, `thread/turns/items/list`, `thread/metadata/update`, `thread/settings/update`, `thread/memoryMode/set`, `memory/reset`, `thread/goal/set`, `thread/goal/get`, `thread/goal/clear`, `thread/delete`, `thread/compact/start`, `thread/shellCommand`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/rollback`, `thread/inject_items` | `CodexRpc.Thread.ListLoaded` models stable loaded-thread id pagination, while `ListTurns` models the experimental turn-history page shape. `CodexRpc.Thread.UpdateMetadata` models the stable `gitInfo` metadata patch and refreshed thread response. `CodexRpc.Thread.SetGoal`, `GetGoal`, `ClearGoal`, `Delete`, and `StartCompaction` model stable lifecycle helpers. Other advanced, experimental, or currently unsupported entries remain deferred. |
 | Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors model all 0.146.0 stable start fields and the accepted turn id returned by steer. Experimental params such as environment selection remain deferred. |
 | Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
 | Review | modeled | `review/start` | `CodexRpc.Review.Start` models typed review targets, inline or detached delivery, and the returned review thread id plus turn. CoKit exposes review protocol data but does not render review UI. |
@@ -104,6 +104,7 @@ without updating the public inventory.
 | `CodexRpc.Thread.Resume` | `thread/resume` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.Fork` | `thread/fork` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.List` | `thread/list` | Thread lifecycle descriptor; group coverage remains partial. |
+| `CodexRpc.Thread.ListLoaded` | `thread/loaded/list` | Stable loaded-thread id pagination descriptor; advanced thread coverage remains partial. |
 | `CodexRpc.Thread.Read` | `thread/read` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.Archive` | `thread/archive` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.Unarchive` | `thread/unarchive` | Thread lifecycle descriptor; group coverage remains partial. |
@@ -188,6 +189,7 @@ Current public request descriptors:
 - `thread/resume`
 - `thread/fork`
 - `thread/list`
+- `thread/loaded/list`
 - `thread/read`
 - `thread/archive`
 - `thread/unarchive`

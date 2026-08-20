@@ -22,6 +22,14 @@ internal class DefaultThreadsApi(
         return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor)
     }
 
+    override suspend fun listLoaded(request: ListLoadedThreadsRequest): LoadedThreadList {
+        val decoded = rpc.request(
+            CodexRpc.Thread.ListLoaded,
+            ThreadLoadedListParams(request.cursor, request.limit),
+        )
+        return LoadedThreadList(decoded.threadIds, decoded.nextCursor)
+    }
+
     override suspend fun read(request: ReadThreadRequest): Thread {
         return rpc.request(CodexRpc.Thread.Read, request.toRpcParams()).thread
     }

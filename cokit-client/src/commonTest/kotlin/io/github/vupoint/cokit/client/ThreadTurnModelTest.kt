@@ -4,6 +4,7 @@ import io.github.vupoint.cokit.client.commands.CommandNetworkAccess
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.serialization.KSerializer
@@ -17,6 +18,22 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class ThreadTurnModelTest {
+    @Test
+    fun loadedThreadListModelsMatchStableWireShape() {
+        assertEquals("thread/loaded/list", CodexRpc.Thread.ListLoaded.method)
+        assertJsonRoundTrip(
+            """{"cursor":"cursor_123","limit":20}""",
+            ThreadLoadedListParams.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"data":["thr_1","thr_2"],"nextCursor":"cursor_456"}""",
+            ThreadLoadedListResult.serializer(),
+        )
+        assertFailsWith<IllegalArgumentException> {
+            ListLoadedThreadsRequest(limit = -1)
+        }
+    }
+
     @Test
     fun stableThreadAndTurnParamsRoundTripAllReleaseFields() {
         assertJsonRoundTrip(

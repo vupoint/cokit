@@ -9,6 +9,8 @@ interface ThreadsApi {
 
     suspend fun list(request: ListThreadsRequest = ListThreadsRequest()): ThreadList
 
+    suspend fun listLoaded(request: ListLoadedThreadsRequest = ListLoadedThreadsRequest()): LoadedThreadList
+
     suspend fun read(request: ReadThreadRequest): Thread
 
     suspend fun archive(threadId: ThreadId)

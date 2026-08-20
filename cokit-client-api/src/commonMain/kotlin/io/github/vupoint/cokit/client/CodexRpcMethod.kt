@@ -135,6 +135,12 @@ object CodexRpc {
             resultSerializer = ThreadListResult.serializer(),
         )
 
+        val ListLoaded: CodexRpcMethod<ThreadLoadedListParams, ThreadLoadedListResult> = CodexRpcMethod(
+            method = "thread/loaded/list",
+            paramsSerializer = ThreadLoadedListParams.serializer(),
+            resultSerializer = ThreadLoadedListResult.serializer(),
+        )
+
         val Read: CodexRpcMethod<ThreadReadParams, ThreadReadResult> = CodexRpcMethod(
             method = "thread/read",
             paramsSerializer = ThreadReadParams.serializer(),

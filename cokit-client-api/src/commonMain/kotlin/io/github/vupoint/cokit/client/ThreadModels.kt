@@ -234,6 +234,22 @@ data class ThreadList(
 )
 
 @Serializable
+data class ListLoadedThreadsRequest(
+    val cursor: CodexCursor? = null,
+    val limit: Int? = null,
+) {
+    init {
+        require(limit == null || limit >= 0) { "limit must be non-negative" }
+    }
+}
+
+@Serializable
+data class LoadedThreadList(
+    val threadIds: List<ThreadId>,
+    val nextCursor: CodexCursor? = null,
+)
+
+@Serializable
 data class StartThreadRequest(
     val serviceTier: ServiceTier? = null,
     val cwd: CodexHostPath? = null,

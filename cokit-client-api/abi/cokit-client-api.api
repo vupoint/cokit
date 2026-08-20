@@ -740,6 +740,7 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Thread {
 	public final fun getFork ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getGetGoal ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getList ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getListLoaded ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getListTurns ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getRead ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getResume ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1269,6 +1270,36 @@ public final class io/github/vupoint/cokit/client/ItemType$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/ListLoadedThreadsRequest {
+	public static final field Companion Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-Uss3h8Q ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun copy-kUvRZsk (Ljava/lang/String;Ljava/lang/Integer;)Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;
+	public static synthetic fun copy-kUvRZsk$default (Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor-Uss3h8Q ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ListLoadedThreadsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ListLoadedThreadsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/ListThreadsRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/ListThreadsRequest$Companion;
 	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1314,6 +1345,36 @@ public final synthetic class io/github/vupoint/cokit/client/ListThreadsRequest$$
 }
 
 public final class io/github/vupoint/cokit/client/ListThreadsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/LoadedThreadList {
+	public static final field Companion Lio/github/vupoint/cokit/client/LoadedThreadList$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-Uss3h8Q ()Ljava/lang/String;
+	public final fun copy-UvMKtcQ (Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/LoadedThreadList;
+	public static synthetic fun copy-UvMKtcQ$default (Lio/github/vupoint/cokit/client/LoadedThreadList;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/LoadedThreadList;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNextCursor-Uss3h8Q ()Ljava/lang/String;
+	public final fun getThreadIds ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/LoadedThreadList$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/LoadedThreadList$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/LoadedThreadList;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/LoadedThreadList;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/LoadedThreadList$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -2634,6 +2695,66 @@ public final class io/github/vupoint/cokit/client/ThreadListResult$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/ThreadLoadedListParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadLoadedListParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-Uss3h8Q ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun copy-kUvRZsk (Ljava/lang/String;Ljava/lang/Integer;)Lio/github/vupoint/cokit/client/ThreadLoadedListParams;
+	public static synthetic fun copy-kUvRZsk$default (Lio/github/vupoint/cokit/client/ThreadLoadedListParams;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadLoadedListParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor-Uss3h8Q ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadLoadedListParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadLoadedListParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadLoadedListParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadLoadedListParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadLoadedListParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadLoadedListResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadLoadedListResult$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-Uss3h8Q ()Ljava/lang/String;
+	public final fun copy-UvMKtcQ (Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadLoadedListResult;
+	public static synthetic fun copy-UvMKtcQ$default (Lio/github/vupoint/cokit/client/ThreadLoadedListResult;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadLoadedListResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNextCursor-Uss3h8Q ()Ljava/lang/String;
+	public final fun getThreadIds ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadLoadedListResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadLoadedListResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadLoadedListResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadLoadedListResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadLoadedListResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public abstract interface class io/github/vupoint/cokit/client/ThreadMetadataPatchValue {
 }
 
@@ -3317,6 +3438,8 @@ public abstract interface class io/github/vupoint/cokit/client/ThreadsApi {
 	public abstract fun fork (Lio/github/vupoint/cokit/client/ForkThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun list (Lio/github/vupoint/cokit/client/ListThreadsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun list$default (Lio/github/vupoint/cokit/client/ThreadsApi;Lio/github/vupoint/cokit/client/ListThreadsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun listLoaded (Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listLoaded$default (Lio/github/vupoint/cokit/client/ThreadsApi;Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun read (Lio/github/vupoint/cokit/client/ReadThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun resume (Lio/github/vupoint/cokit/client/ResumeThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun setName (Lio/github/vupoint/cokit/client/SetThreadNameRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -3328,6 +3451,7 @@ public abstract interface class io/github/vupoint/cokit/client/ThreadsApi {
 
 public final class io/github/vupoint/cokit/client/ThreadsApi$DefaultImpls {
 	public static synthetic fun list$default (Lio/github/vupoint/cokit/client/ThreadsApi;Lio/github/vupoint/cokit/client/ListThreadsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun listLoaded$default (Lio/github/vupoint/cokit/client/ThreadsApi;Lio/github/vupoint/cokit/client/ListLoadedThreadsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun start$default (Lio/github/vupoint/cokit/client/ThreadsApi;Lio/github/vupoint/cokit/client/StartThreadRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 

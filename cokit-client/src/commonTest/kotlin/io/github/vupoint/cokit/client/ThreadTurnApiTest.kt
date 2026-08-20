@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
@@ -22,6 +23,40 @@ import kotlinx.serialization.json.put
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ThreadTurnApiTest {
+    @Test
+    fun listLoadedReturnsTypedThreadIdsAndNextCursor() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+        val deferred = async {
+            fixture.client.threads.listLoaded(
+                ListLoadedThreadsRequest(
+                    cursor = CodexCursor("cursor_123"),
+                    limit = 2,
+                ),
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("thread/loaded/list", request.method)
+        assertEquals("cursor_123", request.params?.jsonObject?.get("cursor")?.jsonPrimitive?.contentOrNull)
+        assertEquals(2, request.params?.jsonObject?.get("limit")?.jsonPrimitive?.content?.toInt())
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("data", kotlinx.serialization.json.buildJsonArray {
+                        add("thr_1")
+                        add("thr_2")
+                    })
+                    put("nextCursor", "cursor_456")
+                },
+            ),
+        )
+
+        assertEquals(listOf(ThreadId("thr_1"), ThreadId("thr_2")), deferred.await().threadIds)
+        assertEquals(CodexCursor("cursor_456"), deferred.await().nextCursor)
+    }
+
     @Test
     fun unarchiveReturnsRefreshedThread() = runTest {
         val fixture = connectedClientFixture(backgroundScope)
