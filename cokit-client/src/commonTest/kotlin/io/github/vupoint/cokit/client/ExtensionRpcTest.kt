@@ -5,6 +5,7 @@ import io.github.vupoint.cokit.client.extensions.AppId
 import io.github.vupoint.cokit.client.extensions.AppReview
 import io.github.vupoint.cokit.client.extensions.AppScreenshot
 import io.github.vupoint.cokit.client.extensions.AppsListParams
+import io.github.vupoint.cokit.client.extensions.AppsInstalledParams
 import io.github.vupoint.cokit.client.extensions.HookEventName
 import io.github.vupoint.cokit.client.extensions.HookHandlerType
 import io.github.vupoint.cokit.client.extensions.HookSource
@@ -34,6 +35,60 @@ import kotlinx.serialization.json.put
 
 @OptIn(ExperimentalCodexApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ExtensionRpcTest {
+    @Test
+    fun stableAppsInstalledDescriptorDecodesRuntimeSnapshot() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+
+        val result = async {
+            fixture.client.request(
+                CodexRpc.App.Installed,
+                AppsInstalledParams(
+                    forceRefresh = true,
+                    threadId = ThreadId("thread_123"),
+                ),
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("app/installed", request.method)
+        assertEquals(true, request.params?.jsonObject?.get("forceRefresh")?.jsonPrimitive?.booleanOrNull)
+        assertEquals("thread_123", request.params?.jsonObject?.get("threadId")?.jsonPrimitive?.contentOrNull)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("apps", buildJsonArray {
+                        add(
+                            buildJsonObject {
+                                put("id", "app_weather")
+                                put("enabled", true)
+                                put("callable", false)
+                                put("runtimeName", "Weather Runtime")
+                                put("futureField", "kept")
+                            },
+                        )
+                        add(
+                            buildJsonObject {
+                                put("id", "app_calendar")
+                                put("enabled", false)
+                                put("callable", false)
+                                put("runtimeName", kotlinx.serialization.json.JsonNull)
+                            },
+                        )
+                    })
+                },
+            ),
+        )
+
+        val apps = result.await().apps
+        assertEquals(AppId("app_weather"), apps[0].id)
+        assertEquals(true, apps[0].enabled)
+        assertEquals(false, apps[0].callable)
+        assertEquals("Weather Runtime", apps[0].runtimeName)
+        assertEquals(null, apps[1].runtimeName)
+    }
+
     @Test
     fun hooksListDescriptorSendsCwdsAndDecodesHookMetadata() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)

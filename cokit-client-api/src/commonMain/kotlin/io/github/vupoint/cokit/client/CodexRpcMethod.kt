@@ -30,6 +30,8 @@ import io.github.vupoint.cokit.client.environment.PermissionProfileListParams
 import io.github.vupoint.cokit.client.environment.PermissionProfileListResult
 import io.github.vupoint.cokit.client.extensions.AppsListParams
 import io.github.vupoint.cokit.client.extensions.AppsListResult
+import io.github.vupoint.cokit.client.extensions.AppsInstalledParams
+import io.github.vupoint.cokit.client.extensions.AppsInstalledResult
 import io.github.vupoint.cokit.client.extensions.HooksListParams
 import io.github.vupoint.cokit.client.extensions.HooksListResult
 import io.github.vupoint.cokit.client.filesystem.FilesystemGetMetadataParams
@@ -442,6 +444,14 @@ object CodexRpc {
             method = "hooks/list",
             paramsSerializer = HooksListParams.serializer(),
             resultSerializer = HooksListResult.serializer(),
+        )
+    }
+
+    object App {
+        val Installed: CodexRpcMethod<AppsInstalledParams, AppsInstalledResult> = CodexRpcMethod(
+            method = "app/installed",
+            paramsSerializer = AppsInstalledParams.serializer(),
+            resultSerializer = AppsInstalledResult.serializer(),
         )
     }
 

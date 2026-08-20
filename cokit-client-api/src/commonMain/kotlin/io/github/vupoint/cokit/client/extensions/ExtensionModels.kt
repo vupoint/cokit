@@ -109,6 +109,25 @@ data class HookMetadata(
 value class AppId(val value: String)
 
 @Serializable
+data class AppsInstalledParams(
+    val forceRefresh: Boolean = false,
+    val threadId: ThreadId? = null,
+)
+
+@Serializable
+data class AppsInstalledResult(
+    val apps: List<InstalledApp>,
+)
+
+@Serializable
+data class InstalledApp(
+    val id: AppId,
+    val enabled: Boolean,
+    val callable: Boolean,
+    val runtimeName: String? = null,
+)
+
+@Serializable
 data class AppsListParams(
     val cursor: CodexCursor? = null,
     val forceRefetch: Boolean? = null,
