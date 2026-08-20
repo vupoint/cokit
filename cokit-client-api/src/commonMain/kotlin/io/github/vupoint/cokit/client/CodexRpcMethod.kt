@@ -148,11 +148,10 @@ object CodexRpc {
             emptyResult = CodexRpcUnit,
         )
 
-        val Unarchive: CodexRpcMethod<ThreadUnarchiveParams, CodexRpcUnit> = CodexRpcMethod(
+        val Unarchive: CodexRpcMethod<ThreadUnarchiveParams, ThreadUnarchiveResult> = CodexRpcMethod(
             method = "thread/unarchive",
             paramsSerializer = ThreadUnarchiveParams.serializer(),
-            resultSerializer = CodexRpcUnit.serializer(),
-            emptyResult = CodexRpcUnit,
+            resultSerializer = ThreadUnarchiveResult.serializer(),
         )
 
         val Delete: CodexRpcMethod<ThreadDeleteParams, CodexRpcUnit> = CodexRpcMethod(
@@ -222,11 +221,10 @@ object CodexRpc {
             resultSerializer = TurnStartResult.serializer(),
         )
 
-        val Steer: CodexRpcMethod<TurnSteerParams, CodexRpcUnit> = CodexRpcMethod(
+        val Steer: CodexRpcMethod<TurnSteerParams, TurnSteerResult> = CodexRpcMethod(
             method = "turn/steer",
             paramsSerializer = TurnSteerParams.serializer(),
-            resultSerializer = CodexRpcUnit.serializer(),
-            emptyResult = CodexRpcUnit,
+            resultSerializer = TurnSteerResult.serializer(),
         )
 
         val Interrupt: CodexRpcMethod<TurnInterruptParams, CodexRpcUnit> = CodexRpcMethod(

@@ -18,6 +18,34 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class ThreadTurnModelTest {
     @Test
+    fun stableThreadAndTurnParamsRoundTripAllReleaseFields() {
+        assertJsonRoundTrip(
+            """{"serviceTier":"priority","approvalPolicy":"never","approvalsReviewer":"auto_review","baseInstructions":"base","config":{"feature":true},"cwd":"/path/to/project","developerInstructions":"developer","serviceName":"desktop","sessionStartSource":"startup","ephemeral":true,"personality":"pragmatic","sandbox":"workspace-write","threadSource":"app","model":"gpt-5","modelProvider":"openai"}""",
+            ThreadStartParams.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"threadId":"thr_123","approvalPolicy":"on-request","approvalsReviewer":"user","baseInstructions":"base","config":{"feature":true},"cwd":"/path/to/project","developerInstructions":"developer","personality":"friendly","sandbox":"read-only","model":"gpt-5","modelProvider":"openai","serviceTier":"priority"}""",
+            ThreadResumeParams.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"threadId":"thr_123","approvalPolicy":"never","approvalsReviewer":"auto_review","baseInstructions":"base","config":{"feature":true},"cwd":"/path/to/project","sandbox":"workspace-write","developerInstructions":"developer","ephemeral":true,"threadSource":"app","lastTurnId":"turn_123","model":"gpt-5","modelProvider":"openai","serviceTier":"priority"}""",
+            ThreadForkParams.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"sourceKinds":["appServer","subAgent"],"archived":false,"cursor":"cursor_123","cwd":["/path/to/project","/path/to/other"],"isPinned":true,"limit":20,"modelProviders":["openai"],"useStateDbOnly":true,"searchTerm":"stable","sortDirection":"asc","sortKey":"updated_at"}""",
+            ThreadListParams.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"data":[{"id":"thr_123"}],"nextCursor":"next_123","backwardsCursor":"back_123"}""",
+            ThreadListResult.serializer(),
+        )
+        assertJsonRoundTrip(
+            """{"threadId":"thr_123","input":[],"approvalPolicy":"on-request","approvalsReviewer":"auto_review","clientUserMessageId":"msg_123","serviceTier":"priority","cwd":"/path/to/project","effort":"high","sandboxPolicy":{"type":"readOnly","networkAccess":false},"model":"gpt-5","summary":"concise","outputSchema":{"type":"object"},"personality":"pragmatic"}""",
+            TurnStartParams.serializer(),
+        )
+    }
+
+    @Test
     fun approvalPolicyRoundTripsGranularStableShape() {
         val fixture =
             """{"granular":{"mcp_elicitations":false,"request_permissions":true,"rules":false,"sandbox_approval":true,"skill_approval":true}}"""
@@ -143,5 +171,19 @@ class ThreadTurnModelTest {
 
         assertEquals(CodexProtocolJson.encodeToString(String.serializer(), expected), encoded)
         assertEquals(value, CodexProtocolJson.decodeFromString(serializer, encoded))
+    }
+
+    private fun <T> assertJsonRoundTrip(
+        fixture: String,
+        serializer: KSerializer<T>,
+    ) {
+        val decoded = runCatching {
+            CodexProtocolJson.decodeFromString(serializer, fixture)
+        }
+        assertTrue(decoded.isSuccess, "Stable fixture should decode: $fixture")
+        assertEquals(
+            CodexJsonPayload.parse(fixture).toJsonElement(),
+            CodexProtocolJson.encodeToJsonElement(serializer, decoded.getOrThrow()),
+        )
     }
 }

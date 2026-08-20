@@ -54,9 +54,14 @@ Identifiers and common options should use focused types such as `ThreadId`,
 `turn/start.sandboxPolicy` and `command/exec.sandboxPolicy` are structured
 `SandboxPolicy` objects. `ApprovalPolicy` accepts the current stable string
 values and the granular stable object, while the legacy `on-failure` value is
-decode-compatible but deprecated. Thread, turn, item, pagination, and client-message scalar fields
-should likewise use wrappers such as `CodexCursor`, `CodexTimestamp`,
-`ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`, and `ItemStatus`.
+decode-compatible but deprecated. Stable thread start, resume, fork, and list
+requests expose the complete 0.146.0 field set. Thread list cwd filters preserve
+the upstream string-or-array union, list results expose both forward and
+backward cursors, `thread/unarchive` returns its refreshed thread, and
+`turn/steer` returns the accepted turn id. Thread, turn, item, pagination, and
+client-message scalar fields should likewise use wrappers such as `CodexCursor`,
+`CodexTimestamp`, `ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`,
+and `ItemStatus`.
 Prefer value classes with documented constants over closed enums when upstream
 may add new string values.
 

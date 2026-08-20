@@ -13,7 +13,7 @@ interface ThreadsApi {
 
     suspend fun archive(threadId: ThreadId)
 
-    suspend fun unarchive(threadId: ThreadId)
+    suspend fun unarchive(threadId: ThreadId): Thread
 
     suspend fun unsubscribe(threadId: ThreadId)
 

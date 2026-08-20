@@ -19,7 +19,7 @@ internal class DefaultThreadsApi(
 
     override suspend fun list(request: ListThreadsRequest): ThreadList {
         val decoded = rpc.request(CodexRpc.Thread.List, request.toRpcParams())
-        return ThreadList(decoded.threads, decoded.cursor)
+        return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor)
     }
 
     override suspend fun read(request: ReadThreadRequest): Thread {
@@ -30,8 +30,8 @@ internal class DefaultThreadsApi(
         rpc.request(CodexRpc.Thread.Archive, ThreadArchiveParams(threadId))
     }
 
-    override suspend fun unarchive(threadId: ThreadId) {
-        rpc.request(CodexRpc.Thread.Unarchive, ThreadUnarchiveParams(threadId))
+    override suspend fun unarchive(threadId: ThreadId): Thread {
+        return rpc.request(CodexRpc.Thread.Unarchive, ThreadUnarchiveParams(threadId)).thread
     }
 
     override suspend fun unsubscribe(threadId: ThreadId) {
@@ -44,33 +44,67 @@ internal class DefaultThreadsApi(
 }
 
 private fun StartThreadRequest.toRpcParams(): ThreadStartParams = ThreadStartParams(
+    serviceTier = serviceTier,
     cwd = cwd,
     approvalPolicy = approvalPolicy,
+    approvalsReviewer = approvalsReviewer,
+    baseInstructions = baseInstructions,
+    config = config,
+    developerInstructions = developerInstructions,
+    serviceName = serviceName,
+    sessionStartSource = sessionStartSource,
+    ephemeral = ephemeral,
     sandbox = sandbox,
-    permissions = permissions,
+    threadSource = threadSource,
     model = model,
-    effort = effort,
+    modelProvider = modelProvider,
     personality = personality,
 )
 
 private fun ResumeThreadRequest.toRpcParams(): ThreadResumeParams = ThreadResumeParams(
     threadId = threadId,
-    excludeTurns = excludeTurns,
-    initialTurnsPage = initialTurnsPage,
+    approvalPolicy = approvalPolicy,
+    approvalsReviewer = approvalsReviewer,
+    baseInstructions = baseInstructions,
+    config = config,
+    cwd = cwd,
+    developerInstructions = developerInstructions,
+    personality = personality,
+    sandbox = sandbox,
+    model = model,
+    modelProvider = modelProvider,
+    serviceTier = serviceTier,
 )
 
 private fun ForkThreadRequest.toRpcParams(): ThreadForkParams = ThreadForkParams(
     threadId = threadId,
+    approvalPolicy = approvalPolicy,
+    approvalsReviewer = approvalsReviewer,
+    baseInstructions = baseInstructions,
+    config = config,
+    cwd = cwd,
+    sandbox = sandbox,
+    developerInstructions = developerInstructions,
     ephemeral = ephemeral,
-    excludeTurns = excludeTurns,
+    threadSource = threadSource,
+    lastTurnId = lastTurnId,
+    model = model,
+    modelProvider = modelProvider,
+    serviceTier = serviceTier,
 )
 
 private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParams(
-    cursor = cursor,
-    limit = limit,
-    cwd = cwd,
+    sourceKinds = sourceKinds,
     archived = archived,
+    cursor = cursor,
+    cwd = cwd,
+    isPinned = isPinned,
+    limit = limit,
+    modelProviders = modelProviders,
+    useStateDbOnly = useStateDbOnly,
     searchTerm = searchTerm,
+    sortDirection = sortDirection,
+    sortKey = sortKey,
 )
 
 private fun ReadThreadRequest.toRpcParams(): ThreadReadParams = ThreadReadParams(

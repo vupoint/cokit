@@ -9,8 +9,8 @@ internal class DefaultTurnsApi(
         return rpc.request(CodexRpc.Turn.Start, request.toRpcParams()).turn
     }
 
-    override suspend fun steer(request: SteerTurnRequest) {
-        rpc.request(CodexRpc.Turn.Steer, request.toRpcParams())
+    override suspend fun steer(request: SteerTurnRequest): TurnId {
+        return rpc.request(CodexRpc.Turn.Steer, request.toRpcParams()).turnId
     }
 
     override suspend fun interrupt(request: InterruptTurnRequest) {
@@ -23,11 +23,15 @@ private fun StartTurnRequest.toRpcParams(): TurnStartParams = TurnStartParams(
     input = input,
     cwd = cwd,
     approvalPolicy = approvalPolicy,
+    approvalsReviewer = approvalsReviewer,
+    clientUserMessageId = clientUserMessageId,
+    serviceTier = serviceTier,
     sandbox = sandboxPolicy,
-    permissions = permissions,
     model = model,
     effort = effort,
+    summary = summary,
     outputSchema = outputSchema,
+    personality = personality,
 )
 
 private fun SteerTurnRequest.toRpcParams(): TurnSteerParams = TurnSteerParams(

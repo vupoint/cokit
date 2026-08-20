@@ -5,6 +5,7 @@ import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import io.github.vupoint.cokit.testing.FakeJsonRpcTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -22,6 +23,52 @@ import kotlinx.serialization.json.put
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ThreadTurnApiTest {
     @Test
+    fun unarchiveReturnsRefreshedThread() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+        val deferred = async<Any> {
+            fixture.client.threads.unarchive(ThreadId("thr_123"))
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject {
+                    put("thread", buildJsonObject { put("id", "thr_123") })
+                },
+            ),
+        )
+
+        assertEquals(ThreadId("thr_123"), assertIs<Thread>(deferred.await()).id)
+    }
+
+    @Test
+    fun steerReturnsAcceptedTurnId() = runTest {
+        val fixture = connectedClientFixture(backgroundScope)
+        val deferred = async<Any> {
+            fixture.client.turns.steer(
+                SteerTurnRequest(
+                    threadId = ThreadId("thr_123"),
+                    expectedTurnId = TurnId("turn_123"),
+                    input = listOf(TurnInput.Text("Keep going")),
+                ),
+            )
+        }
+        runCurrent()
+
+        val request = fixture.transport.sent.last() as JsonRpcRequest
+        fixture.transport.receive(
+            JsonRpcResponse(
+                request.id,
+                result = buildJsonObject { put("turnId", "turn_123") },
+            ),
+        )
+
+        assertEquals(TurnId("turn_123"), assertIs<TurnId>(deferred.await()))
+    }
+
+    @Test
     fun startThreadSendsThreadStartAndReturnsThread() = runTest {
         val fixture = connectedClientFixture(backgroundScope)
 
@@ -32,7 +79,7 @@ class ThreadTurnApiTest {
                     approvalPolicy = ApprovalPolicy.OnRequest,
                     sandbox = SandboxMode.WorkspaceWrite,
                     model = ModelName("gpt-5"),
-                    effort = ReasoningEffort.Medium,
+                    serviceTier = ServiceTier("fast"),
                 ),
             )
         }
@@ -45,7 +92,7 @@ class ThreadTurnApiTest {
         assertEquals("on-request", params["approvalPolicy"]?.jsonPrimitive?.contentOrNull)
         assertEquals("workspace-write", params["sandbox"]?.jsonPrimitive?.contentOrNull)
         assertEquals("gpt-5", params["model"]?.jsonPrimitive?.contentOrNull)
-        assertEquals("medium", params["effort"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("fast", params["serviceTier"]?.jsonPrimitive?.contentOrNull)
 
         fixture.transport.receive(
             JsonRpcResponse(
@@ -162,22 +209,20 @@ class ThreadTurnApiTest {
             items = listOf(payload),
             error = TurnError("failed"),
         )
-        val startThread = StartThreadRequest(permissions = payload)
+        val startThread = StartThreadRequest(config = payload)
         val resumeThread = ResumeThreadRequest(
             threadId = ThreadId("thr_123"),
-            initialTurnsPage = payload,
+            config = payload,
         )
         val startTurn = StartTurnRequest(
             threadId = ThreadId("thr_123"),
-            permissions = payload,
             outputSchema = payload,
         )
 
         assertEquals(payload, turn.items.single())
         assertEquals("failed", turn.error?.message)
-        assertEquals(payload, startThread.permissions)
-        assertEquals(payload, resumeThread.initialTurnsPage)
-        assertEquals(payload, startTurn.permissions)
+        assertEquals(payload, startThread.config)
+        assertEquals(payload, resumeThread.config)
         assertEquals(payload, startTurn.outputSchema)
     }
 

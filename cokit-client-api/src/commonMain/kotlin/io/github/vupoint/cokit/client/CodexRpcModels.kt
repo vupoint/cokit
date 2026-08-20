@@ -6,13 +6,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ThreadStartParams(
+    val serviceTier: ServiceTier? = null,
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val developerInstructions: String? = null,
+    val serviceName: String? = null,
+    val sessionStartSource: ThreadStartSource? = null,
+    val ephemeral: Boolean? = null,
     val sandbox: SandboxMode? = null,
-    val permissions: CodexJsonPayload? = null,
+    val threadSource: ThreadSource? = null,
     val model: ModelName? = null,
-    val effort: ReasoningEffort? = null,
-    val personality: String? = null,
+    val modelProvider: String? = null,
+    val personality: Personality? = null,
 )
 
 @Serializable
@@ -23,8 +31,17 @@ data class ThreadStartResult(
 @Serializable
 data class ThreadResumeParams(
     val threadId: ThreadId,
-    val excludeTurns: List<TurnId> = emptyList(),
-    val initialTurnsPage: CodexJsonPayload? = null,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val cwd: CodexHostPath? = null,
+    val developerInstructions: String? = null,
+    val personality: Personality? = null,
+    val sandbox: SandboxMode? = null,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val serviceTier: ServiceTier? = null,
 )
 
 @Serializable
@@ -35,8 +52,19 @@ data class ThreadResumeResult(
 @Serializable
 data class ThreadForkParams(
     val threadId: ThreadId,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val cwd: CodexHostPath? = null,
+    val sandbox: SandboxMode? = null,
+    val developerInstructions: String? = null,
     val ephemeral: Boolean? = null,
-    val excludeTurns: List<TurnId> = emptyList(),
+    val threadSource: ThreadSource? = null,
+    val lastTurnId: TurnId? = null,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val serviceTier: ServiceTier? = null,
 )
 
 @Serializable
@@ -46,17 +74,25 @@ data class ThreadForkResult(
 
 @Serializable
 data class ThreadListParams(
-    val cursor: CodexCursor? = null,
-    val limit: Int? = null,
-    val cwd: CodexHostPath? = null,
+    val sourceKinds: List<ThreadSourceKind>? = null,
     val archived: Boolean? = null,
+    val cursor: CodexCursor? = null,
+    val cwd: ThreadListCwdFilter? = null,
+    val isPinned: Boolean? = null,
+    val limit: Int? = null,
+    val modelProviders: List<String>? = null,
+    val useStateDbOnly: Boolean? = null,
     val searchTerm: String? = null,
+    val sortDirection: SortDirection? = null,
+    val sortKey: ThreadSortKey? = null,
 )
 
 @Serializable
 data class ThreadListResult(
+    @SerialName("data")
     val threads: List<Thread> = emptyList(),
-    val cursor: CodexCursor? = null,
+    val nextCursor: CodexCursor? = null,
+    val backwardsCursor: CodexCursor? = null,
 )
 
 @Serializable
@@ -78,6 +114,11 @@ data class ThreadArchiveParams(
 @Serializable
 data class ThreadUnarchiveParams(
     val threadId: ThreadId,
+)
+
+@Serializable
+data class ThreadUnarchiveResult(
+    val thread: Thread,
 )
 
 @Serializable
@@ -170,12 +211,16 @@ data class TurnStartParams(
     val input: List<TurnInput> = emptyList(),
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val clientUserMessageId: ClientMessageId? = null,
+    val serviceTier: ServiceTier? = null,
     @SerialName("sandboxPolicy")
     val sandbox: SandboxPolicy? = null,
-    val permissions: CodexJsonPayload? = null,
     val model: ModelName? = null,
     val effort: ReasoningEffort? = null,
+    val summary: ReasoningSummary? = null,
     val outputSchema: CodexJsonPayload? = null,
+    val personality: Personality? = null,
 )
 
 @Serializable
@@ -189,6 +234,11 @@ data class TurnSteerParams(
     val expectedTurnId: TurnId,
     val input: List<TurnInput>,
     val clientUserMessageId: ClientMessageId? = null,
+)
+
+@Serializable
+data class TurnSteerResult(
+    val turnId: TurnId,
 )
 
 @Serializable

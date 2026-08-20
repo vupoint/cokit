@@ -10,11 +10,15 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 @Serializable
@@ -28,6 +32,81 @@ value class CodexCursor(val value: String)
 @Serializable
 @JvmInline
 value class CodexTimestamp(val epochSeconds: Long)
+
+@Serializable
+@JvmInline
+value class ThreadSource(val value: String)
+
+@Serializable
+@JvmInline
+value class ThreadStartSource(val value: String) {
+    companion object {
+        val Startup = ThreadStartSource("startup")
+        val Clear = ThreadStartSource("clear")
+    }
+}
+
+@Serializable
+@JvmInline
+value class ThreadSourceKind(val value: String) {
+    companion object {
+        val Cli = ThreadSourceKind("cli")
+        val VsCode = ThreadSourceKind("vscode")
+        val Exec = ThreadSourceKind("exec")
+        val AppServer = ThreadSourceKind("appServer")
+        val SubAgent = ThreadSourceKind("subAgent")
+        val SubAgentReview = ThreadSourceKind("subAgentReview")
+        val SubAgentCompact = ThreadSourceKind("subAgentCompact")
+        val SubAgentThreadSpawn = ThreadSourceKind("subAgentThreadSpawn")
+        val SubAgentOther = ThreadSourceKind("subAgentOther")
+        val Unknown = ThreadSourceKind("unknown")
+    }
+}
+
+@Serializable
+@JvmInline
+value class ThreadSortKey(val value: String) {
+    companion object {
+        val CreatedAt = ThreadSortKey("created_at")
+        val UpdatedAt = ThreadSortKey("updated_at")
+        val RecencyAt = ThreadSortKey("recency_at")
+    }
+}
+
+@Serializable(with = ThreadListCwdFilterSerializer::class)
+sealed interface ThreadListCwdFilter {
+    data class Single(val path: CodexHostPath) : ThreadListCwdFilter
+
+    data class AnyOf(val paths: List<CodexHostPath>) : ThreadListCwdFilter
+}
+
+internal object ThreadListCwdFilterSerializer : KSerializer<ThreadListCwdFilter> {
+    override val descriptor: SerialDescriptor = JsonElement.serializer().descriptor
+
+    override fun serialize(encoder: Encoder, value: ThreadListCwdFilter) {
+        val jsonEncoder = encoder as? JsonEncoder
+            ?: throw SerializationException("ThreadListCwdFilter requires JSON encoding")
+        val element = when (value) {
+            is ThreadListCwdFilter.Single -> JsonPrimitive(value.path.value)
+            is ThreadListCwdFilter.AnyOf -> buildJsonArray {
+                value.paths.forEach { add(JsonPrimitive(it.value)) }
+            }
+        }
+        jsonEncoder.encodeJsonElement(element)
+    }
+
+    override fun deserialize(decoder: Decoder): ThreadListCwdFilter {
+        val jsonDecoder = decoder as? JsonDecoder
+            ?: throw SerializationException("ThreadListCwdFilter requires JSON decoding")
+        return when (val element = jsonDecoder.decodeJsonElement()) {
+            is JsonPrimitive -> ThreadListCwdFilter.Single(CodexHostPath(element.content))
+            is JsonArray -> ThreadListCwdFilter.AnyOf(
+                element.map { CodexHostPath(it.jsonPrimitive.content) },
+            )
+            else -> throw SerializationException("ThreadListCwdFilter must be a string or array")
+        }
+    }
+}
 
 @Serializable
 @JvmInline
@@ -150,41 +229,76 @@ object ThreadGitInfoPatchSerializer : KSerializer<ThreadGitInfoPatch> {
 @Serializable
 data class ThreadList(
     val threads: List<Thread> = emptyList(),
-    val cursor: CodexCursor? = null,
+    val nextCursor: CodexCursor? = null,
+    val backwardsCursor: CodexCursor? = null,
 )
 
 @Serializable
 data class StartThreadRequest(
+    val serviceTier: ServiceTier? = null,
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val developerInstructions: String? = null,
+    val serviceName: String? = null,
+    val sessionStartSource: ThreadStartSource? = null,
+    val ephemeral: Boolean? = null,
     val sandbox: SandboxMode? = null,
-    val permissions: CodexJsonPayload? = null,
+    val threadSource: ThreadSource? = null,
     val model: ModelName? = null,
-    val effort: ReasoningEffort? = null,
-    val personality: String? = null,
+    val modelProvider: String? = null,
+    val personality: Personality? = null,
 )
 
 @Serializable
 data class ResumeThreadRequest(
     val threadId: ThreadId,
-    val excludeTurns: List<TurnId> = emptyList(),
-    val initialTurnsPage: CodexJsonPayload? = null,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val cwd: CodexHostPath? = null,
+    val developerInstructions: String? = null,
+    val personality: Personality? = null,
+    val sandbox: SandboxMode? = null,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val serviceTier: ServiceTier? = null,
 )
 
 @Serializable
 data class ForkThreadRequest(
     val threadId: ThreadId,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val baseInstructions: String? = null,
+    val config: CodexJsonPayload? = null,
+    val cwd: CodexHostPath? = null,
+    val sandbox: SandboxMode? = null,
+    val developerInstructions: String? = null,
     val ephemeral: Boolean? = null,
-    val excludeTurns: List<TurnId> = emptyList(),
+    val threadSource: ThreadSource? = null,
+    val lastTurnId: TurnId? = null,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val serviceTier: ServiceTier? = null,
 )
 
 @Serializable
 data class ListThreadsRequest(
-    val cursor: CodexCursor? = null,
-    val limit: Int? = null,
-    val cwd: CodexHostPath? = null,
+    val sourceKinds: List<ThreadSourceKind>? = null,
     val archived: Boolean? = null,
+    val cursor: CodexCursor? = null,
+    val cwd: ThreadListCwdFilter? = null,
+    val isPinned: Boolean? = null,
+    val limit: Int? = null,
+    val modelProviders: List<String>? = null,
+    val useStateDbOnly: Boolean? = null,
     val searchTerm: String? = null,
+    val sortDirection: SortDirection? = null,
+    val sortKey: ThreadSortKey? = null,
 )
 
 @Serializable

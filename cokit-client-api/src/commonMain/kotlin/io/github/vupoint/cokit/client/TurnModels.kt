@@ -64,11 +64,15 @@ data class StartTurnRequest(
     val input: List<TurnInput> = emptyList(),
     val cwd: CodexHostPath? = null,
     val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val clientUserMessageId: ClientMessageId? = null,
+    val serviceTier: ServiceTier? = null,
     val sandboxPolicy: SandboxPolicy? = null,
-    val permissions: CodexJsonPayload? = null,
     val model: ModelName? = null,
     val effort: ReasoningEffort? = null,
+    val summary: ReasoningSummary? = null,
     val outputSchema: CodexJsonPayload? = null,
+    val personality: Personality? = null,
 )
 
 @Serializable

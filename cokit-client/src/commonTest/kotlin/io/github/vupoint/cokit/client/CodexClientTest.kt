@@ -117,7 +117,7 @@ class CodexClientTest {
                 ThreadForkParams(
                     threadId = ThreadId("thr_123"),
                     ephemeral = true,
-                    excludeTurns = listOf(TurnId("turn_1")),
+                    lastTurnId = TurnId("turn_1"),
                 ),
                 "thread/fork",
                 "thr_fork",
@@ -130,7 +130,7 @@ class CodexClientTest {
                 ThreadListParams(
                     cursor = CodexCursor("cursor_1"),
                     limit = 10,
-                    cwd = CodexHostPath("/path/to/project"),
+                    cwd = ThreadListCwdFilter.Single(CodexHostPath("/path/to/project")),
                     archived = false,
                     searchTerm = "sample",
                 ),
@@ -160,13 +160,14 @@ class CodexClientTest {
             ),
         )
         assertEquals(
-            CodexRpcUnit,
-            fixture.requestUnitResult(
+            ThreadId("thr_unarchive"),
+            fixture.requestThreadResult(
                 this,
                 CodexRpc.Thread.Unarchive,
                 ThreadUnarchiveParams(ThreadId("thr_123")),
                 "thread/unarchive",
-            ),
+                "thr_unarchive",
+            ).thread.id,
         )
         assertEquals(
             CodexRpcUnit,
@@ -432,10 +433,8 @@ class CodexClientTest {
     fun turnDescriptorsExposeEveryTurnRpcMethod() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
 
-        assertEquals(
-            CodexRpcUnit,
-            fixture.requestUnitResult(
-                this,
+        val steer = async {
+            fixture.client.request(
                 CodexRpc.Turn.Steer,
                 TurnSteerParams(
                     threadId = ThreadId("thr_123"),
@@ -443,9 +442,18 @@ class CodexClientTest {
                     input = listOf(TurnInput.Text("Keep going")),
                     clientUserMessageId = ClientMessageId("msg_123"),
                 ),
-                "turn/steer",
+            )
+        }
+        runCurrent()
+        val steerRequest = fixture.transport.sent.last() as JsonRpcRequest
+        assertEquals("turn/steer", steerRequest.method)
+        fixture.transport.receive(
+            JsonRpcResponse(
+                steerRequest.id,
+                result = buildJsonObject { put("turnId", "turn_123") },
             ),
         )
+        assertEquals(TurnId("turn_123"), steer.await().turnId)
         assertEquals(
             CodexRpcUnit,
             fixture.requestUnitResult(
@@ -625,13 +633,13 @@ class CodexClientTest {
                     sent.id,
                     result = buildJsonObject {
                         put(
-                            "threads",
+                            "data",
                             kotlinx.serialization.json.buildJsonArray {
                                 add(buildJsonObject { put("id", "thr_1") })
                                 add(buildJsonObject { put("id", "thr_2") })
                             },
                         )
-                        put("cursor", "cursor_2")
+                        put("nextCursor", "cursor_2")
                     },
                 ),
             )

@@ -55,6 +55,43 @@ value class SandboxMode(val value: String) {
 }
 
 @Serializable
+@JvmInline
+value class ApprovalsReviewer(val value: String) {
+    companion object {
+        val User = ApprovalsReviewer("user")
+        val AutoReview = ApprovalsReviewer("auto_review")
+
+        @Deprecated("guardian_subagent is a legacy compatibility value. Use AutoReview.")
+        val GuardianSubagent = ApprovalsReviewer("guardian_subagent")
+    }
+}
+
+@Serializable
+@JvmInline
+value class Personality(val value: String) {
+    companion object {
+        val None = Personality("none")
+        val Friendly = Personality("friendly")
+        val Pragmatic = Personality("pragmatic")
+    }
+}
+
+@Serializable
+@JvmInline
+value class ReasoningSummary(val value: String) {
+    companion object {
+        val Auto = ReasoningSummary("auto")
+        val Concise = ReasoningSummary("concise")
+        val Detailed = ReasoningSummary("detailed")
+        val None = ReasoningSummary("none")
+    }
+}
+
+@Serializable
+@JvmInline
+value class ServiceTier(val value: String)
+
+@Serializable
 data class GranularApprovalPolicy(
     @SerialName("mcp_elicitations")
     val mcpElicitations: Boolean,
