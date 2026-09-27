@@ -42,6 +42,69 @@ class Release157CompatibilityTest {
         }
     }
 
+    @Test
+    fun threadListRetainsSectionFilterOmissionNullAndValue() {
+        for (fixture in listOf("{}", "{\"sectionId\":null}", "{\"sectionId\":\"section_1\",\"originators\":[\"desktop\"]}")) {
+            roundTrip(fixture, ThreadListParams.serializer())
+        }
+    }
+
+    @Test
+    fun resumeAndForkRetainStableHistoryExclusion() {
+        val fixture = """{"threadId":"thr_1","excludeTurns":true}"""
+        roundTrip(fixture, ThreadResumeParams.serializer())
+        roundTrip(fixture, ThreadForkParams.serializer())
+    }
+
+    @Test
+    fun threadRetainsMetadataAndHistory() {
+        roundTrip(
+            """{"id":"thr_1","name":"Review","status":{"type":"active","activeFlags":["waitingOnApproval"]},"historyMode":"paginated","model":"test-model","reasoningEffort":"high","sessionId":"session_1","forkedFromId":"thr_0","ephemeral":false,"section":{"id":"section_1","name":"Work"},"turns":[{"id":"turn_1","status":"completed","itemsView":"notLoaded"}]}""",
+            Thread.serializer(),
+        )
+    }
+
+    @Test
+    fun threadStatusNotificationPreservesStructuredStatus() {
+        val notification = io.github.vupoint.cokit.protocol.JsonRpcNotification(
+            method = "thread/status/changed",
+            params = CodexProtocolJson.parseToJsonElement(
+                """{"threadId":"thr_1","status":{"type":"active","activeFlags":["waitingOnApproval"]}}""",
+            ),
+        ).toCodexNotification()
+        assertIs<CodexNotification.ThreadStatusChanged>(notification)
+    }
+
+    @Test
+    fun sectionAppearancePreservesOmissionClearAndReplacement() {
+        for (appearance in listOf("", ",\"appearance\":null", ",\"appearance\":{\"color\":\"blue\"}")) {
+            roundTrip("{\"sectionId\":\"section_1\",\"name\":\"Work\"$appearance}", ThreadSectionUpdateParams.serializer())
+        }
+        roundTrip("""{"threadId":"thr_1","sectionId":null}""", ThreadSectionMoveParams.serializer())
+        kotlin.test.assertFailsWith<kotlinx.serialization.SerializationException> {
+            CodexProtocolJson.decodeFromJsonElement(ThreadListParams.serializer(), CodexProtocolJson.parseToJsonElement("""{"sectionId":{}}"""))
+        }
+    }
+
+    @Test
+    fun historyDescriptorsRetainItemsAndBothCursors() {
+        assertEquals("thread/items/list", CodexRpc.Thread.ListItems.method)
+        assertEquals("thread/revert", CodexRpc.Thread.Revert.method)
+        assertEquals("thread/section/move", CodexRpc.Thread.MoveToSection.method)
+        assertEquals("threadSection/list", CodexRpc.ThreadSection.List.method)
+        assertEquals("threadSection/create", CodexRpc.ThreadSection.Create.method)
+        assertEquals("threadSection/update", CodexRpc.ThreadSection.Update.method)
+        assertEquals("threadSection/delete", CodexRpc.ThreadSection.Delete.method)
+        roundTrip(
+            """{"data":[{"turnId":"turn_1","item":{"type":"futureItem","id":"item_1","value":42},"startedAtMs":10,"completedAtMs":20}],"nextCursor":"next","backwardsCursor":"back"}""",
+            ThreadItemsListResult.serializer(),
+        )
+        roundTrip(
+            """{"thread":{"id":"thr_1"},"itemsBackwardsCursor":"items","turnsBackwardsCursor":"turns"}""",
+            ThreadRevertResult.serializer(),
+        )
+    }
+
     private fun <T> roundTrip(fixture: String, serializer: KSerializer<T>) {
         val expected = CodexProtocolJson.parseToJsonElement(fixture)
         val decoded = CodexProtocolJson.decodeFromJsonElement(serializer, expected)

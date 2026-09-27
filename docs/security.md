@@ -318,3 +318,12 @@ elicitations share the same explicit handler and default-denial behavior.
 Initialize extension declarations do not register a handler or grant permission.
 `explicitGatewayOauth` changes the server runtime's OAuth behavior and cannot be
 undone by another connection; callers must opt into that behavior explicitly.
+
+## Thread History And Sections
+
+`thread/revert` changes only persisted paginated conversation history. It does not
+undo filesystem edits. CoKit sends it only when explicitly requested by the caller.
+Section deletion and moves are likewise explicit mutations. Section filters and
+appearance updates distinguish omitted fields from explicit null; clearing a
+section must never be inferred from an omitted field. History remains paginated
+and no automatic page accumulation or retry is added.

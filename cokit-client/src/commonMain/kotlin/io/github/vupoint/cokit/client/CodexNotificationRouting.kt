@@ -230,7 +230,7 @@ private data class ThreadStartedPayload(
 @Serializable
 private data class ThreadStatusChangedPayload(
     val threadId: ThreadId,
-    val status: ThreadStatusType,
+    val status: ThreadStatus,
 )
 
 @Serializable

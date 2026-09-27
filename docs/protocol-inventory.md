@@ -194,6 +194,13 @@ without updating the public inventory.
 | `CodexRpc.RemoteControl.ReadPairingStatus` | `remoteControl/pairing/status` | Experimental remote-control pairing status descriptor; group coverage remains experimental. |
 | `CodexRpc.RemoteControl.ListClients` | `remoteControl/client/list` | Experimental remote-control client list descriptor; group coverage remains experimental. |
 | `CodexRpc.RemoteControl.RevokeClient` | `remoteControl/client/revoke` | Experimental remote-control client revoke descriptor; group coverage remains experimental. |
+| `CodexRpc.Thread.ListItems` | `thread/items/list` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.Thread.Revert` | `thread/revert` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.Thread.MoveToSection` | `thread/section/move` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.ThreadSection.List` | `threadSection/list` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.ThreadSection.Create` | `threadSection/create` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.ThreadSection.Update` | `threadSection/update` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.ThreadSection.Delete` | `threadSection/delete` | Stable 0.157.1 thread history and section descriptor. |
 
 ## Current Modeled Method Summary
 
@@ -311,3 +318,10 @@ Current typed server request:
 - `item/permissions/requestApproval`
 - `item/tool/requestUserInput`
 - `mcpServer/elicitation/request`
+
+## Codex 0.157.1 Thread Alignment
+
+Thread list uses sectionId with omitted/null/value semantics; isPinned is removed.
+Thread turns/items pagination and resume/fork excludeTurns are stable. Revert only
+changes paginated conversation history, never files. Structured status and active
+flags are retained in threads and status notifications.

@@ -20,7 +20,7 @@ sealed interface CodexNotification {
 
     data class ThreadStatusChanged(
         val threadId: ThreadId,
-        val status: ThreadStatusType,
+        val status: ThreadStatus,
     ) : CodexNotification {
         override val method: String = "thread/status/changed"
     }

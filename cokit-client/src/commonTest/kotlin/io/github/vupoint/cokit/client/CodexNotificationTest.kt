@@ -35,13 +35,13 @@ class CodexNotificationTest {
             method = "thread/status/changed",
             params = buildJsonObject {
                 put("threadId", "thr_123")
-                put("status", "inProgress")
+                put("status", buildJsonObject { put("type", "active") })
             },
         ).toCodexNotification()
 
         val threadStatusChanged = assertIs<CodexNotification.ThreadStatusChanged>(statusChanged)
         assertEquals(ThreadId("thr_123"), threadStatusChanged.threadId)
-        assertEquals(ThreadStatusType("inProgress"), threadStatusChanged.status)
+        assertEquals(ThreadStatusType.Active, threadStatusChanged.status.type)
     }
 
     @Test

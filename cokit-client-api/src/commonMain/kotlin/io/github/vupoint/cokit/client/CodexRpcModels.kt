@@ -31,6 +31,7 @@ data class ThreadStartResult(
 @Serializable
 data class ThreadResumeParams(
     val threadId: ThreadId,
+    val excludeTurns: Boolean? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val approvalsReviewer: ApprovalsReviewer? = null,
     val baseInstructions: String? = null,
@@ -52,6 +53,7 @@ data class ThreadResumeResult(
 @Serializable
 data class ThreadForkParams(
     val threadId: ThreadId,
+    val excludeTurns: Boolean? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val approvalsReviewer: ApprovalsReviewer? = null,
     val baseInstructions: String? = null,
@@ -78,7 +80,9 @@ data class ThreadListParams(
     val archived: Boolean? = null,
     val cursor: CodexCursor? = null,
     val cwd: ThreadListCwdFilter? = null,
-    val isPinned: Boolean? = null,
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val sectionId: CodexOptional<ThreadSectionId> = CodexOptional.Omitted,
+    val originators: List<String>? = null,
     val limit: Int? = null,
     val modelProviders: List<String>? = null,
     val useStateDbOnly: Boolean? = null,
@@ -199,7 +203,6 @@ data class ThreadCompactionStartParams(
     val threadId: ThreadId,
 )
 
-@ExperimentalCodexApi
 @Serializable
 data class ThreadTurnsListParams(
     val threadId: ThreadId,
@@ -209,7 +212,6 @@ data class ThreadTurnsListParams(
     val itemsView: TurnItemsView? = null,
 )
 
-@ExperimentalCodexApi
 @Serializable
 data class ThreadTurnsListResult(
     val data: List<Turn> = emptyList(),

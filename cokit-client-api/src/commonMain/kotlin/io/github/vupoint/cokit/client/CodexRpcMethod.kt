@@ -218,11 +218,54 @@ object CodexRpc {
             emptyResult = CodexRpcUnit,
         )
 
-        @ExperimentalCodexApi
         val ListTurns: CodexRpcMethod<ThreadTurnsListParams, ThreadTurnsListResult> = CodexRpcMethod(
             method = "thread/turns/list",
             paramsSerializer = ThreadTurnsListParams.serializer(),
             resultSerializer = ThreadTurnsListResult.serializer(),
+        )
+
+        val ListItems: CodexRpcMethod<ThreadItemsListParams, ThreadItemsListResult> = CodexRpcMethod(
+            method = "thread/items/list",
+            paramsSerializer = ThreadItemsListParams.serializer(),
+            resultSerializer = ThreadItemsListResult.serializer(),
+        )
+
+        val Revert: CodexRpcMethod<ThreadRevertParams, ThreadRevertResult> = CodexRpcMethod(
+            method = "thread/revert",
+            paramsSerializer = ThreadRevertParams.serializer(),
+            resultSerializer = ThreadRevertResult.serializer(),
+        )
+
+        val MoveToSection: CodexRpcMethod<ThreadSectionMoveParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/section/move",
+            paramsSerializer = ThreadSectionMoveParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+        )
+    }
+
+    object ThreadSection {
+        val List: CodexRpcMethod<ThreadSectionListParams, ThreadSectionListResult> = CodexRpcMethod(
+            method = "threadSection/list",
+            paramsSerializer = ThreadSectionListParams.serializer(),
+            resultSerializer = ThreadSectionListResult.serializer(),
+        )
+
+        val Create: CodexRpcMethod<ThreadSectionCreateParams, ThreadSectionResult> = CodexRpcMethod(
+            method = "threadSection/create",
+            paramsSerializer = ThreadSectionCreateParams.serializer(),
+            resultSerializer = ThreadSectionResult.serializer(),
+        )
+
+        val Update: CodexRpcMethod<ThreadSectionUpdateParams, ThreadSectionResult> = CodexRpcMethod(
+            method = "threadSection/update",
+            paramsSerializer = ThreadSectionUpdateParams.serializer(),
+            resultSerializer = ThreadSectionResult.serializer(),
+        )
+
+        val Delete: CodexRpcMethod<ThreadSectionDeleteParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "threadSection/delete",
+            paramsSerializer = ThreadSectionDeleteParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
         )
     }
 

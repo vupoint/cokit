@@ -71,6 +71,7 @@ private fun StartThreadRequest.toRpcParams(): ThreadStartParams = ThreadStartPar
 
 private fun ResumeThreadRequest.toRpcParams(): ThreadResumeParams = ThreadResumeParams(
     threadId = threadId,
+    excludeTurns = excludeTurns,
     approvalPolicy = approvalPolicy,
     approvalsReviewer = approvalsReviewer,
     baseInstructions = baseInstructions,
@@ -86,6 +87,7 @@ private fun ResumeThreadRequest.toRpcParams(): ThreadResumeParams = ThreadResume
 
 private fun ForkThreadRequest.toRpcParams(): ThreadForkParams = ThreadForkParams(
     threadId = threadId,
+    excludeTurns = excludeTurns,
     approvalPolicy = approvalPolicy,
     approvalsReviewer = approvalsReviewer,
     baseInstructions = baseInstructions,
@@ -106,7 +108,8 @@ private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParam
     archived = archived,
     cursor = cursor,
     cwd = cwd,
-    isPinned = isPinned,
+    sectionId = sectionId,
+    originators = originators,
     limit = limit,
     modelProviders = modelProviders,
     useStateDbOnly = useStateDbOnly,

@@ -1,5 +1,6 @@
 package io.github.vupoint.cokit.client
 
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -70,6 +71,7 @@ value class ThreadSortKey(val value: String) {
         val CreatedAt = ThreadSortKey("created_at")
         val UpdatedAt = ThreadSortKey("updated_at")
         val RecencyAt = ThreadSortKey("recency_at")
+        val SectionPosition = ThreadSortKey("section_position")
     }
 }
 
@@ -113,6 +115,9 @@ internal object ThreadListCwdFilterSerializer : KSerializer<ThreadListCwdFilter>
 value class ThreadStatusType(val value: String) {
     companion object {
         val NotLoaded = ThreadStatusType("notLoaded")
+        val Idle = ThreadStatusType("idle")
+        val Active = ThreadStatusType("active")
+        val SystemError = ThreadStatusType("systemError")
     }
 }
 
@@ -121,6 +126,8 @@ value class ThreadStatusType(val value: String) {
 value class ThreadGoalStatus(val value: String) {
     companion object {
         val Active = ThreadGoalStatus("active")
+        val Paused = ThreadGoalStatus("paused")
+        val Complete = ThreadGoalStatus("complete")
         val Blocked = ThreadGoalStatus("blocked")
         val BudgetLimited = ThreadGoalStatus("budgetLimited")
         val UsageLimited = ThreadGoalStatus("usageLimited")
@@ -135,6 +142,28 @@ data class Thread(
     val createdAt: CodexTimestamp? = null,
     val updatedAt: CodexTimestamp? = null,
     val gitInfo: ThreadGitInfo? = null,
+    val name: String? = null,
+    val status: ThreadStatus? = null,
+    val historyMode: ThreadHistoryMode? = null,
+    val model: ModelName? = null,
+    val reasoningEffort: ReasoningEffort? = null,
+    val originator: String? = null,
+    val sessionId: String? = null,
+    val forkedFromId: ThreadId? = null,
+    val parentThreadId: ThreadId? = null,
+    val projectId: String? = null,
+    val section: ThreadSection? = null,
+    val sectionEnteredAt: CodexTimestamp? = null,
+    val recencyAt: CodexTimestamp? = null,
+    val cwd: CodexHostPath? = null,
+    val ephemeral: Boolean? = null,
+    val cliVersion: String? = null,
+    val agentNickname: String? = null,
+    val agentRole: String? = null,
+    /** Preserves the string/custom/subagent source union without losing future variants. */
+    val source: CodexJsonPayload? = null,
+    val threadSource: ThreadSource? = null,
+    val turns: List<Turn> = emptyList(),
 )
 
 @Serializable
@@ -271,6 +300,7 @@ data class StartThreadRequest(
 @Serializable
 data class ResumeThreadRequest(
     val threadId: ThreadId,
+    val excludeTurns: Boolean? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val approvalsReviewer: ApprovalsReviewer? = null,
     val baseInstructions: String? = null,
@@ -287,6 +317,7 @@ data class ResumeThreadRequest(
 @Serializable
 data class ForkThreadRequest(
     val threadId: ThreadId,
+    val excludeTurns: Boolean? = null,
     val approvalPolicy: ApprovalPolicy? = null,
     val approvalsReviewer: ApprovalsReviewer? = null,
     val baseInstructions: String? = null,
@@ -308,7 +339,10 @@ data class ListThreadsRequest(
     val archived: Boolean? = null,
     val cursor: CodexCursor? = null,
     val cwd: ThreadListCwdFilter? = null,
-    val isPinned: Boolean? = null,
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val sectionId: CodexOptional<ThreadSectionId> = CodexOptional.Omitted,
+    /** Nonempty originator filters require a hosted backend. */
+    val originators: List<String>? = null,
     val limit: Int? = null,
     val modelProviders: List<String>? = null,
     val useStateDbOnly: Boolean? = null,

@@ -49,7 +49,7 @@ class ThreadTurnModelTest {
             ThreadForkParams.serializer(),
         )
         assertJsonRoundTrip(
-            """{"sourceKinds":["appServer","subAgent"],"archived":false,"cursor":"cursor_123","cwd":["/path/to/project","/path/to/other"],"isPinned":true,"limit":20,"modelProviders":["openai"],"useStateDbOnly":true,"searchTerm":"stable","sortDirection":"asc","sortKey":"updated_at"}""",
+            """{"sourceKinds":["appServer","subAgent"],"archived":false,"cursor":"cursor_123","cwd":["/path/to/project","/path/to/other"],"sectionId":"section_1","limit":20,"modelProviders":["openai"],"useStateDbOnly":true,"searchTerm":"stable","sortDirection":"asc","sortKey":"updated_at"}""",
             ThreadListParams.serializer(),
         )
         assertJsonRoundTrip(
