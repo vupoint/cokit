@@ -29,6 +29,13 @@ interface CodexClient : AutoCloseable {
         params: P,
     ): R
 
+    /** Reports the ID after sending. Cancelling this coroutine does not cancel server-side work. */
+    suspend fun <P : Any, R : Any> request(
+        method: CodexRpcMethod<P, R>,
+        params: P,
+        onRequestId: (CodexRequestId) -> Unit,
+    ): R
+
     fun registerCommandApprovalHandler(handler: CommandApprovalHandler)
 
     fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler)

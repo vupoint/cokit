@@ -208,6 +208,25 @@ without updating the public inventory.
 | `CodexRpc.GatewayOAuth.Login` | `account/gatewayOAuth/login` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
 | `CodexRpc.GatewayOAuth.Cancel` | `account/gatewayOAuth/cancel` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
 
+| `CodexRpc.Project.List` | `project/list` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Read` | `project/read` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Create` | `project/create` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Import` | `project/import` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Update` | `project/update` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Move` | `project/move` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.Project.Delete` | `project/delete` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.Add` | `thread/queue/add` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.List` | `thread/queue/list` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.Update` | `thread/queue/update` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.Delete` | `thread/queue/delete` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.Reorder` | `thread/queue/reorder` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.ThreadQueue.Start` | `thread/queue/start` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.UserVerification.Status` | `userVerification/status` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.UserVerification.Enroll` | `userVerification/enroll` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.UserVerification.Delete` | `userVerification/delete` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.UserVerification.Verify` | `userVerification/verify` | Experimental release descriptor; requires initialization opt-in. |
+| `CodexRpc.UserVerification.Cancel` | `userVerification/cancel` | Experimental release descriptor; requires initialization opt-in. |
+
 ## Current Modeled Method Summary
 
 Current public request descriptors:

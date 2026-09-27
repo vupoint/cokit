@@ -1,5 +1,6 @@
 package io.github.vupoint.cokit.client
 
+import io.github.vupoint.cokit.protocol.JsonRpcId
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.rpc.JsonRpcSession
 import kotlinx.serialization.DeserializationStrategy
@@ -33,6 +34,7 @@ internal fun <T : Any> JsonElement?.decodeResult(
 internal suspend fun <P : Any, R : Any> JsonRpcSession.request(
     method: CodexRpcMethod<P, R>,
     params: P,
+    onRequestId: (CodexRequestId) -> Unit = {},
 ): R {
     val requestParams = method.paramsSerializer?.let { serializer ->
         CodexProtocolJson.encodeToJsonElement(serializer, params)
@@ -40,6 +42,12 @@ internal suspend fun <P : Any, R : Any> JsonRpcSession.request(
     val result = request(
         method = method.method,
         params = requestParams,
+        onRequestId = { id ->
+            onRequestId(when (id) {
+                is JsonRpcId.Number -> CodexRequestId.Number(id.value)
+                is JsonRpcId.StringId -> CodexRequestId.StringId(id.value)
+            })
+        },
     )
     return result.decodeResult(method)
 }

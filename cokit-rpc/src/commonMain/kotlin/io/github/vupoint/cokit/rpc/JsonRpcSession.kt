@@ -10,6 +10,8 @@ import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.collect
@@ -67,7 +69,14 @@ class JsonRpcSession(
         return id
     }
 
-    suspend fun request(method: String, params: JsonElementResult = null): JsonElementResult {
+    suspend fun request(method: String, params: JsonElementResult = null): JsonElementResult =
+        request(method, params) {}
+
+    suspend fun request(
+        method: String,
+        params: JsonElementResult,
+        onRequestId: (JsonRpcId) -> Unit,
+    ): JsonElementResult {
         val id = nextId()
         val message = JsonRpcRequest(id = id, method = method, params = params)
         requireWithinMessageLimit(message)
@@ -78,11 +87,12 @@ class JsonRpcSession(
         }
         try {
             transport.send(message)
+            onRequestId(id)
+            return deferred.await()
         } catch (error: Throwable) {
-            cancelPending(id, error)
+            withContext(NonCancellable) { cancelPending(id, error) }
             throw error
         }
-        return deferred.await()
     }
 
     suspend fun sendResponse(response: JsonRpcResponse) {

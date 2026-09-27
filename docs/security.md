@@ -349,3 +349,27 @@ CoKit never opens a browser or starts login from a read. OAuth notifications red
 authorization URLs and errors from string representations. Explicit gateway mode
 requires a successful capability/read probe before the application's authenticated
 requests; a failed probe must not silently enable automatic login.
+
+## Experimental Projects, Queues And Native Verification
+
+Project and queue mutations require explicit API opt-in and initialization with
+`experimentalApi = true`. CoKit rejects these requests locally when the capability
+is absent. Creating/importing projects uses the caller's idempotency key; CoKit
+never retries mutations automatically. Queuing input does not authorize CoKit to
+start a turn; queue start is a separate explicit operation.
+
+Native verification is a local signing primitive. Enrollment, deletion, signing
+and cancellation are caller-initiated experimental operations. The application
+must approve display text, validate backend challenges and register credentials
+with its backend. CoKit validates canonical unpadded base64url and UTF-8 size
+bounds, and redacts credential/proof/challenge fields from model string output.
+Do not log serialized payloads. Enrollment, deletion and verification require a
+trusted local stdio/in-process connection; remote peers must use their own local
+authenticator. CoKit does not infer transport trust or broker native prompts.
+
+The request-ID callback runs after transport send and must not block or throw.
+Use its ID with `UserVerification.Cancel`; the cancel acknowledgement is neither
+proof that the OS prompt closed nor rollback of enrollment. Cancelling the calling
+coroutine releases local correlation state but does not cancel server-side work.
+The application must discard late proofs after cancellation, account changes or
+superseding requests. CoKit never interprets a proof as permission to run a tool.

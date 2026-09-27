@@ -32,7 +32,7 @@ object CodexClients {
                 params = CodexProtocolJson.encodeToJsonElement(InitializeParams.serializer(), params),
             )
             session.notify("initialized")
-            DefaultCodexClient(session, connection.scope)
+            DefaultCodexClient(session, connection.scope, connection.capabilities?.experimentalApi == true)
         } catch (error: Throwable) {
             session.close()
             throw error
@@ -43,6 +43,7 @@ object CodexClients {
 internal class DefaultCodexClient(
     private val rpc: JsonRpcSession,
     scope: CoroutineScope,
+    private val experimentalApi: Boolean = false,
 ) : CodexClient {
     private val mutableServerRequests = MutableSharedFlow<CodexServerRequest>(
         extraBufferCapacity = 64,
@@ -79,7 +80,18 @@ internal class DefaultCodexClient(
     override suspend fun <P : Any, R : Any> request(
         method: CodexRpcMethod<P, R>,
         params: P,
-    ): R = rpc.request(method, params)
+    ): R = request(method, params) {}
+
+    override suspend fun <P : Any, R : Any> request(
+        method: CodexRpcMethod<P, R>,
+        params: P,
+        onRequestId: (CodexRequestId) -> Unit,
+    ): R {
+        require(!method.requiresExperimentalApi || experimentalApi) {
+            "${method.method} requires InitializeCapabilities(experimentalApi = true)"
+        }
+        return rpc.request(method, params, onRequestId)
+    }
 
     override fun registerCommandApprovalHandler(handler: CommandApprovalHandler) {
         commandApprovalHandler = handler

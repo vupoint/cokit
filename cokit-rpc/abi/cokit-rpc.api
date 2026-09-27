@@ -26,6 +26,7 @@ public final class io/github/vupoint/cokit/rpc/JsonRpcSession : java/lang/AutoCl
 	public final fun notify (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun publishForTests (Lio/github/vupoint/cokit/protocol/JsonRpcMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun request (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun request (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun request$default (Lio/github/vupoint/cokit/rpc/JsonRpcSession;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun sendRequest (Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun sendRequest$default (Lio/github/vupoint/cokit/rpc/JsonRpcSession;Ljava/lang/String;Lkotlinx/serialization/json/JsonElement;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;

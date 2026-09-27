@@ -114,9 +114,154 @@ class CodexRpcMethod<P : Any, R : Any> internal constructor(
     val paramsSerializer: KSerializer<P>?,
     val resultSerializer: KSerializer<R>,
     val emptyResult: R? = null,
+    val requiresExperimentalApi: Boolean = false,
 )
 
 object CodexRpc {
+    @ExperimentalCodexApi
+    object Project {
+        val List: CodexRpcMethod<ProjectListParams, ProjectListResult> = CodexRpcMethod(
+            method = "project/list",
+            paramsSerializer = ProjectListParams.serializer(),
+            resultSerializer = ProjectListResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Read: CodexRpcMethod<ProjectReadParams, ProjectResult> = CodexRpcMethod(
+            method = "project/read",
+            paramsSerializer = ProjectReadParams.serializer(),
+            resultSerializer = ProjectResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Create: CodexRpcMethod<ProjectCreateParams, ProjectResult> = CodexRpcMethod(
+            method = "project/create",
+            paramsSerializer = ProjectCreateParams.serializer(),
+            resultSerializer = ProjectResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Import: CodexRpcMethod<ProjectImportParams, ProjectResult> = CodexRpcMethod(
+            method = "project/import",
+            paramsSerializer = ProjectImportParams.serializer(),
+            resultSerializer = ProjectResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Update: CodexRpcMethod<ProjectUpdateParams, ProjectResult> = CodexRpcMethod(
+            method = "project/update",
+            paramsSerializer = ProjectUpdateParams.serializer(),
+            resultSerializer = ProjectResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Move: CodexRpcMethod<ProjectMoveParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "project/move",
+            paramsSerializer = ProjectMoveParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Delete: CodexRpcMethod<ProjectDeleteParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "project/delete",
+            paramsSerializer = ProjectDeleteParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+            emptyResult = CodexRpcUnit,
+        )
+
+    }
+
+    @ExperimentalCodexApi
+    object ThreadQueue {
+        val Add: CodexRpcMethod<ThreadQueueAddParams, ThreadQueueSubmissionResult> = CodexRpcMethod(
+            method = "thread/queue/add",
+            paramsSerializer = ThreadQueueAddParams.serializer(),
+            resultSerializer = ThreadQueueSubmissionResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val List: CodexRpcMethod<ThreadQueueListParams, ThreadQueueListResult> = CodexRpcMethod(
+            method = "thread/queue/list",
+            paramsSerializer = ThreadQueueListParams.serializer(),
+            resultSerializer = ThreadQueueListResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Update: CodexRpcMethod<ThreadQueueUpdateParams, ThreadQueueSubmissionResult> = CodexRpcMethod(
+            method = "thread/queue/update",
+            paramsSerializer = ThreadQueueUpdateParams.serializer(),
+            resultSerializer = ThreadQueueSubmissionResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Delete: CodexRpcMethod<ThreadQueueDeleteParams, ThreadQueueDeleteResult> = CodexRpcMethod(
+            method = "thread/queue/delete",
+            paramsSerializer = ThreadQueueDeleteParams.serializer(),
+            resultSerializer = ThreadQueueDeleteResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Reorder: CodexRpcMethod<ThreadQueueReorderParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/queue/reorder",
+            paramsSerializer = ThreadQueueReorderParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Start: CodexRpcMethod<ThreadQueueStartParams, ThreadQueueStartResult> = CodexRpcMethod(
+            method = "thread/queue/start",
+            paramsSerializer = ThreadQueueStartParams.serializer(),
+            resultSerializer = ThreadQueueStartResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+    }
+
+    @ExperimentalCodexApi
+    object UserVerification {
+        val Status: CodexRpcMethod<CodexRpcUnit, UserVerificationStatusResult> = CodexRpcMethod(
+            method = "userVerification/status",
+            paramsSerializer = CodexRpcUnit.serializer(),
+            resultSerializer = UserVerificationStatusResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Enroll: CodexRpcMethod<CodexRpcUnit, UserVerificationEnrollResult> = CodexRpcMethod(
+            method = "userVerification/enroll",
+            paramsSerializer = CodexRpcUnit.serializer(),
+            resultSerializer = UserVerificationEnrollResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Delete: CodexRpcMethod<CodexRpcUnit, CodexRpcUnit> = CodexRpcMethod(
+            method = "userVerification/delete",
+            paramsSerializer = CodexRpcUnit.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+            emptyResult = CodexRpcUnit,
+        )
+
+        val Verify: CodexRpcMethod<UserVerificationVerifyParams, UserVerificationVerifyResult> = CodexRpcMethod(
+            method = "userVerification/verify",
+            paramsSerializer = UserVerificationVerifyParams.serializer(),
+            resultSerializer = UserVerificationVerifyResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        val Cancel: CodexRpcMethod<UserVerificationCancelParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "userVerification/cancel",
+            paramsSerializer = UserVerificationCancelParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+            emptyResult = CodexRpcUnit,
+        )
+
+    }
+
+
     object Thread {
         val Start: CodexRpcMethod<ThreadStartParams, ThreadStartResult> = CodexRpcMethod(
             method = "thread/start",

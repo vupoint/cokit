@@ -11,6 +11,33 @@ import kotlinx.serialization.Serializable
 sealed interface CodexNotification {
     val method: String
 
+    @ExperimentalCodexApi
+    @Serializable
+    data class ProjectChanged(
+        val projectId: String,
+        val changeType: ProjectChangeType,
+    ) : CodexNotification {
+        override val method: String = "project/changed"
+    }
+
+    @ExperimentalCodexApi
+    @Serializable
+    data class ThreadProjectUpdated(
+        val threadId: ThreadId,
+        val projectId: String?,
+    ) : CodexNotification {
+        override val method: String = "thread/project/updated"
+    }
+
+    @ExperimentalCodexApi
+    @Serializable
+    data class ThreadQueueChanged(
+        val threadId: ThreadId,
+    ) : CodexNotification {
+        override val method: String = "thread/queue/changed"
+    }
+
+
     data class ThreadStarted(
         val threadId: ThreadId,
         val thread: Thread? = null,

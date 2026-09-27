@@ -182,7 +182,7 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 96 public `CodexRpc` request descriptors |
+| Request groups | 6 | 8 | 3 | 5 | 114 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
@@ -610,3 +610,22 @@ resolution or a server upgrade; do not fall back to automatic browser login.
 Login starts only on an explicit call, and clients own opening the returned event
 URL. Do not opt out of gateway notifications while logging in. Cancel applies to
 the calling connection and acknowledges release of its login slot.
+
+## Experimental Release Extensions
+
+`CodexRpc.Project` exposes list/read/create/import/update/move/delete.
+`CodexRpc.ThreadQueue` exposes add/list/update/delete/reorder/start. Queue input
+reuses `TurnInput`, including its opaque forward-compatible variant. Project,
+thread-project and queue change notifications are typed and experimental.
+
+`CodexRpc.UserVerification` exposes status/enroll/delete/verify/cancel. All three
+new request groups require `@OptIn(ExperimentalCodexApi::class)` and
+`InitializeCapabilities(experimentalApi = true)`. Missing initialization opt-in
+fails locally before sending. Native verification errors remain ordinary
+`JsonRpcRemoteException` errors with upstream error data; CoKit does not turn
+verification into an automatic approval handler.
+
+The `CodexClient.request(method, params, onRequestId)` overload reports an outbound
+`CodexRequestId` after sending. Keep this ID when an upstream cancellation request
+needs it. Coroutine cancellation only releases local correlation state. See the
+native verification trust and cancellation requirements in `security.md`.

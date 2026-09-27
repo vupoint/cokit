@@ -17,13 +17,19 @@ class Release157ExtensionsTest {
             }
         }.toSet()
         val expected = setOf("thread/attachment/add", "thread/attachment/list", "thread/attachment/remove",
-            "account/gatewayOAuth/read", "account/gatewayOAuth/login", "account/gatewayOAuth/cancel")
+            "account/gatewayOAuth/read", "account/gatewayOAuth/login", "account/gatewayOAuth/cancel",
+            "project/list", "project/read", "project/create", "project/import", "project/update", "project/move", "project/delete",
+            "thread/queue/add", "thread/queue/list", "thread/queue/update", "thread/queue/delete", "thread/queue/reorder", "thread/queue/start",
+            "userVerification/status", "userVerification/enroll", "userVerification/delete", "userVerification/verify", "userVerification/cancel")
         assertTrue(methods.containsAll(expected), "Missing: ${expected - methods}")
     }
 
     @Test
     fun stableReleaseEventsAreTyped() {
         for ((method, params) in listOf(
+            "project/changed" to """{"projectId":"prj_1","changeType":"updated"}""",
+            "thread/project/updated" to """{"threadId":"thr_1","projectId":null}""",
+            "thread/queue/changed" to """{"threadId":"thr_1"}""",
             "thread/attachment/updated" to """{"threadId":"thr_1","attachmentId":"att_1","attachmentType":"pull_request","identityKey":"example","operation":"created"}""",
             "account/gatewayOAuth/changed" to """{"providerId":"example","status":"started","authUrl":"https://example.invalid/authorize"}""",
         )) {
