@@ -182,7 +182,7 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 90 public `CodexRpc` request descriptors |
+| Request groups | 6 | 8 | 3 | 5 | 96 public `CodexRpc` request descriptors |
 | Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
@@ -593,3 +593,20 @@ IDs. Model discovery preserves specialty, multi-agent version, access programs a
 retirement timestamps. Managed policy exposes stable login, provider, browser,
 auto-review and credential-store requirements. Legacy `network` is decode-only
 compatibility with older servers, not a current stable requirement field.
+
+## Attachments And Gateway OAuth
+
+`CodexRpc.ThreadAttachment` adds, lists and removes stored resource references;
+`ThreadAttachmentUpdated` reports explicit mutations. Fork attachment copying is
+best effort and does not emit per-attachment events; reload the new thread's list.
+The server limits attachments to 100 per thread/page. No external resource is
+created, copied or deleted by CoKit.
+
+`CodexRpc.GatewayOAuth` exposes read/login/cancel and `GatewayOAuthChanged` exposes
+status and the initiating connection's authorization URL. Set
+`InitializeCapabilities.explicitGatewayOauth = true` and successfully call Read on
+every connection before authenticated calls. Failed or unsupported probes require
+resolution or a server upgrade; do not fall back to automatic browser login.
+Login starts only on an explicit call, and clients own opening the returned event
+URL. Do not opt out of gateway notifications while logging in. Cancel applies to
+the calling connection and acknowledges release of its login slot.

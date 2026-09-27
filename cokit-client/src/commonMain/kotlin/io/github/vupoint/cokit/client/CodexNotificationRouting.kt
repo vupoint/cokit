@@ -16,6 +16,8 @@ import kotlinx.serialization.json.decodeFromJsonElement
 @OptIn(ExperimentalCodexApi::class)
 internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
     return when (method) {
+        "thread/attachment/updated" -> params.decodeNotificationParams<CodexNotification.ThreadAttachmentUpdated>() ?: CodexNotification.Unknown(method)
+        "account/gatewayOAuth/changed" -> params.decodeNotificationParams<CodexNotification.GatewayOAuthChanged>() ?: CodexNotification.Unknown(method)
         "thread/started" -> {
             val payload = params.decodeNotificationParams<ThreadStartedPayload>()
             val thread = payload?.thread

@@ -201,6 +201,12 @@ without updating the public inventory.
 | `CodexRpc.ThreadSection.Create` | `threadSection/create` | Stable 0.157.1 thread history and section descriptor. |
 | `CodexRpc.ThreadSection.Update` | `threadSection/update` | Stable 0.157.1 thread history and section descriptor. |
 | `CodexRpc.ThreadSection.Delete` | `threadSection/delete` | Stable 0.157.1 thread history and section descriptor. |
+| `CodexRpc.ThreadAttachment.Add` | `thread/attachment/add` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
+| `CodexRpc.ThreadAttachment.List` | `thread/attachment/list` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
+| `CodexRpc.ThreadAttachment.Remove` | `thread/attachment/remove` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
+| `CodexRpc.GatewayOAuth.Read` | `account/gatewayOAuth/read` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
+| `CodexRpc.GatewayOAuth.Login` | `account/gatewayOAuth/login` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
+| `CodexRpc.GatewayOAuth.Cancel` | `account/gatewayOAuth/cancel` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
 
 ## Current Modeled Method Summary
 

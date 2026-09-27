@@ -385,6 +385,41 @@ public final class io/github/vupoint/cokit/client/CodexNotification$FilesystemCh
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class io/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged : io/github/vupoint/cokit/client/CodexNotification {
+	public static final field Companion Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-ekIcJ-M ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy-WCm-uFU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged;
+	public static synthetic fun copy-WCm-uFU$default (Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthUrl ()Ljava/lang/String;
+	public final fun getError ()Ljava/lang/String;
+	public fun getMethod ()Ljava/lang/String;
+	public final fun getProviderId ()Ljava/lang/String;
+	public final fun getStatus-ekIcJ-M ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/CodexNotification$GatewayOAuthChanged$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/CodexNotification$ItemCompleted : io/github/vupoint/cokit/client/CodexNotification {
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadItemSummary;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
@@ -461,6 +496,42 @@ public final class io/github/vupoint/cokit/client/CodexNotification$ServerReques
 	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated : io/github/vupoint/cokit/client/CodexNotification {
+	public static final field Companion Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2-8nCq-1E ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5-HOBpzcA ()Ljava/lang/String;
+	public final fun copy-K7tJKdY (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated;
+	public static synthetic fun copy-K7tJKdY$default (Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttachmentId-8nCq-1E ()Ljava/lang/String;
+	public final fun getAttachmentType ()Ljava/lang/String;
+	public final fun getIdentityKey ()Ljava/lang/String;
+	public fun getMethod ()Ljava/lang/String;
+	public final fun getOperation-HOBpzcA ()Ljava/lang/String;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/CodexNotification$ThreadAttachmentUpdated$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class io/github/vupoint/cokit/client/CodexNotification$ThreadStarted : io/github/vupoint/cokit/client/CodexNotification {
@@ -701,6 +772,13 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Filesystem {
 	public final fun getWriteFile ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
 
+public final class io/github/vupoint/cokit/client/CodexRpc$GatewayOAuth {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$GatewayOAuth;
+	public final fun getCancel ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getLogin ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getRead ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+}
+
 public final class io/github/vupoint/cokit/client/CodexRpc$Hooks {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Hooks;
 	public final fun getList ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -796,6 +874,13 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Thread {
 	public final fun getUnarchive ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getUnsubscribe ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getUpdateMetadata ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+}
+
+public final class io/github/vupoint/cokit/client/CodexRpc$ThreadAttachment {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$ThreadAttachment;
+	public final fun getAdd ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getList ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getRemove ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
 
 public final class io/github/vupoint/cokit/client/CodexRpc$ThreadSection {
@@ -2169,6 +2254,290 @@ public final synthetic class io/github/vupoint/cokit/client/ThreadArchiveParams$
 }
 
 public final class io/github/vupoint/cokit/client/ThreadArchiveParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachment {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachment$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-8nCq-1E ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun component5-fgCIm4Y ()J
+	public final fun copy-wu1SIYs (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;J)Lio/github/vupoint/cokit/client/ThreadAttachment;
+	public static synthetic fun copy-wu1SIYs$default (Lio/github/vupoint/cokit/client/ThreadAttachment;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;JILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttachmentType ()Ljava/lang/String;
+	public final fun getCreatedAt-fgCIm4Y ()J
+	public final fun getId-8nCq-1E ()Ljava/lang/String;
+	public final fun getIdentityKey ()Ljava/lang/String;
+	public final fun getPayload ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachment$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachment$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachment;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachment;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachment$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddOutcome {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentAddOutcome$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddOutcome;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentAddOutcome$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentAddOutcome$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-REXkMvo (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-l7M_-fk (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddOutcome$Companion {
+	public final fun getCreated--9DaLFE ()Ljava/lang/String;
+	public final fun getExisting--9DaLFE ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun copy-tfmMdjU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams;
+	public static synthetic fun copy-tfmMdjU$default (Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttachmentType ()Ljava/lang/String;
+	public final fun getIdentityKey ()Ljava/lang/String;
+	public final fun getPayload ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentAddParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachmentAddParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult$Companion;
+	public synthetic fun <init> (Lio/github/vupoint/cokit/client/ThreadAttachment;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/ThreadAttachment;
+	public final fun component2--9DaLFE ()Ljava/lang/String;
+	public final fun copy-l7M_-fk (Lio/github/vupoint/cokit/client/ThreadAttachment;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult;
+	public static synthetic fun copy-l7M_-fk$default (Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult;Lio/github/vupoint/cokit/client/ThreadAttachment;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttachment ()Lio/github/vupoint/cokit/client/ThreadAttachment;
+	public final fun getOutcome--9DaLFE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentAddResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachmentAddResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentAddResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentId {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentId$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-kbQYSbw (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-6L3yDv4 (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentId$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentListParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentListParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2-Uss3h8Q ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun copy-ruXrPoA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;)Lio/github/vupoint/cokit/client/ThreadAttachmentListParams;
+	public static synthetic fun copy-ruXrPoA$default (Lio/github/vupoint/cokit/client/ThreadAttachmentListParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachmentListParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor-Uss3h8Q ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Integer;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentListParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentListParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachmentListParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachmentListParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentListParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentListResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentListResult$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-Uss3h8Q ()Ljava/lang/String;
+	public final fun copy-UvMKtcQ (Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentListResult;
+	public static synthetic fun copy-UvMKtcQ$default (Lio/github/vupoint/cokit/client/ThreadAttachmentListResult;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachmentListResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()Ljava/util/List;
+	public final fun getNextCursor-Uss3h8Q ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentListResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentListResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachmentListResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachmentListResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentListResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentOperation {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentOperation$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentOperation;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentOperation$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentOperation$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-yCOnD9Y (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-1fmXIao (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentOperation$Companion {
+	public final fun getCreated-HOBpzcA ()Ljava/lang/String;
+	public final fun getDeleted-HOBpzcA ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentRemoveParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy-MPzN1_k (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams;
+	public static synthetic fun copy-MPzN1_k$default (Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttachmentType ()Ljava/lang/String;
+	public final fun getIdentityKey ()Ljava/lang/String;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentRemoveParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadAttachmentRemoveParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentRemoveParams$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -6575,6 +6944,76 @@ public final synthetic class io/github/vupoint/cokit/client/auth/ConsumeAccountR
 }
 
 public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GatewayOAuthReadResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun component4-CDgfx8A ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy-wFkffBc (Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult;
+	public static synthetic fun copy-wFkffBc$default (Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ljava/lang/String;
+	public final fun getProviderId ()Ljava/lang/String;
+	public final fun getProviderName ()Ljava/lang/String;
+	public final fun getRequired ()Z
+	public final fun getStatus-CDgfx8A ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/GatewayOAuthReadResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/GatewayOAuthReadResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GatewayOAuthReadResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GatewayOAuthStatus {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/GatewayOAuthStatus$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/GatewayOAuthStatus;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/GatewayOAuthStatus$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/GatewayOAuthStatus$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-rA81B2I (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-zILyXGA (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GatewayOAuthStatus$Companion {
+	public final fun getFailed-ekIcJ-M ()Ljava/lang/String;
+	public final fun getNotReady-ekIcJ-M ()Ljava/lang/String;
+	public final fun getStarted-ekIcJ-M ()Ljava/lang/String;
+	public final fun getSucceeded-ekIcJ-M ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

@@ -155,6 +155,28 @@ sealed interface CodexNotification {
         override val method: String = "remoteControl/status/changed"
     }
 
+    @Serializable
+    data class ThreadAttachmentUpdated(
+        val threadId: ThreadId,
+        val attachmentId: ThreadAttachmentId,
+        val attachmentType: String,
+        val identityKey: String,
+        val operation: ThreadAttachmentOperation,
+    ) : CodexNotification {
+        override val method: String get() = "thread/attachment/updated"
+    }
+
+    @Serializable
+    data class GatewayOAuthChanged(
+        val providerId: String,
+        val status: io.github.vupoint.cokit.client.auth.GatewayOAuthStatus,
+        val authUrl: String? = null,
+        val error: String? = null,
+    ) : CodexNotification {
+        override val method: String get() = "account/gatewayOAuth/changed"
+        override fun toString(): String = "GatewayOAuthChanged(status=$status, hasAuthUrl=${authUrl != null}, hasError=${error != null})"
+    }
+
     data class Unknown(
         override val method: String,
     ) : CodexNotification

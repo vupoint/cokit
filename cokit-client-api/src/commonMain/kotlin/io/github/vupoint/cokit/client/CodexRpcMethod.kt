@@ -106,6 +106,7 @@ import io.github.vupoint.cokit.client.skills.SkillConfigWriteResult
 import io.github.vupoint.cokit.client.skills.SkillsExtraRootsSetParams
 import io.github.vupoint.cokit.client.skills.SkillsListParams
 import io.github.vupoint.cokit.client.skills.SkillsListResult
+import io.github.vupoint.cokit.client.auth.GatewayOAuthReadResult
 import kotlinx.serialization.KSerializer
 
 class CodexRpcMethod<P : Any, R : Any> internal constructor(
@@ -265,6 +266,42 @@ object CodexRpc {
         val Delete: CodexRpcMethod<ThreadSectionDeleteParams, CodexRpcUnit> = CodexRpcMethod(
             method = "threadSection/delete",
             paramsSerializer = ThreadSectionDeleteParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+        )
+    }
+
+    object ThreadAttachment {
+        val Add: CodexRpcMethod<ThreadAttachmentAddParams, ThreadAttachmentAddResult> = CodexRpcMethod(
+            method = "thread/attachment/add",
+            paramsSerializer = ThreadAttachmentAddParams.serializer(),
+            resultSerializer = ThreadAttachmentAddResult.serializer(),
+        )
+        val List: CodexRpcMethod<ThreadAttachmentListParams, ThreadAttachmentListResult> = CodexRpcMethod(
+            method = "thread/attachment/list",
+            paramsSerializer = ThreadAttachmentListParams.serializer(),
+            resultSerializer = ThreadAttachmentListResult.serializer(),
+        )
+        val Remove: CodexRpcMethod<ThreadAttachmentRemoveParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/attachment/remove",
+            paramsSerializer = ThreadAttachmentRemoveParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+        )
+    }
+
+    object GatewayOAuth {
+        val Read: CodexRpcMethod<CodexRpcUnit, GatewayOAuthReadResult> = CodexRpcMethod(
+            method = "account/gatewayOAuth/read",
+            paramsSerializer = null,
+            resultSerializer = GatewayOAuthReadResult.serializer(),
+        )
+        val Login: CodexRpcMethod<CodexRpcUnit, CodexRpcUnit> = CodexRpcMethod(
+            method = "account/gatewayOAuth/login",
+            paramsSerializer = null,
+            resultSerializer = CodexRpcUnit.serializer(),
+        )
+        val Cancel: CodexRpcMethod<CodexRpcUnit, CodexRpcUnit> = CodexRpcMethod(
+            method = "account/gatewayOAuth/cancel",
+            paramsSerializer = null,
             resultSerializer = CodexRpcUnit.serializer(),
         )
     }

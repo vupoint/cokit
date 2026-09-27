@@ -339,3 +339,13 @@ upstream account-scoping precedence. Treat resource target IDs, managed provider
 configuration and instruction contents as sensitive and do not log raw payloads.
 Model access-program metadata does not grant access. Disabled plugin selections
 are stored state only and must not be presented as enforced capability restrictions.
+
+## Attachments And Gateway OAuth
+
+Attachments store caller-provided resource references and opaque payloads. They do
+not authorize CoKit to access or mutate the referenced resources. Treat identity
+keys and payloads as potentially sensitive. Gateway OAuth operations are explicit;
+CoKit never opens a browser or starts login from a read. OAuth notifications redact
+authorization URLs and errors from string representations. Explicit gateway mode
+requires a successful capability/read probe before the application's authenticated
+requests; a failed probe must not silently enable automatic login.
