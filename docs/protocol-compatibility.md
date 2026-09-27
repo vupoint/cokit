@@ -4,10 +4,11 @@ CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 
 ## Codex 0.157.1 Upgrade
 
-The schema provenance now records Codex 0.157.1. Approval kinds, initialize
-extensions, and both OpenAI form elicitation aliases are aligned. The coverage
-snapshot below describes the previous 0.146.0 API until the remaining release
-alignment tasks update it.
+The current baseline is Codex CLI 0.157.1. This release aligns approval kinds,
+initialization extensions, MCP form aliases, section and history APIs, effective
+thread/turn metadata, attachments, Gateway OAuth and experimental project, queue
+and native verification APIs. Public contracts remain in `cokit-client-api`;
+transport and caller-owned UI/authentication policy remain separate.
 
 ## Versioning
 
@@ -37,7 +38,7 @@ enable the matching upstream experimental capability before use.
 Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
 status models require `@ExperimentalCodexApi`, and applications should enable
 the matching upstream experimental capability before use. Current local
-`codex-cli 0.146.0` generated schema exposes the enable/disable params and
+`codex-cli 0.157.1` generated schema exposes the enable/disable params and
 status-changed notification shape; the upstream README also documents the
 `remoteControl/enable`, `remoteControl/disable`, and
 `remoteControl/status/read` request methods.
@@ -62,7 +63,7 @@ Identifiers and common options should use focused types such as `ThreadId`,
 `SandboxPolicy` objects. `ApprovalPolicy` accepts the current stable string
 values and the granular stable object, while the legacy `on-failure` value is
 decode-compatible but deprecated. Stable thread start, resume, fork, and list
-requests expose the complete 0.146.0 field set. Thread list cwd filters preserve
+requests expose the reviewed stable field set. Thread list cwd filters preserve
 the upstream string-or-array union, list results expose both forward and
 backward cursors, `thread/unarchive` returns its refreshed thread, and
 `turn/steer` returns the accepted turn id. Thread, turn, item, pagination, and
@@ -70,13 +71,21 @@ client-message scalar fields should likewise use wrappers such as `CodexCursor`,
 `CodexTimestamp`, `ClientMessageId`, `ThreadStatusType`, `TurnStatus`, `ItemId`,
 and `ItemStatus`.
 
-Because CoKit is still in the `0.0.x` development series, the 0.146.0 alignment
-intentionally corrects previously inaccurate public contracts instead of
-retaining stable-looking aliases that are invalid on the wire. Applications
-should replace removed thread-start `permissions` and thread-level `effort`
-arguments with the current stable fields, stop sending `excludeTurns` and
-`initialTurnsPage`, handle `thread/unarchive` as a thread result, and handle
-`turn/steer` as an accepted turn-id result.
+CoKit is still in the `0.0.x` development series, so inaccurate public contracts
+are corrected rather than retained as stable-looking aliases. For this upgrade:
+
+- Replace `isPinned` with `sectionId`: `CodexOptional.Omitted` leaves the filter
+  unset, `CodexOptional.Value(null)` selects unsectioned threads and a non-null
+  value selects a section. `ThreadSectionUpdateParams.appearance` uses the same
+  omission/clear/value distinction.
+- `excludeTurns` on resume/fork and `thread/turns/list` are stable in 0.157.1.
+  Preserve history mode and pagination cursors rather than assuming all turns
+  were loaded. `initialTurnsPage` remains outside the stable request API.
+- Thread status notifications carry structured status, including active flags.
+- `thread/rollback` is removed upstream; `thread/revert` only changes conversation
+  history and does not undo filesystem changes.
+- Do not rely on friendly/pragmatic personality constants to select a style;
+  both are deprecated. The `none` value retains instruction-removal semantics.
 
 Prefer value classes with documented constants over closed enums when upstream
 may add new string values.
@@ -101,76 +110,15 @@ remain deny-by-default unless a typed handler is registered.
 ## Upstream Coverage Snapshot
 
 This snapshot was reviewed against the upstream app-server README and generated
-`codex-cli 0.146.0` stable and experimental schemas on 2026-08-20:
+`codex-cli 0.157.1` stable and experimental schemas on 2026-09-27:
 
-https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md
+https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server/README.md
 
 The checked protocol inventory groups upstream request, notification, and
 server-request surfaces by current CoKit coverage:
 [Protocol Inventory](protocol-inventory.md).
 
-The current `CodexRpc` descriptor catalog covers the core modeled thread, turn,
-command, filesystem, review, model catalog, config, skills, permission profile,
-environment, collaboration mode, and experimental standalone process request
-methods:
-
-- `thread/start`
-- `thread/resume`
-- `thread/fork`
-- `thread/list`
-- `thread/loaded/list`
-- `thread/read`
-- `thread/archive`
-- `thread/unarchive`
-- `thread/unsubscribe`
-- `thread/name/set`
-- `thread/metadata/update`
-- `thread/turns/list`
-- `thread/delete`
-- `thread/goal/set`
-- `thread/goal/get`
-- `thread/goal/clear`
-- `thread/compact/start`
-- `turn/start`
-- `turn/steer`
-- `turn/interrupt`
-- `command/exec`
-- `command/exec/write`
-- `command/exec/resize`
-- `command/exec/terminate`
-- `fs/readFile`
-- `fs/getMetadata`
-- `fs/readDirectory`
-- `fs/writeFile`
-- `fs/createDirectory`
-- `fs/copy`
-- `fs/remove`
-- `fs/watch`
-- `fs/unwatch`
-- `process/spawn`
-- `process/writeStdin`
-- `process/kill`
-- `process/resizePty`
-- `review/start`
-- `model/list`
-- `modelProvider/capabilities/read`
-- `config/read`
-- `config/value/write`
-- `config/batchWrite`
-- `configRequirements/read`
-- `skills/list`
-- `skills/extraRoots/set`
-- `skills/config/write`
-- `permissionProfile/list`
-- `collaborationMode/list`
-- `environment/add`
-- `remoteControl/enable`
-- `remoteControl/disable`
-- `remoteControl/status/read`
-- `remoteControl/pairing/start`
-- `remoteControl/pairing/status`
-- `remoteControl/client/list`
-- `remoteControl/client/revoke`
+The exact descriptor catalog is maintained once in the checked inventory above.
 
 `CodexClients.connect()` also performs the required `initialize` request and
 `initialized` notification internally.
@@ -182,16 +130,17 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 6 | 8 | 3 | 5 | 114 public `CodexRpc` request descriptors |
-| Notification groups | 5 | 5 | 7 | 7 | Not counted by this helper |
+| Request groups | 9 | 8 | 5 | 12 | 114 public `CodexRpc` request descriptors |
+| Notification groups | 6 | 5 | 7 | 8 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
-The upstream README currently documents roughly 100 request methods when the
-main API overview, auth/account surface, and initialization handshake are counted
-together. On that basis, CoKit's typed request descriptor coverage is about 83%
-of the full upstream request surface, or about 84% if the internal initialize
-handshake is counted as implemented coverage.
+The pinned stable schema contains 104 client requests; CoKit exposes 83 of them
+as public descriptors and implements `initialize` internally (84/104, 80.8%).
+The experimental bundle contains 167 client requests, including stable methods;
+CoKit exposes 114 descriptors in total and implements `initialize` internally
+(115/167, 68.9%). These are method counts, not claims of complete field or event
+coverage. No current descriptor is absent from the pinned experimental bundle.
 
 Typed notification and server-request coverage is intentionally smaller than the
 upstream surface today:
@@ -217,6 +166,8 @@ upstream surface today:
   success or failure, preserving nullable login ids for API-key and canceled
   flows. `AccountRateLimitsUpdated` carries sparse rolling rate-limit snapshots
   that clients can merge into the latest read response.
+  Attachment and Gateway OAuth mutations, plus experimental project and queue
+  changes, also have typed events.
   `RemoteControlStatusChanged` exposes the experimental remote-control status
   snapshot, including local server name and client-visible environment id.
   Unknown notifications expose only the method name in the primary API.
@@ -247,14 +198,15 @@ strategy, expected-version checks, explicit file paths, and the batch
 `reloadUserConfig` flag. `CodexRpc.Config.ReadRequirements` exposes read-only
 managed policy constraints for approval policies, sandbox modes, permission
 profiles, web-search modes, Windows sandbox setup modes, remote control,
-feature pins, residency, computer-use, and network allow or deny maps. Managed
+feature pins, residency, computer-use, login/provider restrictions, browser and
+credential-store requirements. The old network field is deprecated compatibility only. Managed
 hook requirement details remain compatibility-limited.
 
 Permission profile and environment catalog APIs are modeled according to the
 current generated schema. `CodexRpc.PermissionProfile.List` reads server-defined
 permission profile ids and descriptions for an optional host cwd.
 `CodexRpc.CollaborationMode.List` and `CodexRpc.Environment.Add` are
-experimental and require `ExperimentalCodexApi`; current `codex-cli 0.146.0`
+experimental and require `ExperimentalCodexApi`; current `codex-cli 0.157.1`
 schema defines collaboration mode listing and environment registration, but not
 environment list/read or collaboration mode read descriptors.
 
@@ -263,7 +215,7 @@ Skills and hooks APIs are modeled as data-oriented protocol descriptors.
 declarations, and optional interface metadata without loading or executing skill
 content in CoKit. `CodexRpc.Skills.SetExtraRoots` updates the app-server skill
 search roots, and `CodexRpc.Skills.WriteConfig` changes a skill's enabled state
-by name or path. Current `codex-cli 0.146.0` schema defines
+by name or path. Current `codex-cli 0.157.1` schema defines
 `skills/config/write` but not a `skills/config/read` request.
 `CodexRpc.Hooks.List` returns per-cwd hook metadata, warnings, and parse errors
 without executing hook handlers in CoKit.
@@ -322,22 +274,19 @@ revoked.
 The following upstream request groups are not yet modeled as primary typed
 descriptors:
 
-- Advanced thread APIs: turn-item hydration, settings, memory mode, shell
-  command, background terminals, rollback, realtime, and raw item injection.
-- Catalog and configuration APIs: experimental feature flags, Windows sandbox
-  setup, feedback upload, and external-agent import.
+- Advanced thread APIs: settings, memory mode, shell commands, background
+  terminals, realtime, search/timeline and raw item injection.
+- Catalog and configuration APIs: feature catalog/enablement, app read, Windows
+  sandbox, feedback upload, diagnostics, and external-agent migration.
 - Plugin sharing APIs: share save, update targets, list, checkout, and delete.
 Future work should add these groups as typed descriptor namespaces without
 changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.
 
-The stable 0.146.0 additions implemented in this snapshot include
-`thread/loaded/list`, `app/installed`, `account/workspaceMessages/read`, reset
-credit consumption, and OpenAI form elicitation capability negotiation. APIs
-documented only on upstream `main`, including projects, thread sections, queue,
-diagnostics, plugin search, and thread revert, remain deferred until a pinned
-stable release schema includes them. The experimental `app/read` method and
-deprecated or under-development fields remain outside the primary stable API.
+Newly supported stable and experimental release extensions are documented below.
+Item-anchor cursors currently exist only on upstream main; CoKit retains the
+released string-cursor contract. Deferred features are listed in the inventory,
+including released experimental diagnostics and plugin search.
 
 ## Implementation Roadmap
 
@@ -376,7 +325,7 @@ surfaces.
   history.
 - Add descriptors for loaded-thread listing, turn history paging, metadata
   updates, settings updates, memory mode, goals, delete, compaction, shell
-  command, rollback, background terminals, and realtime methods.
+  command, background terminals, and realtime methods.
 - Model the event stream needed by normal clients: `thread/*`, `turn/*`,
   `item/started`, `item/completed`, item deltas, token usage, warnings, and
   errors.
@@ -529,8 +478,8 @@ Schema provenance is recorded in
 The file records the Codex CLI version, upstream Codex commit, stable schema
 command, experimental schema command, generation timestamp, and canonical
 SHA-256 digests for both schema modes. The current stable baseline is
-`codex-cli 0.146.0` at upstream release commit
-`e363b08c9175ac1cbe5893615dd2cb9ddf95043b`.
+`codex-cli 0.157.1` at upstream release commit
+`36650394c5b38c2990ccf2a3457165ca3e9d9726`.
 
 Run:
 
@@ -557,7 +506,7 @@ schema fixtures or generated DTOs, update the provenance file with:
 
 ```bash
 codex --version
-git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.146.0^{}'
+git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.157.1^{}'
 ```
 
 Then update `generatedAt` to the refresh timestamp. The Gradle schema generation

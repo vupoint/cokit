@@ -5,10 +5,10 @@ can track modeled, partial, deferred, and experimental protocol coverage without
 publishing generated schema artifacts.
 
 Source of truth:
-https://github.com/openai/codex/blob/main/codex-rs/app-server/README.md
+https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server/README.md
 
-Reviewed against the upstream README and the `codex-cli 0.146.0` generated
-stable and experimental schemas on 2026-08-20.
+Reviewed against the upstream README and the `codex-cli 0.157.1` generated
+stable and experimental schemas on 2026-09-27.
 
 ## Status Legend
 
@@ -25,42 +25,55 @@ stable and experimental schemas on 2026-08-20.
 Unknown notifications and unsupported server requests are not counted as
 modeled coverage. They are compatibility behavior only.
 
-## 0.146.0 Release Classification
+## 0.157.1 Release Classification
 
 | Classification | Reviewed surface | CoKit decision |
 | --- | --- | --- |
-| Supported stable | Corrected thread start/resume/fork/list and turn-start fields; `thread/unarchive` and `turn/steer` results; `thread/loaded/list`; `app/installed`; `account/workspaceMessages/read`; `account/rateLimitResetCredit/consume`; OpenAI form elicitation capability and server requests; command approval request fields | Typed in the public API and covered by release-pinned fixtures. |
-| Supported experimental | Existing descriptors annotated with `ExperimentalCodexApi`, including process, remote-control, collaboration-mode, environment-add, and `app/list` surfaces | Remain opt-in and are not promoted by this stable alignment. |
-| Deferred stable | Stable methods and payload details still marked `partial` or `deferred` in the group tables below | Deferred until their complete schemas, security boundaries, and public API value are implemented together. |
-| Main-only/unreleased | Project APIs, thread sections, queue APIs, diagnostics APIs, plugin search, and `thread/revert` observed on upstream `main` but absent from the 0.146.0 release schema | Not implemented and not counted as release support. |
-| Deprecated or under development | Legacy `ApprovalPolicy.OnFailure`; broad-bundle fields such as `excludeTurns` and `initialTurnsPage`; experimental `app/read` and experimental-feature mutation | Legacy decode compatibility stays deprecated where already public. Other entries remain excluded from the stable surface and require explicit experimental design before adoption. |
+| Supported stable | Approval kinds and MCP aliases; section CRUD and filters; turns/items history and revert; attachments; explicit Gateway OAuth; effective thread/turn, catalog and policy metadata | Typed public contracts, protocol fixtures and recorded 0.157.1 schema provenance. |
+| Supported experimental | Process, remote-control, collaboration-mode, environment-add, app-list, project, queue and native user-verification APIs | Require API and initialization opt-in; local checks additionally guard the three new groups. |
+| Deferred stable | `app/read`, feature catalog/mutation, plugin sharing/reconcile, shell commands, external-agent migration, fuzzy search, Windows sandbox and remaining stable request/payload gaps | Not counted as typed support; see the group tables. |
+| Deferred experimental | Diagnostics, plugin search, realtime, thread search/timeline/settings, memory, MCP event streams and other unmodeled experimental methods | Available upstream does not imply implemented in CoKit. |
+| Main-only/unreleased | Item-anchor cursors seen on upstream main | Released 0.157.1 pagination retains string cursors. |
+| Deprecated or removed | Legacy `ApprovalPolicy.OnFailure`, personality friendly/pragmatic, removed `isPinned` and `thread/rollback` | Replace pin filters with sections; use `thread/revert` for conversation history. Legacy decode-compatible constants remain deprecated. |
 
 ## Request Groups
 
 | Group | Status | Upstream methods | CoKit coverage |
 | --- | --- | --- | --- |
 | Connection lifecycle | partial | `initialize`, `initialized` | `CodexClients.connect()` performs the handshake internally with typed `InitializeParams` and `InitializeCapabilities`. There is no public `CodexRpc` descriptor for `initialize`. |
-| Core thread lifecycle | partial | `thread/start`, `thread/resume`, `thread/fork`, `thread/list`, `thread/read`, `thread/archive`, `thread/unarchive`, `thread/unsubscribe`, `thread/name/set` | Typed `CodexRpc.Thread` descriptors exist. Stable start, resume, fork, and list params match the 0.146.0 schema; list results preserve both cursor directions and unarchive returns the refreshed thread. Thread payload details remain intentionally narrow. |
-| Advanced thread history and metadata | partial | `thread/loaded/list`, `thread/turns/list`, `thread/turns/items/list`, `thread/metadata/update`, `thread/settings/update`, `thread/memoryMode/set`, `memory/reset`, `thread/goal/set`, `thread/goal/get`, `thread/goal/clear`, `thread/delete`, `thread/compact/start`, `thread/shellCommand`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/rollback`, `thread/inject_items` | `CodexRpc.Thread.ListLoaded` models stable loaded-thread id pagination, while `ListTurns` models the experimental turn-history page shape. `CodexRpc.Thread.UpdateMetadata` models the stable `gitInfo` metadata patch and refreshed thread response. `CodexRpc.Thread.SetGoal`, `GetGoal`, `ClearGoal`, `Delete`, and `StartCompaction` model stable lifecycle helpers. Other advanced, experimental, or currently unsupported entries remain deferred. |
-| Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors model all 0.146.0 stable start fields and the accepted turn id returned by steer. Experimental params such as environment selection remain deferred. |
-| Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
+| Core thread lifecycle | partial | `thread/start`, `thread/resume`, `thread/fork`, `thread/list`, `thread/read`, `thread/archive`, `thread/unarchive`, `thread/unsubscribe`, `thread/name/set` | Typed `CodexRpc.Thread` descriptors exist. Stable thread parameters include release additions; list results preserve both cursor directions and unarchive returns the refreshed thread. Effective configuration, metadata, structured status and included turns are preserved; unsupported item details remain opaque. |
+| Advanced thread history and metadata | partial | `thread/loaded/list`, `thread/turns/list`, `thread/items/list`, `thread/metadata/update`, `thread/settings/update`, `thread/memoryMode/set`, `memory/reset`, `thread/goal/set`, `thread/goal/get`, `thread/goal/clear`, `thread/delete`, `thread/compact/start`, `thread/shellCommand`, `thread/backgroundTerminals/clean`, `thread/backgroundTerminals/list`, `thread/backgroundTerminals/terminate`, `thread/revert`, `thread/inject_items` | `CodexRpc.Thread.ListLoaded` models stable loaded-thread id pagination, and `ListTurns`/`ListItems` model stable paginated history. `Revert` changes stored conversation history, never files. `CodexRpc.Thread.UpdateMetadata` models the stable `gitInfo` metadata patch and refreshed thread response. `CodexRpc.Thread.SetGoal`, `GetGoal`, `ClearGoal`, `Delete`, and `StartCompaction` model stable lifecycle helpers. Other advanced, experimental, or currently unsupported entries remain deferred. |
+| Turn lifecycle | partial | `turn/start`, `turn/steer`, `turn/interrupt` | Typed `CodexRpc.Turn` descriptors model the reviewed stable start fields, including tool output and per-turn service tier and the accepted turn id returned by steer. Experimental params such as environment selection remain deferred. |
+| Thread realtime | experimental | `thread/realtime/start`, `thread/realtime/listVoices`, `thread/realtime/appendSpeech`, `thread/realtime/appendAudio`, `thread/realtime/appendText`, `thread/realtime/stop` | Deferred. Realtime requires explicit experimental opt-in before CoKit should expose descriptors. |
 | Review | modeled | `review/start` | `CodexRpc.Review.Start` models typed review targets, inline or detached delivery, and the returned review thread id plus turn. CoKit exposes review protocol data but does not render review UI. |
-| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.146.0` generated schema. Output notifications remain deferred. Approval handling for agent-driven command execution is tracked under server requests. |
+| Sandboxed command execution | partial | `command/exec`, `command/exec/write`, `command/exec/resize`, `command/exec/terminate` | `CodexRpc.Command.Exec`, `WriteStdin`, `Resize`, and `Terminate` model the command request/control shapes from the `codex-cli 0.157.1` generated schema. `CommandExecOutputDelta` models output chunks and truncation. Approval handling for agent-driven command execution is tracked under server requests. |
 | Standalone process lifecycle | experimental | `process/spawn`, `process/writeStdin`, `process/resizePty`, `process/kill` | `CodexRpc.Process.Spawn`, `WriteStdin`, `ResizePty`, and `Kill` model the experimental unsandboxed process lifecycle descriptors behind `ExperimentalCodexApi`. |
 | Filesystem utilities | modeled | `fs/readFile`, `fs/writeFile`, `fs/createDirectory`, `fs/getMetadata`, `fs/readDirectory`, `fs/remove`, `fs/copy`, `fs/watch`, `fs/unwatch` | `CodexRpc.Filesystem.ReadFile`, `GetMetadata`, `ReadDirectory`, `WriteFile`, `CreateDirectory`, `Copy`, `Remove`, `Watch`, and `Unwatch` model host filesystem descriptors, including connection-scoped watch identifiers. |
 | Models and provider catalog | modeled | `model/list`, `modelProvider/capabilities/read` | `CodexRpc.Model.List` models typed catalog entries, cursors, display names, reasoning options, service tiers, and input modalities. `CodexRpc.Model.ReadProviderCapabilities` models provider-level web search, image generation, and namespace-tool capability flags. |
-| Feature and permission catalog | partial | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | `CodexRpc.PermissionProfile.List` models permission profile ids, descriptions, optional cwd scoping, and pagination. Experimental feature list and enablement methods remain deferred. |
-| Environments and collaboration modes | experimental | `environment/add`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.146.0` experimental schema behind `ExperimentalCodexApi`. The current schema does not define environment list/read or collaboration mode read descriptors. |
-| Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.146.0` schema does not define a `skills/config/read` request. |
-| Apps, marketplaces, and plugins | partial | `app/installed`, `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall`, `plugin/share/save`, `plugin/share/updateTargets`, `plugin/share/list`, `plugin/share/checkout`, `plugin/share/delete` | `CodexRpc.App.Installed` models the stable committed runtime snapshot with identity, enabled, callable, and runtime-name state only. `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. `CodexRpc.Marketplace` and `CodexRpc.Plugin` model marketplace add/remove/upgrade, plugin list/installed/read/skill-read, install, and uninstall descriptors. Plugin sharing descriptors remain deferred. |
+| Feature and permission catalog | partial | `experimentalFeature/list`, `experimentalFeature/enablement/set`, `permissionProfile/list` | `CodexRpc.PermissionProfile.List` models permission profile ids, descriptions, optional cwd scoping, and pagination. Stable feature list and enablement methods remain deferred. |
+| Environments and collaboration modes | experimental | `environment/add`, `environment/info`, `environment/status`, `collaborationMode/list` | `CodexRpc.Environment.Add` and `CodexRpc.CollaborationMode.List` model the current `codex-cli 0.157.1` experimental schema behind `ExperimentalCodexApi`. Environment info/status remain deferred; the schema does not define environment list/read or collaboration mode read descriptors. |
+| Skills and hooks | modeled | `skills/list`, `skills/extraRoots/set`, `skills/config/write`, `hooks/list` | `CodexRpc.Skills.List`, `SetExtraRoots`, and `WriteConfig` model current skills catalog, extra-root, and config-write descriptors. `CodexRpc.Hooks.List` models hook metadata, source, enabled state, trust status, warnings, and parse errors. Current `codex-cli 0.157.1` schema does not define a `skills/config/read` request. |
+| Apps, marketplaces, and plugins | partial | `app/installed`, `app/read`, `app/list`, `marketplace/add`, `marketplace/remove`, `marketplace/upgrade`, `plugin/list`, `plugin/installed`, `plugin/read`, `plugin/skill/read`, `plugin/install`, `plugin/uninstall`, `plugin/reconcile`, `plugin/search`, `plugin/share/save`, `plugin/share/updateTargets`, `plugin/share/list`, `plugin/share/checkout`, `plugin/share/delete` | `CodexRpc.App.Installed` models the stable committed runtime snapshot with identity, enabled, callable, and runtime-name state only. `CodexRpc.Apps.List` models the experimental app catalog page shape behind `ExperimentalCodexApi`, including branding and optional app metadata. `CodexRpc.Marketplace` and `CodexRpc.Plugin` model marketplace add/remove/upgrade, plugin list/installed/read/skill-read, install, and uninstall descriptors. App read, plugin sharing/reconcile and experimental search remain deferred. |
 | MCP APIs | modeled | `mcpServer/oauth/login`, `config/mcpServer/reload`, `mcpServerStatus/list`, `mcpServer/resource/read`, `mcpServer/tool/call` | `CodexRpc.Mcp.StartOauthLogin`, `ReloadConfig`, `ListServerStatus`, `ReadResource`, and `CallTool` model current MCP catalog, resource, OAuth, config-reload, and tool-call request shapes. MCP-provided schemas, annotations, content, `_meta`, and tool arguments stay behind `CodexJsonPayload` compatibility fields. Server-initiated MCP elicitation is tracked under server requests. |
-| Windows sandbox setup | deferred | `windowsSandbox/setupStart` | No typed descriptor yet. |
+| Windows sandbox setup | deferred | `windowsSandbox/setupStart`, `windowsSandbox/readiness` | No typed descriptor yet. |
 | Feedback upload | deferred | `feedback/upload` | No typed descriptor yet. |
-| Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `CodexRpc.Config.ReadRequirements` models read-only managed policy constraints for approval, sandbox, permission profile, web search, remote control, feature, residency, computer-use, and network policy fields. Managed hooks remain compatibility-limited. |
-| External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import` | No typed descriptors yet. |
+| Config read and write | partial | `config/read`, `config/value/write`, `config/batchWrite`, `configRequirements/read` | `CodexRpc.Config.Read`, `WriteValue`, and `BatchWrite` model effective config reads, single value writes, batch writes, and batch write reload flags. Arbitrary config values stay behind `ConfigValue` and `CodexJsonPayload`. `CodexRpc.Config.ReadRequirements` models read-only managed policy constraints for approval, sandbox, permission profile, web search, remote control, feature, residency, computer-use, browser, credential-store, login and provider policy fields; legacy network is retained only for older-server compatibility. Managed hooks remain compatibility-limited. |
+| External agent migration | deferred | `externalAgentConfig/detect`, `externalAgentConfig/import`, `externalAgentConfig/import/readHistories`, `externalAgentConfig/import/recordHistory` | No typed descriptors yet. |
 | Remote control | experimental | `remoteControl/enable`, `remoteControl/disable`, `remoteControl/status/read`, `remoteControl/pairing/start`, `remoteControl/pairing/status`, `remoteControl/client/list`, `remoteControl/client/revoke` | `CodexRpc.RemoteControl` models experimental status, enable/disable, pairing, client list, and client revoke descriptors behind `ExperimentalCodexApi`. Pairing codes and controller client ids are redacted from model string representations. |
-| Tool user-input utility | experimental | `tool/requestUserInput` | Deferred. This is distinct from the server-initiated `item/tool/requestUserInput` flow. |
 | Account and auth | modeled | `account/read`, `account/login/start`, `account/login/cancel`, `account/logout`, `account/rateLimits/read`, `account/usage/read`, `account/workspaceMessages/read`, `account/rateLimitResetCredit/consume`, `account/sendAddCreditsNudgeEmail` | `CodexRpc.Account.Read` models current auth state, required OpenAI auth, API key, ChatGPT plan, redacted ChatGPT email, and Amazon Bedrock account variants. `CodexRpc.Account.StartLogin` and `CancelLogin` model API-key, ChatGPT browser, ChatGPT device-code, unstable external-token, and cancel-status shapes. `CodexRpc.Account.Logout` models the current no-params empty response. `ReadRateLimits`, `ReadUsage`, `ReadWorkspaceMessages`, `ConsumeRateLimitResetCredit`, and `SendAddCreditsNudgeEmail` model current rate-limit snapshots, usage summaries, workspace messages, explicit idempotent reset-credit outcomes, and add-credits nudge status. Auth models must avoid logging credentials, auth URLs, account identifiers, and tokens. |
+| Thread sections | modeled | `threadSection/list`, `threadSection/create`, `threadSection/update`, `threadSection/delete`, `thread/section/move` | Typed section ordering and appearance; omission/null/value filters and patches are preserved. |
+| Thread attachments | modeled | `thread/attachment/add`, `thread/attachment/list`, `thread/attachment/remove` | Typed stored references and mutation notifications; external resources are untouched. |
+| Gateway OAuth | modeled | `account/gatewayOAuth/read`, `account/gatewayOAuth/login`, `account/gatewayOAuth/cancel` | Explicit login/cancel and status events; application owns the browser and probe policy. |
+| Projects | experimental | `project/list`, `project/read`, `project/create`, `project/import`, `project/update`, `project/move`, `project/delete` | Typed project roots, metadata, idempotency keys, ordering and notifications. |
+| Thread queues | experimental | `thread/queue/add`, `thread/queue/list`, `thread/queue/update`, `thread/queue/delete`, `thread/queue/reorder`, `thread/queue/start` | Typed queued submissions; starting a turn is explicit. |
+| Native user verification | experimental | `userVerification/status`, `userVerification/enroll`, `userVerification/delete`, `userVerification/verify`, `userVerification/cancel` | Local signing primitive with validated input, redacted proof and original-request cancellation IDs. |
+| Native cloud-provider setup | experimental | `account/bedrock/discover`, `account/bedrock/setup` | Deferred; existing account-state decoding does not configure a provider. |
+| Fuzzy search | deferred | `fuzzyFileSearch` | Stable descriptor remains deferred. |
+| Fuzzy search sessions | experimental | `fuzzyFileSearch/sessionStart`, `fuzzyFileSearch/sessionUpdate`, `fuzzyFileSearch/sessionStop` | Deferred. |
+| Extended thread control | experimental | `thread/search`, `thread/searchOccurrences`, `thread/timeline/list`, `thread/increment_elicitation`, `thread/decrement_elicitation`, `turn/settings/update` | Deferred. |
+| Guardian action approval | deferred | `thread/approveGuardianDeniedAction` | Deferred; CoKit never approves guardian-denied work automatically. |
+| MCP event streams | experimental | `mcpServer/event/stream/start`, `mcpServer/event/stream/stop` | Deferred; ordinary MCP requests remain modeled separately. |
+| Runtime diagnostics and maintenance | experimental | `memory/status`, `rollout/compress`, `server/diagnostics`, `mock/experimentalMethod` | Deferred; mock/experimentalMethod is an upstream test-only endpoint. |
 
 ## Notification Groups
 
@@ -90,12 +103,14 @@ modeled coverage. They are compatibility behavior only.
 | External agent migration | deferred | `externalAgentConfig/import/completed` | No typed notification yet. |
 | Server-request lifecycle | modeled | `serverRequest/resolved` | `CodexNotification.ServerRequestResolved` exposes the thread id and JSON-RPC request id so applications can clear pending request UI after the server reports resolution or cleanup. Current upstream schema does not include request method or status fields on this notification. |
 | Warnings and errors | modeled | `configWarning`, `warning`, `error` | `CodexNotification.ConfigWarning`, `Warning`, and `Error` expose safe typed fields without raw notification params. Structured `codexErrorInfo` remains deferred. |
+| Attachments and Gateway OAuth | modeled | `thread/attachment/updated`, `account/gatewayOAuth/changed` | Typed mutation/status notifications; authorization URLs are redacted from string output. |
+| Projects and queues | experimental | `project/changed`, `thread/project/updated`, `thread/queue/changed` | Typed invalidation events; reload the appropriate catalog or queue. |
 
 ## Server-Request Groups
 
 | Group | Status | Upstream server requests | CoKit coverage |
 | --- | --- | --- | --- |
-| Command execution approval | partial | `item/commandExecution/requestApproval` | Typed `CodexServerRequest.CommandApproval` and approval handlers model the complete 0.146.0 stable request shape, including network-only prompts and forward-compatible command actions. Some newer response decisions and experimental additional-permission payloads are not fully modeled. Without a handler, CoKit declines by default. |
+| Command execution approval | partial | `item/commandExecution/requestApproval` | Typed `CodexServerRequest.CommandApproval` and approval handlers model the reviewed stable request fields, including command/writeStdin kind, network-only prompts and forward-compatible command actions. Some newer response decisions and experimental additional-permission payloads are not fully modeled. Without a handler, CoKit declines by default. |
 | File change approval | partial | `item/fileChange/requestApproval` | Typed `CodexServerRequest.FileChangeApproval` and approval handlers exist. Unstable grant-root semantics are exposed as host paths. Without a handler, CoKit declines by default. |
 | Permission grant approval | partial | `item/permissions/requestApproval` | Typed `CodexServerRequest.PermissionApproval` and approval handlers exist for requested filesystem/network grants. Without a handler, CoKit returns an empty granted-permissions profile. |
 | Dynamic tool call | experimental | `item/tool/call` | Deferred. Without a handler, CoKit declines by default. |
@@ -122,7 +137,7 @@ without updating the public inventory.
 | `CodexRpc.Thread.Unsubscribe` | `thread/unsubscribe` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.SetName` | `thread/name/set` | Thread lifecycle descriptor; group coverage remains partial. |
 | `CodexRpc.Thread.UpdateMetadata` | `thread/metadata/update` | Metadata descriptor; advanced thread coverage remains partial. |
-| `CodexRpc.Thread.ListTurns` | `thread/turns/list` | Experimental turn history paging descriptor; advanced thread coverage remains partial. |
+| `CodexRpc.Thread.ListTurns` | `thread/turns/list` | Stable turn history paging descriptor; advanced thread coverage remains partial. |
 | `CodexRpc.Thread.Delete` | `thread/delete` | Thread lifecycle helper; advanced thread coverage remains partial. |
 | `CodexRpc.Thread.SetGoal` | `thread/goal/set` | Thread goal descriptor; advanced thread coverage remains partial. |
 | `CodexRpc.Thread.GetGoal` | `thread/goal/get` | Thread goal descriptor; advanced thread coverage remains partial. |
@@ -207,7 +222,6 @@ without updating the public inventory.
 | `CodexRpc.GatewayOAuth.Read` | `account/gatewayOAuth/read` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
 | `CodexRpc.GatewayOAuth.Login` | `account/gatewayOAuth/login` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
 | `CodexRpc.GatewayOAuth.Cancel` | `account/gatewayOAuth/cancel` | Stable 0.157.1 attachment or explicit gateway OAuth descriptor. |
-
 | `CodexRpc.Project.List` | `project/list` | Experimental release descriptor; requires initialization opt-in. |
 | `CodexRpc.Project.Read` | `project/read` | Experimental release descriptor; requires initialization opt-in. |
 | `CodexRpc.Project.Create` | `project/create` | Experimental release descriptor; requires initialization opt-in. |
@@ -229,93 +243,9 @@ without updating the public inventory.
 
 ## Current Modeled Method Summary
 
-Current public request descriptors:
+The complete public request catalog is the checked descriptor table above.
 
-- `thread/start`
-- `thread/resume`
-- `thread/fork`
-- `thread/list`
-- `thread/loaded/list`
-- `thread/read`
-- `thread/archive`
-- `thread/unarchive`
-- `thread/unsubscribe`
-- `thread/name/set`
-- `thread/metadata/update`
-- `thread/turns/list`
-- `thread/delete`
-- `thread/goal/set`
-- `thread/goal/get`
-- `thread/goal/clear`
-- `thread/compact/start`
-- `turn/start`
-- `turn/steer`
-- `turn/interrupt`
-- `command/exec`
-- `command/exec/write`
-- `command/exec/resize`
-- `command/exec/terminate`
-- `fs/readFile`
-- `fs/getMetadata`
-- `fs/readDirectory`
-- `fs/writeFile`
-- `fs/createDirectory`
-- `fs/copy`
-- `fs/remove`
-- `fs/watch`
-- `fs/unwatch`
-- `process/spawn`
-- `process/writeStdin`
-- `process/kill`
-- `process/resizePty`
-- `review/start`
-- `model/list`
-- `modelProvider/capabilities/read`
-- `config/read`
-- `config/value/write`
-- `config/batchWrite`
-- `configRequirements/read`
-- `skills/list`
-- `skills/extraRoots/set`
-- `skills/config/write`
-- `hooks/list`
-- `app/installed`
-- `app/list`
-- `marketplace/add`
-- `marketplace/remove`
-- `marketplace/upgrade`
-- `plugin/list`
-- `plugin/installed`
-- `plugin/read`
-- `plugin/skill/read`
-- `plugin/install`
-- `plugin/uninstall`
-- `mcpServer/oauth/login`
-- `config/mcpServer/reload`
-- `mcpServerStatus/list`
-- `mcpServer/resource/read`
-- `mcpServer/tool/call`
-- `account/read`
-- `account/login/start`
-- `account/login/cancel`
-- `account/logout`
-- `account/rateLimits/read`
-- `account/usage/read`
-- `account/workspaceMessages/read`
-- `account/rateLimitResetCredit/consume`
-- `account/sendAddCreditsNudgeEmail`
-- `permissionProfile/list`
-- `collaborationMode/list`
-- `environment/add`
-- `remoteControl/enable`
-- `remoteControl/disable`
-- `remoteControl/status/read`
-- `remoteControl/pairing/start`
-- `remoteControl/pairing/status`
-- `remoteControl/client/list`
-- `remoteControl/client/revoke`
-
-Current typed notification:
+Current typed notifications:
 
 - `thread/started`
 - `thread/status/changed`
@@ -335,6 +265,11 @@ Current typed notification:
 - `account/login/completed`
 - `account/rateLimits/updated`
 - `remoteControl/status/changed`
+- `thread/attachment/updated`
+- `account/gatewayOAuth/changed`
+- `project/changed`
+- `thread/project/updated`
+- `thread/queue/changed`
 
 Current typed server request:
 
@@ -343,6 +278,7 @@ Current typed server request:
 - `item/permissions/requestApproval`
 - `item/tool/requestUserInput`
 - `mcpServer/elicitation/request`
+- `attestation/generate`
 
 ## Codex 0.157.1 Thread Alignment
 

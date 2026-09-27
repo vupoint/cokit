@@ -161,6 +161,35 @@ connector metadata. Reset-credit consumption is intentionally omitted from the
 read-only quickstart: callers must supply an explicit idempotency key and handle
 all documented outcomes before invoking that mutation.
 
+## Sections And Paginated History
+
+The 0.157.1 baseline uses sections in place of the old `isPinned` filter.
+Omitting `sectionId` leaves the filter unset; explicit null selects threads that
+are not in any section:
+
+```kotlin
+val unsectioned = client.request(
+    CodexRpc.Thread.List,
+    ThreadListParams(sectionId = CodexOptional.Value(null), limit = 20),
+)
+val sections = client.request(CodexRpc.ThreadSection.List, ThreadSectionListParams())
+val page = client.request(
+    CodexRpc.Thread.ListItems,
+    ThreadItemsListParams(threadId = threadId, limit = 50),
+)
+```
+
+Use returned cursors to request later pages. Item history preserves payloads in
+`CodexJsonPayload`, since not every upstream item variant is modeled. Resume and
+fork support stable `excludeTurns`; inspect the returned history mode rather than
+assuming an empty list means the thread has no history.
+
+Project, queue and native verification descriptors require both Kotlin opt-in
+and `InitializeCapabilities(experimentalApi = true)` when connecting. These are
+explicit operations; merely connecting does not queue input, start a turn, enroll
+a credential or request a biometric proof. See [Protocol Compatibility](protocol-compatibility.md)
+and [Security](security.md) for Gateway OAuth probing and native cancellation.
+
 ## Observe Notifications
 
 ```kotlin
