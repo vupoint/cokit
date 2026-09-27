@@ -327,3 +327,15 @@ Section deletion and moves are likewise explicit mutations. Section filters and
 appearance updates distinguish omitted fields from explicit null; clearing a
 section must never be inferred from an omitted field. History remains paginated
 and no automatic page accumulation or retry is added.
+
+## Catalog And Account Scope
+
+Missing permission-profile availability or MCP capabilities means unavailable
+information, not permission to use the capability. Explicit MCP resource targets
+preserve a required nullable link ID: null requests no-auth access subject to server
+policy. CoKit never infers null from an unknown account and never performs discovery
+or authentication on behalf of the caller. Origin call IDs and thread IDs retain
+upstream account-scoping precedence. Treat resource target IDs, managed provider
+configuration and instruction contents as sensitive and do not log raw payloads.
+Model access-program metadata does not grant access. Disabled plugin selections
+are stored state only and must not be presented as enforced capability restrictions.

@@ -26,6 +26,16 @@ data class ThreadStartParams(
 @Serializable
 data class ThreadStartResult(
     val thread: Thread,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val cwd: CodexHostPath? = null,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val sandbox: SandboxPolicy? = null,
+    val reasoningEffort: ReasoningEffort? = null,
+    val serviceTier: ServiceTier? = null,
+    val disabledPluginIds: List<String> = emptyList(),
+    val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
 @Serializable
@@ -48,6 +58,19 @@ data class ThreadResumeParams(
 @Serializable
 data class ThreadResumeResult(
     val thread: Thread,
+    val itemsBackwardsCursor: CodexCursor? = null,
+    val turnsBackwardsCursor: CodexCursor? = null,
+    val collaborationMode: ThreadCollaborationMode? = null,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val cwd: CodexHostPath? = null,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val sandbox: SandboxPolicy? = null,
+    val reasoningEffort: ReasoningEffort? = null,
+    val serviceTier: ServiceTier? = null,
+    val disabledPluginIds: List<String> = emptyList(),
+    val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
 @Serializable
@@ -72,6 +95,16 @@ data class ThreadForkParams(
 @Serializable
 data class ThreadForkResult(
     val thread: Thread,
+    val model: ModelName? = null,
+    val modelProvider: String? = null,
+    val cwd: CodexHostPath? = null,
+    val approvalPolicy: ApprovalPolicy? = null,
+    val approvalsReviewer: ApprovalsReviewer? = null,
+    val sandbox: SandboxPolicy? = null,
+    val reasoningEffort: ReasoningEffort? = null,
+    val serviceTier: ServiceTier? = null,
+    val disabledPluginIds: List<String> = emptyList(),
+    val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
 @Serializable
@@ -229,6 +262,12 @@ data class TurnStartParams(
     val approvalsReviewer: ApprovalsReviewer? = null,
     val clientUserMessageId: ClientMessageId? = null,
     val serviceTier: ServiceTier? = null,
+    /** Applies only to a newly started turn and does not change the thread tier. */
+    val serviceTierForTurn: ServiceTier? = null,
+    val toolOutput: TurnToolOutput? = null,
+    val turnTrigger: String? = null,
+    /** Saved selection only; upstream does not yet filter plugin capabilities. */
+    val disabledPluginIds: List<String>? = null,
     @SerialName("sandboxPolicy")
     val sandbox: SandboxPolicy? = null,
     val model: ModelName? = null,

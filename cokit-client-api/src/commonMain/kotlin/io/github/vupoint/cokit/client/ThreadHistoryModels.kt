@@ -57,3 +57,16 @@ value class ThreadActiveFlag(val value: String) {
         val WaitingOnUserInput = ThreadActiveFlag("waitingOnUserInput")
     }
 }
+
+@Serializable
+data class ThreadCollaborationMode(
+    val mode: io.github.vupoint.cokit.client.environment.CollaborationModeKind,
+    val settings: ThreadCollaborationSettings,
+)
+
+@Serializable
+data class ThreadCollaborationSettings(
+    val model: ModelName,
+    @kotlinx.serialization.SerialName("reasoning_effort") val reasoningEffort: ReasoningEffort? = null,
+    @kotlinx.serialization.SerialName("developer_instructions") val developerInstructions: String? = null,
+)

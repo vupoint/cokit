@@ -48,6 +48,9 @@ data class Turn(
     val itemsView: TurnItemsView? = null,
     val items: List<CodexJsonPayload> = emptyList(),
     val error: TurnError? = null,
+    val startedAt: CodexTimestamp? = null,
+    val completedAt: CodexTimestamp? = null,
+    val durationMs: Long? = null,
 )
 
 @Serializable
@@ -67,6 +70,12 @@ data class StartTurnRequest(
     val approvalsReviewer: ApprovalsReviewer? = null,
     val clientUserMessageId: ClientMessageId? = null,
     val serviceTier: ServiceTier? = null,
+    /** Applies only to a newly started turn and does not change the thread tier. */
+    val serviceTierForTurn: ServiceTier? = null,
+    val toolOutput: TurnToolOutput? = null,
+    val turnTrigger: String? = null,
+    /** Saved selection only; upstream does not yet filter plugin capabilities. */
+    val disabledPluginIds: List<String>? = null,
     val sandboxPolicy: SandboxPolicy? = null,
     val model: ModelName? = null,
     val effort: ReasoningEffort? = null,

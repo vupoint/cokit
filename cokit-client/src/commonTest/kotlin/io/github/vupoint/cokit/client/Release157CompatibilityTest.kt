@@ -105,6 +105,64 @@ class Release157CompatibilityTest {
         )
     }
 
+    @Test
+    fun turnOptionsAndTimingRetainReleaseFields() {
+        roundTrip(
+            """{"threadId":"thr_1","input":[],"serviceTierForTurn":"default","turnTrigger":"scheduled","disabledPluginIds":[],"toolOutput":{"name":"lookup","output":"done"}}""",
+            TurnStartParams.serializer(),
+        )
+        roundTrip(
+            """{"id":"turn_1","status":"completed","startedAt":10,"completedAt":11,"durationMs":1000}""",
+            Turn.serializer(),
+        )
+    }
+
+    @Test
+    fun permissionAndMcpSnapshotsRetainAvailabilityAndExplicitAccountTarget() {
+        roundTrip("""{"id":"read-only","allowed":false}""", io.github.vupoint.cokit.client.environment.PermissionProfileSummary.serializer())
+        roundTrip(
+            """{"name":"example","authStatus":"notLoggedIn","runtimeStatus":"authenticationRequired","toolsError":"Sign in required","serverCapabilities":{"extensions":{"example":{}}},"httpOrigin":"https://example.invalid","pluginId":"example@market"}""",
+            io.github.vupoint.cokit.client.mcp.McpServerStatus.serializer(),
+        )
+        roundTrip(
+            """{"server":"example","uri":"example://resource","connectorId":"app_1","originCallId":"call_1","target":{"connectorId":"app_1","linkId":null}}""",
+            io.github.vupoint.cokit.client.mcp.McpResourceReadParams.serializer(),
+        )
+    }
+
+    @Test
+    fun modelCatalogAndManagedRequirementsRetainReleaseMetadata() {
+        roundTrip(
+            """{"id":"model_1","model":"test-model","displayName":"Test","description":"Test model","hidden":false,"isDefault":true,"defaultReasoningEffort":"high","supportedReasoningEfforts":[],"modelSpecialty":"coding","multiAgentVersion":"v2","availableAccessPrograms":{"cyber":["future-program"]}}""",
+            io.github.vupoint.cokit.client.models.ModelCatalogEntry.serializer(),
+        )
+        roundTrip(
+            """{"allowedLoginMethods":[],"modelProvider":"openai","modelProviders":{"openai":{"wire_api":"responses"}},"allowBrowserAndComputerUse":false,"autoReview":{"requiredOnModels":["test-model"]},"inAppBrowser":{"allowExternalBrowserSettingsImport":false},"cliAuthCredentialsStore":"keyring","chatgptBaseUrl":"https://example.invalid","additionalDeveloperInstructions":"Managed instructions"}""",
+            io.github.vupoint.cokit.client.policy.ManagedPolicyRequirements.serializer(),
+        )
+    }
+
+    @Test
+    fun toolOutputContentSupportsMultimodalPayloadsAndRejectsInvalidImages() {
+        roundTrip(
+            """{"name":"lookup","output":[{"type":"input_text","text":"done"},{"type":"input_image","image_url":"https://example.invalid/image.png","detail":"high"},{"type":"input_image","file_id":"file_1"},{"type":"input_audio","audio_url":"https://example.invalid/audio.wav"},{"type":"encrypted_content","encrypted_content":"opaque"}]}""",
+            TurnToolOutput.serializer(),
+        )
+        kotlin.test.assertFailsWith<IllegalArgumentException> { ToolOutputContent.Image() }
+        kotlin.test.assertFailsWith<IllegalArgumentException> { ToolOutputContent.Image(imageUrl = "url", fileId = "id") }
+        kotlin.test.assertFailsWith<kotlinx.serialization.SerializationException> {
+            CodexProtocolJson.decodeFromJsonElement(ToolOutputBody.serializer(), CodexProtocolJson.parseToJsonElement("42"))
+        }
+    }
+
+    @Test
+    fun threadResumeRetainsEffectiveConfigurationAndHydrationCursors() {
+        roundTrip(
+            """{"thread":{"id":"thr_1"},"model":"test-model","modelProvider":"openai","cwd":"/path/to/project","approvalPolicy":"on-request","approvalsReviewer":"user","sandbox":{"type":"readOnly"},"reasoningEffort":"high","serviceTier":"default","instructionSources":["/path/to/project/AGENTS.md"],"disabledPluginIds":["example@market"],"itemsBackwardsCursor":"items","turnsBackwardsCursor":"turns","collaborationMode":{"mode":"default","settings":{"model":"test-model"}}}""",
+            ThreadResumeResult.serializer(),
+        )
+    }
+
     private fun <T> roundTrip(fixture: String, serializer: KSerializer<T>) {
         val expected = CodexProtocolJson.parseToJsonElement(fixture)
         val decoded = CodexProtocolJson.decodeFromJsonElement(serializer, expected)

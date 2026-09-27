@@ -49,6 +49,9 @@ data class ModelCatalogEntry(
     val supportsPersonality: Boolean = false,
     val upgrade: String? = null,
     val upgradeInfo: ModelUpgradeInfo? = null,
+    val availableAccessPrograms: ModelAccessPrograms? = null,
+    val modelSpecialty: String? = null,
+    val multiAgentVersion: MultiAgentVersion? = null,
 )
 
 @Serializable
@@ -75,6 +78,7 @@ data class ModelUpgradeInfo(
     val modelLink: String? = null,
     val migrationMarkdown: String? = null,
     val upgradeCopy: String? = null,
+    val retirementAt: io.github.vupoint.cokit.client.CodexTimestamp? = null,
 )
 
 @Serializable
@@ -86,3 +90,26 @@ data class ModelProviderCapabilities(
     val imageGeneration: Boolean,
     val namespaceTools: Boolean,
 )
+
+@Serializable
+data class ModelAccessPrograms(val cyber: List<CyberAccessProgram>)
+
+@Serializable
+@JvmInline
+value class CyberAccessProgram(val value: String) {
+    companion object {
+        val Standard = CyberAccessProgram("standard")
+        val DaybreakBlue = CyberAccessProgram("daybreakBlue")
+        val DaybreakRed = CyberAccessProgram("daybreakRed")
+    }
+}
+
+@Serializable
+@JvmInline
+value class MultiAgentVersion(val value: String) {
+    companion object {
+        val Disabled = MultiAgentVersion("disabled")
+        val V1 = MultiAgentVersion("v1")
+        val V2 = MultiAgentVersion("v2")
+    }
+}

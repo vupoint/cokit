@@ -152,6 +152,10 @@ class ThreadTurnApiTest {
                     input = listOf(TurnInput.Text("Run tests")),
                     approvalPolicy = ApprovalPolicy.OnRequest,
                     sandboxPolicy = SandboxPolicy.WorkspaceWrite(),
+                    serviceTierForTurn = ServiceTier("default"),
+                    turnTrigger = "scheduled",
+                    disabledPluginIds = emptyList(),
+                    toolOutput = TurnToolOutput("lookup", ToolOutputBody.Text("done")),
                     outputSchema = CodexJsonPayload.parse("""{"type":"object"}"""),
                 ),
             )
@@ -167,6 +171,10 @@ class ThreadTurnApiTest {
             "workspaceWrite",
             params["sandboxPolicy"]?.jsonObject?.get("type")?.jsonPrimitive?.contentOrNull,
         )
+        assertEquals("default", params["serviceTierForTurn"]?.jsonPrimitive?.content)
+        assertEquals("scheduled", params["turnTrigger"]?.jsonPrimitive?.content)
+        assertEquals(0, params["disabledPluginIds"]?.jsonArray?.size)
+        assertEquals("done", params["toolOutput"]?.jsonObject?.get("output")?.jsonPrimitive?.content)
         assertTrue(params.containsKey("input"))
         val inputItem = params["input"]
             ?.jsonArray

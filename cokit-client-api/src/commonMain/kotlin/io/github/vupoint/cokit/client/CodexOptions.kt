@@ -71,7 +71,9 @@ value class ApprovalsReviewer(val value: String) {
 value class Personality(val value: String) {
     companion object {
         val None = Personality("none")
+        @Deprecated("Codex 0.157.1 no longer selects a style with friendly")
         val Friendly = Personality("friendly")
+        @Deprecated("Codex 0.157.1 no longer selects a style with pragmatic")
         val Pragmatic = Personality("pragmatic")
     }
 }

@@ -80,6 +80,11 @@ data class McpServerStatus(
     val resourceTemplates: List<McpResourceTemplate> = emptyList(),
     val tools: Map<McpToolName, McpTool> = emptyMap(),
     val serverInfo: McpServerInfo? = null,
+    val httpOrigin: String? = null,
+    val pluginId: String? = null,
+    val runtimeStatus: McpServerConnectionStatus? = null,
+    val serverCapabilities: CodexJsonPayload? = null,
+    val toolsError: String? = null,
 )
 
 @Serializable
@@ -134,6 +139,9 @@ data class McpResourceReadParams(
     val server: McpServerName,
     val uri: McpResourceUri,
     val threadId: ThreadId? = null,
+    val connectorId: String? = null,
+    val originCallId: String? = null,
+    val target: McpResourceReadTarget? = null,
 )
 
 @Serializable
@@ -198,3 +206,23 @@ data class McpServerToolCallResult(
     val meta: CodexJsonPayload? = null,
     val structuredContent: CodexJsonPayload? = null,
 )
+
+/** A null linkId explicitly requests no-auth access, subject to server policy. */
+@Serializable
+data class McpResourceReadTarget(val connectorId: String, val linkId: String?) {
+    override fun toString(): String = "McpResourceReadTarget(connectorId=[redacted], hasLinkId=${linkId != null})"
+}
+
+@Serializable
+@JvmInline
+value class McpServerConnectionStatus(val value: String) {
+    companion object {
+        val NotStarted = McpServerConnectionStatus("notStarted")
+        val Starting = McpServerConnectionStatus("starting")
+        val Connected = McpServerConnectionStatus("connected")
+        val AuthenticationRequired = McpServerConnectionStatus("authenticationRequired")
+        val Failed = McpServerConnectionStatus("failed")
+        val Cancelled = McpServerConnectionStatus("cancelled")
+        val Disabled = McpServerConnectionStatus("disabled")
+    }
+}

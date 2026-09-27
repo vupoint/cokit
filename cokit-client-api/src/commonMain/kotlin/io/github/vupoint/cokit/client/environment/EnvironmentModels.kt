@@ -40,6 +40,8 @@ data class PermissionProfileListResult(
 @Serializable
 data class PermissionProfileSummary(
     val id: PermissionProfileId,
+    /** Null means an older server did not report availability. */
+    val allowed: Boolean? = null,
     val description: String? = null,
 )
 

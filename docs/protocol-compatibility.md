@@ -574,3 +574,22 @@ Protocol fixtures should come from upstream examples, generated schema samples,
 or reduced examples that exercise specific parser behavior. Fixtures must not
 include secrets, access tokens, private account data, auth URLs, or private local
 paths.
+
+## Codex 0.157.1 Model Alignment
+
+Thread start/resume/fork results retain effective configuration and resume history
+cursors. Thread snapshots retain metadata, runtime status, and included turns.
+Turn results retain timestamps and duration. `serviceTierForTurn` changes only a new
+turn; `serviceTier` continues to change subsequent turns. `toolOutput` accepts text
+or typed multimodal content. `turnTrigger` and `disabledPluginIds` are forwarded;
+upstream currently saves disabled plugin IDs without filtering capabilities.
+`Personality.Friendly` and `Pragmatic` are deprecated because they no longer select
+a style. `none` retains the upstream instruction-removal semantics.
+
+Permission profile availability is nullable for older servers, never inferred as
+allowed. MCP snapshots preserve connection status, capabilities, plugin origin and
+catalog errors. Resource reads support explicit app/account targets and origin call
+IDs. Model discovery preserves specialty, multi-agent version, access programs and
+retirement timestamps. Managed policy exposes stable login, provider, browser,
+auto-review and credential-store requirements. Legacy `network` is decode-only
+compatibility with older servers, not a current stable requirement field.
