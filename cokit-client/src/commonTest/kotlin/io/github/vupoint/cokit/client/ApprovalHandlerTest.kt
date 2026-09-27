@@ -2,6 +2,7 @@ package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.approvals.ApprovalDecision
 import io.github.vupoint.cokit.client.approvals.CommandAction
+import io.github.vupoint.cokit.client.approvals.CommandApprovalKind
 import io.github.vupoint.cokit.client.approvals.CommandApprovalId
 import io.github.vupoint.cokit.client.approvals.CommandApprovalRequest
 import io.github.vupoint.cokit.client.approvals.FileChangeApprovalRequest
@@ -57,6 +58,7 @@ class ApprovalHandlerTest {
             cwd = CodexHostPath("/path/to/project"),
         )
 
+        assertEquals(CommandApprovalKind.Command, request.kind)
         assertEquals(ThreadId("thr_123"), request.threadId)
         assertEquals(TurnId("turn_123"), request.turnId)
         assertEquals(ItemId("item_123"), request.itemId)
@@ -78,6 +80,7 @@ class ApprovalHandlerTest {
                     put("turnId", "turn_123")
                     put("itemId", "item_123")
                     put("startedAtMs", 1_776_000_000_000)
+                    put("kind", "writeStdin")
                     put("approvalId", "approval_123")
                     put("environmentId", "local")
                     put("reason", "Allow package metadata lookup")
@@ -124,6 +127,7 @@ class ApprovalHandlerTest {
         runCurrent()
 
         val approval = assertIs<CodexServerRequest.CommandApproval>(serverRequest.await()).request
+        assertEquals(CommandApprovalKind.WriteStdin, approval.kind)
         assertEquals(null, approval.command)
         assertEquals(CommandApprovalId("approval_123"), approval.approvalId)
         assertEquals(EnvironmentId("local"), approval.environmentId)

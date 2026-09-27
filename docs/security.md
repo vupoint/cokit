@@ -307,3 +307,14 @@ remote execution endpoints.
 The WebSocket transport is experimental. Use stdio for the default local
 integration path unless an application has a specific reason to opt into
 WebSocket behavior.
+
+## Codex 0.157.1 Approval And MCP Compatibility
+
+Command approval requests distinguish `command` from `writeStdin`. Missing kinds
+from older servers default to `command`; unknown strings are preserved for explicit
+handlers. Applications must inspect the kind before granting approval. Unhandled
+requests still decline, including stdin approvals. `openai/form` and `openaiForm`
+elicitations share the same explicit handler and default-denial behavior.
+Initialize extension declarations do not register a handler or grant permission.
+`explicitGatewayOauth` changes the server runtime's OAuth behavior and cannot be
+undone by another connection; callers must opt into that behavior explicitly.

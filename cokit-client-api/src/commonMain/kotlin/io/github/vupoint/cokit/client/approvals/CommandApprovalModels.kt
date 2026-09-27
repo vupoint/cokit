@@ -29,6 +29,7 @@ data class CommandApprovalRequest(
     val turnId: TurnId,
     val itemId: ItemId,
     val startedAtMs: Long,
+    val kind: CommandApprovalKind = CommandApprovalKind.Command,
     val approvalId: CommandApprovalId? = null,
     val command: String? = null,
     val commandActions: List<CommandAction> = emptyList(),
@@ -45,6 +46,7 @@ data class CommandApprovalRequest(
             "turnId=$turnId, " +
             "itemId=$itemId, " +
             "startedAtMs=$startedAtMs, " +
+            "kind=$kind, " +
             "hasApprovalId=${approvalId != null}, " +
             "hasCommand=${command != null}, " +
             "commandActionCount=${commandActions.size}, " +
@@ -54,6 +56,16 @@ data class CommandApprovalRequest(
             "execpolicyAmendmentCount=${proposedExecpolicyAmendment?.size ?: 0}, " +
             "networkPolicyAmendmentCount=${proposedNetworkPolicyAmendments?.size ?: 0}, " +
             "hasReason=${reason != null})"
+}
+
+/** The action being approved; unknown values remain available to explicit handlers. */
+@Serializable
+@JvmInline
+value class CommandApprovalKind(val value: String) {
+    companion object {
+        val Command = CommandApprovalKind("command")
+        val WriteStdin = CommandApprovalKind("writeStdin")
+    }
 }
 
 @Serializable

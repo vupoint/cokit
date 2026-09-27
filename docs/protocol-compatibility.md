@@ -2,6 +2,13 @@
 
 CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 
+## Codex 0.157.1 Upgrade
+
+The schema provenance now records Codex 0.157.1. Approval kinds, initialize
+extensions, and both OpenAI form elicitation aliases are aligned. The coverage
+snapshot below describes the previous 0.146.0 API until the remaining release
+alignment tasks update it.
+
 ## Versioning
 
 - CoKit library versions follow semantic versioning for public Kotlin APIs.

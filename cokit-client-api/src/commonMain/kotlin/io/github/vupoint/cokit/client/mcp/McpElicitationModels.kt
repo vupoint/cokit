@@ -62,7 +62,7 @@ object McpElicitationRequestSerializer :
     ): DeserializationStrategy<McpElicitationRequest> {
         return when (element.jsonObject["mode"]?.jsonPrimitive?.contentOrNull) {
             "form" -> McpElicitationRequest.Form.serializer()
-            "openai/form" -> McpElicitationRequest.OpenAiForm.serializer()
+            "openai/form", "openaiForm" -> McpElicitationRequest.OpenAiForm.serializer()
             "url" -> McpElicitationRequest.Url.serializer()
             else -> throw SerializationException("Unknown MCP elicitation request mode")
         }

@@ -15,6 +15,10 @@ data class InitializeCapabilities(
     val mcpServerOpenaiFormElicitation: Boolean? = null,
     val optOutNotificationMethods: List<String> = emptyList(),
     val requestAttestation: Boolean = false,
+    /** MCP extension settings, for example an `openai/form` declaration. */
+    val extensions: Map<String, CodexJsonPayload>? = null,
+    /** Opts this server runtime into explicit gateway OAuth; later connections cannot undo it. */
+    val explicitGatewayOauth: Boolean? = null,
 )
 
 @Serializable
