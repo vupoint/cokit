@@ -48,7 +48,20 @@ data class McpServerOauthLoginParams(
     val name: McpServerName,
     val scopes: List<String>? = null,
     val timeoutSecs: Long? = null,
+    val threadId: ThreadId? = null,
+    /** Omission lets the server automatically discover the registration strategy. */
+    val clientRegistration: McpServerOauthClientRegistration? = null,
 )
+
+@Serializable
+@JvmInline
+value class McpServerOauthClientRegistration(val value: String) {
+    companion object {
+        val Auto = McpServerOauthClientRegistration("auto")
+        val Cimd = McpServerOauthClientRegistration("cimd")
+        val Dcr = McpServerOauthClientRegistration("dcr")
+    }
+}
 
 @Serializable
 data class McpServerOauthLoginResult(
@@ -64,7 +77,25 @@ data class McpServerStatusListParams(
     val detail: McpServerStatusDetail? = null,
     val limit: Int? = null,
     val threadId: ThreadId? = null,
+    /** Restricts discovery to one server; unknown names return an empty page. */
+    val serverName: McpServerName? = null,
 )
+
+/** Presentation metadata only; applications decide whether and how to render it. */
+@Serializable
+data class McpAppUi(
+    val resourceUri: McpResourceUri,
+    val preferredModelDisplayMode: McpAppDisplayMode,
+)
+
+@Serializable
+@JvmInline
+value class McpAppDisplayMode(val value: String) {
+    companion object {
+        val Inline = McpAppDisplayMode("inline")
+        val Fullscreen = McpAppDisplayMode("fullscreen")
+    }
+}
 
 @Serializable
 data class McpServerStatusListResult(

@@ -33,6 +33,38 @@ import kotlinx.serialization.json.put
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class CodexClientTest {
     @Test
+    fun itemHistoryUsesAnAnchorThenTheReturnedOpaqueCursorWithoutExperimentalOptIn() = runTest {
+        val fixture = connectedRpcClientFixture(backgroundScope)
+        var cursor: ThreadItemsListCursor = ThreadItemsListCursor.ItemAnchor(ItemId("item_1"))
+        for (expected in listOf("""{"type":"item","itemId":"item_1"}""", "\"next-page\"")) {
+            val deferred = async {
+                fixture.client.request(
+                    CodexRpc.Thread.ListItems,
+                    ThreadItemsListParams(ThreadId("thr_1"), TurnId("turn_1"), cursor, sortDirection = SortDirection.Desc),
+                )
+            }
+            runCurrent()
+            val request = fixture.transport.sent.last() as JsonRpcRequest
+            assertEquals("thread/items/list", request.method)
+            assertEquals(
+                io.github.vupoint.cokit.protocol.CodexProtocolJson.parseToJsonElement(
+                    """{"threadId":"thr_1","turnId":"turn_1","cursor":$expected,"sortDirection":"desc"}""",
+                ),
+                request.params,
+            )
+            fixture.transport.receive(JsonRpcResponse(
+                request.id,
+                result = io.github.vupoint.cokit.protocol.CodexProtocolJson.parseToJsonElement(
+                    """{"data":[],"nextCursor":"next-page","backwardsCursor":"previous-page"}""",
+                ),
+            ))
+            val page = deferred.await()
+            assertEquals(CodexCursor("previous-page"), page.backwardsCursor)
+            cursor = ThreadItemsListCursor.Opaque(page.nextCursor!!)
+        }
+    }
+
+    @Test
     fun typedMethodDescriptorSendsMethodAndDecodesResult() = runTest {
         val fixture = connectedRpcClientFixture(backgroundScope)
 

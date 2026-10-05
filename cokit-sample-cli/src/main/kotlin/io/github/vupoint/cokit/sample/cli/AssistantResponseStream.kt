@@ -4,6 +4,7 @@ import io.github.vupoint.cokit.client.CodexNotification
 import io.github.vupoint.cokit.client.ItemType
 import io.github.vupoint.cokit.client.Turn
 import io.github.vupoint.cokit.client.TurnId
+import io.github.vupoint.cokit.client.TurnStatus
 import kotlinx.coroutines.channels.Channel
 
 internal suspend fun streamAssistantResponse(
@@ -38,6 +39,9 @@ internal suspend fun streamAssistantResponse(
 
             is CodexNotification.TurnCompleted -> {
                 if (event.turn.id == turnId) {
+                    if (event.turn.status != TurnStatus.Completed) {
+                        throw SampleRunException(event.turn.failureMessage())
+                    }
                     if (wroteAssistantText) {
                         output.line()
                     } else {
@@ -68,7 +72,7 @@ internal suspend fun streamAssistantResponse(
 
 private fun Turn.failureMessage(): String {
     val message = error?.message ?: "unknown error"
-    return "Turn ${id.value} failed: $message"
+    return "Turn ${id.value} ${status.value}: $message"
 }
 
 internal class SampleRunException(message: String) : RuntimeException(message)

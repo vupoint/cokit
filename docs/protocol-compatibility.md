@@ -5,7 +5,7 @@ CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 ## Dynamic Tools (Experimental)
 
 CoKit supports `thread/start.dynamicTools` through `StartThreadRequest` and
-`ThreadStartParams`. Definitions model the 0.157.1 experimental schema's
+`ThreadStartParams`. Definitions model the 0.160.0 experimental schema's
 `type: "function"` and `type: "namespace"` alternatives; namespaces contain
 function definitions only. Function definitions preserve `inputSchema` as
 `CodexJsonPayload` and expose optional `deferLoading` (false is omitted).
@@ -36,17 +36,60 @@ Malformed params return `-32602`, and handler exceptions return generic `-32000`
 Handlers own permissions and side effects; see [security](security.md#dynamic-tool-execution).
 
 The contract tests use literal payloads checked against the existing generated
-0.157.1 experimental schema. Its aggregate SHA-256 is
-`ff9bcc67a07f763a9e61954019c652937ae96b1f7ca2319f2ad23d9cb567c571`, matching
+0.160.0 experimental schema. Its aggregate SHA-256 is
+`0c5c56bb19890527ff10c1fc32b069b2afcce7a1463ede19e71f43bb662441af`, matching
 `cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
-No schema version or generated artifacts are changed by this addition.
+The 0.160.0 stable alignment refreshes schema provenance without expanding
+experimental implementation coverage.
 Upstream persists tool definitions for resumed threads; the execution callback
 remains application-owned and must be registered on each new client connection.
 Runtime tool replacement and automatic tool discovery remain deferred.
 
+## Codex 0.160.0 Stable Alignment
+
+The current baseline is Codex CLI 0.160.0. The stable schema still has 104 client
+requests and 10 server requests; no request descriptors were added or removed by
+this upgrade. Existing experimental APIs keep their opt-in gates and scope.
+The experimental schema is regenerated for provenance, not to enable new APIs;
+`environment/add.authBearerToken` remains outside CoKit's modeled params.
+
+- `thread/items/list.cursor` accepts `ThreadItemsListCursor.Opaque(CodexCursor(...))`
+  or `ThreadItemsListCursor.ItemAnchor(ItemId(...))`. This replaces the request's
+  former `CodexCursor?` Kotlin type; wrap existing request cursors in `Opaque`.
+  Response `nextCursor` and `backwardsCursor` remain `CodexCursor?`.
+  An anchor requires a non-blank `turnId` and `itemId`. It excludes the anchor
+  item: ascending returns newer items, descending older items. The server rejects
+  unknown or out-of-scope anchors with `-32602`; CoKit never guesses another page.
+  Omitted/null cursors still select the first page.
+- `mcpServerStatus/list.serverName` restricts discovery to one server. With
+  `threadId`, discovery uses that thread's connection after pending refreshes;
+  without it, the server creates a connection for the selected server. Unknown
+  names return an empty page. Omission preserves full-inventory discovery.
+- MCP OAuth params also expose the already-released `threadId` and
+  `clientRegistration` (`auto`, `cimd`, `dcr`). Omission retains server defaults.
+- `ThreadItemSummary` preserves `mcpAppUi` and legacy `mcpAppResourceUri`.
+  Presentation metadata never triggers rendering. Missing `mcpAppUi` does not
+  imply inline mode: 0.160.0 leaves it absent for missing or unsupported descriptor
+  preferences while retaining the legacy URI. Unknown received mode strings remain
+  readable for forward compatibility.
+- `AccountPlanType.ProMax` names the new `promax` value. Unknown plan values still
+  round-trip through the string wrapper.
+- `Turn.error` may accompany either `failed` or `interrupted`, including
+  `flexUnavailable` and `tooManyDenials`. Error payloads remain opaque and preserved.
+  `TurnCompleted` represents a terminal notification, not guaranteed success;
+  inspect `turn.status` and `turn.error`. The CLI sample reports interrupted turns
+  as unsuccessful. Guardian strict circuit breaking can report `tooManyDenials`
+  without a separate `error` notification; CoKit does not change Guardian settings.
+- Upstream removed `PluginSummary.extensions` and its supporting types. CoKit did
+  not expose these fields, so no compatibility alias or replacement is added.
+
+Unreleased main changes, including removal of provider `namespaceTools`, goal
+mutation origins, OAuth login IDs, attachment-owner lookup and prediction APIs,
+are excluded. `namespaceTools` remains required by the 0.160.0 response schema.
+
 ## Codex 0.157.1 Upgrade
 
-The current baseline is Codex CLI 0.157.1. This release aligns approval kinds,
+The previous 0.157.1 upgrade aligned approval kinds,
 initialization extensions, MCP form aliases, section and history APIs, effective
 thread/turn metadata, attachments, Gateway OAuth and experimental project, queue
 and native verification APIs. Public contracts remain in `cokit-client-api`;
@@ -80,7 +123,7 @@ enable the matching upstream experimental capability before use.
 Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
 status models require `@ExperimentalCodexApi`, and applications should enable
 the matching upstream experimental capability before use. Current local
-`codex-cli 0.157.1` generated schema exposes the enable/disable params and
+`codex-cli 0.160.0` generated schema exposes the enable/disable params and
 status-changed notification shape; the upstream README also documents the
 `remoteControl/enable`, `remoteControl/disable`, and
 `remoteControl/status/read` request methods.
@@ -152,9 +195,9 @@ remain deny-by-default unless a typed handler is registered.
 ## Upstream Coverage Snapshot
 
 This snapshot was reviewed against the upstream app-server README and generated
-`codex-cli 0.157.1` stable and experimental schemas on 2026-09-27:
+`codex-cli 0.160.0` stable and experimental schemas on 2026-10-05:
 
-https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server/README.md
+https://github.com/openai/codex/blob/rust-v0.160.0/codex-rs/app-server/README.md
 
 The checked protocol inventory groups upstream request, notification, and
 server-request surfaces by current CoKit coverage:
@@ -248,7 +291,7 @@ Permission profile and environment catalog APIs are modeled according to the
 current generated schema. `CodexRpc.PermissionProfile.List` reads server-defined
 permission profile ids and descriptions for an optional host cwd.
 `CodexRpc.CollaborationMode.List` and `CodexRpc.Environment.Add` are
-experimental and require `ExperimentalCodexApi`; current `codex-cli 0.157.1`
+experimental and require `ExperimentalCodexApi`; current `codex-cli 0.160.0`
 schema defines collaboration mode listing and environment registration, but not
 environment list/read or collaboration mode read descriptors.
 
@@ -257,7 +300,7 @@ Skills and hooks APIs are modeled as data-oriented protocol descriptors.
 declarations, and optional interface metadata without loading or executing skill
 content in CoKit. `CodexRpc.Skills.SetExtraRoots` updates the app-server skill
 search roots, and `CodexRpc.Skills.WriteConfig` changes a skill's enabled state
-by name or path. Current `codex-cli 0.157.1` schema defines
+by name or path. Current `codex-cli 0.160.0` schema defines
 `skills/config/write` but not a `skills/config/read` request.
 `CodexRpc.Hooks.List` returns per-cwd hook metadata, warnings, and parse errors
 without executing hook handlers in CoKit.
@@ -326,8 +369,8 @@ changing the rule that primary APIs do not expose `JsonElement`, raw method
 strings, or JSON-RPC envelopes.
 
 Newly supported stable and experimental release extensions are documented below.
-Item-anchor cursors currently exist only on upstream main; CoKit retains the
-released string-cursor contract. Deferred features are listed in the inventory,
+Item-anchor cursors are supported by the released 0.160.0 stable contract;
+response cursors remain opaque strings. Deferred features are listed in the inventory,
 including released experimental diagnostics and plugin search.
 
 ## Implementation Roadmap
@@ -520,8 +563,8 @@ Schema provenance is recorded in
 The file records the Codex CLI version, upstream Codex commit, stable schema
 command, experimental schema command, generation timestamp, and canonical
 SHA-256 digests for both schema modes. The current stable baseline is
-`codex-cli 0.157.1` at upstream release commit
-`36650394c5b38c2990ccf2a3457165ca3e9d9726`.
+`codex-cli 0.160.0` at upstream release commit
+`a956835d020762cb2b570053af06f643a11c0ecc`.
 
 Run:
 
@@ -548,7 +591,7 @@ schema fixtures or generated DTOs, update the provenance file with:
 
 ```bash
 codex --version
-git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.157.1^{}'
+git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.160.0^{}'
 ```
 
 Then update `generatedAt` to the refresh timestamp. The Gradle schema generation

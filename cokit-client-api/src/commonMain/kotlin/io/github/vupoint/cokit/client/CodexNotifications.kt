@@ -66,6 +66,7 @@ sealed interface CodexNotification {
         override val method: String = "turn/started"
     }
 
+    /** Terminal notification; inspect [turn] status and error before treating it as success. */
     data class TurnCompleted(
         val turn: Turn,
     ) : CodexNotification {

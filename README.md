@@ -8,7 +8,7 @@ separate modules.
 
 ## Status
 
-CoKit is in early development and tracks Codex CLI **0.157.1**. The current codebase includes:
+CoKit is in early development and tracks Codex CLI **0.160.0**. The current codebase includes:
 
 - JSON-RPC protocol envelopes and serializers.
 - A coroutine JSON-RPC session with response correlation and notification flows.
@@ -18,6 +18,8 @@ CoKit is in early development and tracks Codex CLI **0.157.1**. The current code
 - Deny-by-default handling for server-initiated approval-like requests.
 - Stable section/history and attachment APIs, explicit Gateway OAuth, and richer
   thread, turn, model, MCP and managed-policy metadata.
+- Stable item-anchor history cursors, scoped MCP discovery and OAuth options,
+  and explicit MCP presentation metadata.
 - Opt-in experimental projects, thread queues, local user verification, and
   client-executed dynamic tools.
 - JVM stdio JSONL transport.
