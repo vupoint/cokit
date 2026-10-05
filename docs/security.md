@@ -406,3 +406,23 @@ proof that the OS prompt closed nor rollback of enrollment. Cancelling the calli
 coroutine releases local correlation state but does not cancel server-side work.
 The application must discard late proofs after cancellation, account changes or
 superseding requests. CoKit never interprets a proof as permission to run a tool.
+
+## Codex 0.160.0 Stable Compatibility
+
+Item-anchor cursors require non-blank item and turn identifiers. CoKit validates
+these local invariants, while app-server validates history membership and returns
+`-32602` for unknown or out-of-scope anchors. No fallback traversal, automatic
+pagination or retries are added. Cursor decoding rejects non-string scalar values,
+arrays, unknown anchor types, and missing or non-string item IDs.
+
+MCP server-name filters and OAuth thread/registration parameters preserve explicit
+caller scope. They do not authorize tool execution, select another account, open
+a browser, or automatically start authentication. MCP presentation URIs and display
+modes are untrusted metadata; exposing them does not fetch resources or render UI.
+Missing presentation metadata must not be interpreted as permission to render.
+
+An interrupted turn may carry `tooManyDenials` without a separate error event.
+Applications must check terminal turn status and preserve its error; the sample
+fails interrupted runs instead of reporting success. This does not alter approval
+defaults or Guardian configuration. Experimental bearer-token environment params
+and all unreleased main protocol changes are excluded from this upgrade.

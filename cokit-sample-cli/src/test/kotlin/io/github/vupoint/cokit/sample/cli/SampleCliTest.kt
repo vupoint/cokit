@@ -1,12 +1,19 @@
 package io.github.vupoint.cokit.sample.cli
 
 import com.github.ajalt.clikt.testing.test
+import io.github.vupoint.cokit.client.CodexJsonPayload
+import io.github.vupoint.cokit.client.CodexNotification
+import io.github.vupoint.cokit.client.Turn
+import io.github.vupoint.cokit.client.TurnError
+import io.github.vupoint.cokit.client.TurnId
+import io.github.vupoint.cokit.client.TurnStatus
 import io.github.vupoint.cokit.protocol.JsonRpcNotification
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import io.github.vupoint.cokit.testing.FakeJsonRpcTransport
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -19,10 +26,30 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SampleCliTest {
+    @Test
+    fun interruptedTurnsNeverReportSuccessfulCompletion() = runTest {
+        for (error in listOf(null, TurnError("Approval denial limit reached", CodexJsonPayload.parse("\"tooManyDenials\"")))) {
+            val turn = Turn(TurnId("turn_123"), TurnStatus.Interrupted, error = error)
+            val events = Channel<CodexNotification>(1)
+            events.send(CodexNotification.TurnCompleted(turn))
+            events.close()
+            val output = RecordingSampleOutput()
+
+            val failure = assertFailsWith<SampleRunException> {
+                streamAssistantResponse(turn.id, events, output)
+            }
+
+            assertTrue(failure.message.orEmpty().contains("interrupted"))
+            if (error != null) assertTrue(failure.message.orEmpty().contains(error.message))
+            assertEquals("", output.content)
+        }
+    }
+
     @Test
     fun runsWithDefaultOptionsWhenNoArgumentsAreProvided() {
         val runner = RecordingSampleRunner()

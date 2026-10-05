@@ -163,7 +163,7 @@ all documented outcomes before invoking that mutation.
 
 ## Sections And Paginated History
 
-The 0.157.1 baseline uses sections in place of the old `isPinned` filter.
+The 0.160.0 baseline uses sections in place of the old `isPinned` filter.
 Omitting `sectionId` leaves the filter unset; explicit null selects threads that
 are not in any section:
 
@@ -244,3 +244,38 @@ client.registerCommandApprovalHandler { request ->
 Command approval handlers use typed request and decision models. Raw JSON-RPC
 compatibility hooks remain available for advanced protocol work, but they are
 not the default application API.
+
+## Codex 0.160.0 Item History
+
+Request a page after a known item within a visible turn. Ascending order returns
+newer items; use `SortDirection.Desc` to read older items instead.
+
+```kotlin
+val page = client.request(
+    CodexRpc.Thread.ListItems,
+    ThreadItemsListParams(
+        threadId = ThreadId("thread_123"),
+        turnId = TurnId("turn_123"),
+        cursor = ThreadItemsListCursor.ItemAnchor(ItemId("item_123")),
+        sortDirection = SortDirection.Asc,
+    ),
+)
+val continuation = page.nextCursor?.let { ThreadItemsListCursor.Opaque(it) }
+```
+
+Only send a continuation request when `nextCursor` is non-null. Passing null again
+starts the first page. Existing string request cursors now need the `Opaque`
+wrapper; response cursors and other pagination APIs keep `CodexCursor`.
+
+For focused MCP discovery, pass `serverName = McpServerName("example")` in
+`McpServerStatusListParams`, with `threadId` when querying a loaded thread's
+connection. MCP OAuth can pass that thread and an explicit
+`McpServerOauthClientRegistration` when required by the configured server.
+
+For item notifications, `item.mcpAppUi` contains an explicit display preference;
+`item.mcpAppResourceUri` may still exist when the preference is absent. Applications
+own display decisions and resource loading. CoKit supplies metadata only.
+
+Treat only `TurnStatus.Completed` as successful completion. A `TurnCompleted`
+notification can carry `TurnStatus.Interrupted` and an error such as
+`tooManyDenials`; there may be no separate `CodexNotification.Error` event.

@@ -11,9 +11,9 @@ class SchemaProvenanceTest {
     fun schemaProvenanceRecordsRequiredAuditFields() {
         val properties = loadSchemaProvenance()
 
-        assertEquals("codex-cli 0.157.1", properties.required("codexVersion"))
+        assertEquals("codex-cli 0.160.0", properties.required("codexVersion"))
         assertEquals(
-            "36650394c5b38c2990ccf2a3457165ca3e9d9726",
+            "a956835d020762cb2b570053af06f643a11c0ecc",
             properties.required("upstreamCommit"),
         )
         assertEquals(
@@ -25,11 +25,11 @@ class SchemaProvenanceTest {
             properties.required("experimentalCommand"),
         )
         assertEquals(
-            "8eb52e0f1d39c5b2263753bfadbbccb74032eab0639b8ca79eb5349e16ac8d73",
+            "1dfbffe0f950647ec0dc6aa0019aa9a1787dbb3d7778b787b7182105c9acac08",
             properties.required("stableSchemaSha256"),
         )
         assertEquals(
-            "ff9bcc67a07f763a9e61954019c652937ae96b1f7ca2319f2ad23d9cb567c571",
+            "0c5c56bb19890527ff10c1fc32b069b2afcce7a1463ede19e71f43bb662441af",
             properties.required("experimentalSchemaSha256"),
         )
         assertTrue(Regex("""\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}""").matches(properties.required("generatedAt")))

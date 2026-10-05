@@ -47,6 +47,7 @@ data class Turn(
     val status: TurnStatus,
     val itemsView: TurnItemsView? = null,
     val items: List<CodexJsonPayload> = emptyList(),
+    /** Errors may accompany failed or interrupted turns, including approval denial limits. */
     val error: TurnError? = null,
     val startedAt: CodexTimestamp? = null,
     val completedAt: CodexTimestamp? = null,

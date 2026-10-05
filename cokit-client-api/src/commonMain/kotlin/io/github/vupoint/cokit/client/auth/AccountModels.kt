@@ -44,6 +44,7 @@ value class AccountPlanType(val value: String) {
         val Plus = AccountPlanType("plus")
         val Pro = AccountPlanType("pro")
         val ProLite = AccountPlanType("prolite")
+        val ProMax = AccountPlanType("promax")
         val Team = AccountPlanType("team")
         val SelfServeBusinessUsageBased = AccountPlanType("self_serve_business_usage_based")
         val Business = AccountPlanType("business")

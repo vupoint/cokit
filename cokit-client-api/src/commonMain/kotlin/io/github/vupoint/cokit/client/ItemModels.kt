@@ -1,6 +1,8 @@
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.tools.DynamicToolCallOutputContent
+import io.github.vupoint.cokit.client.mcp.McpAppUi
+import io.github.vupoint.cokit.client.mcp.McpResourceUri
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -61,4 +63,8 @@ data class ThreadItemSummary(
     @ExperimentalCodexApi val arguments: CodexJsonPayload? = null,
     @ExperimentalCodexApi val contentItems: List<DynamicToolCallOutputContent>? = null,
     @ExperimentalCodexApi val success: Boolean? = null,
+    /** Explicit upstream presentation preference; absence does not imply inline display. */
+    val mcpAppUi: McpAppUi? = null,
+    /** Legacy URI retained even when no supported display preference was supplied. */
+    val mcpAppResourceUri: McpResourceUri? = null,
 )

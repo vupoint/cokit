@@ -7,6 +7,7 @@ import io.github.vupoint.cokit.client.mcp.McpResourceReadParams
 import io.github.vupoint.cokit.client.mcp.McpResourceUri
 import io.github.vupoint.cokit.client.mcp.McpServerName
 import io.github.vupoint.cokit.client.mcp.McpServerOauthLoginParams
+import io.github.vupoint.cokit.client.mcp.McpServerOauthClientRegistration
 import io.github.vupoint.cokit.client.mcp.McpServerStatusDetail
 import io.github.vupoint.cokit.client.mcp.McpServerStatusListParams
 import io.github.vupoint.cokit.client.mcp.McpServerToolCallParams
@@ -49,6 +50,7 @@ class McpRpcTest {
                     detail = McpServerStatusDetail.Full,
                     limit = 20,
                     threadId = ThreadId("thread_123"),
+                    serverName = McpServerName("github"),
                 ),
             )
         }
@@ -61,6 +63,7 @@ class McpRpcTest {
         assertEquals("full", params["detail"]?.jsonPrimitive?.contentOrNull)
         assertEquals(20, params["limit"]?.jsonPrimitive?.intOrNull)
         assertEquals("thread_123", params["threadId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("github", params["serverName"]?.jsonPrimitive?.contentOrNull)
 
         fixture.transport.receive(
             JsonRpcResponse(
@@ -278,6 +281,8 @@ class McpRpcTest {
                     name = McpServerName("github"),
                     scopes = listOf("repo", "read:user"),
                     timeoutSecs = 120,
+                    threadId = ThreadId("thread_123"),
+                    clientRegistration = McpServerOauthClientRegistration.Cimd,
                 ),
             )
         }
@@ -289,6 +294,8 @@ class McpRpcTest {
         assertEquals("github", oauthParams["name"]?.jsonPrimitive?.contentOrNull)
         assertEquals(listOf("repo", "read:user"), oauthParams["scopes"]!!.jsonArray.map { it.jsonPrimitive.contentOrNull })
         assertEquals(120, oauthParams["timeoutSecs"]?.jsonPrimitive?.intOrNull)
+        assertEquals("thread_123", oauthParams["threadId"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("cimd", oauthParams["clientRegistration"]?.jsonPrimitive?.contentOrNull)
         fixture.transport.receive(
             JsonRpcResponse(
                 oauth.id,
