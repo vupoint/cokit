@@ -158,6 +158,7 @@ public abstract interface class io/github/vupoint/cokit/client/CodexClient : jav
 	public abstract fun isInitialized ()Z
 	public abstract fun registerAttestationGenerateHandler (Lio/github/vupoint/cokit/client/attestation/AttestationGenerateHandler;)V
 	public abstract fun registerCommandApprovalHandler (Lio/github/vupoint/cokit/client/approvals/CommandApprovalHandler;)V
+	public abstract fun registerDynamicToolCallHandler (Lio/github/vupoint/cokit/client/tools/DynamicToolCallHandler;)V
 	public abstract fun registerFileChangeApprovalHandler (Lio/github/vupoint/cokit/client/approvals/FileChangeApprovalHandler;)V
 	public abstract fun registerMcpElicitationHandler (Lio/github/vupoint/cokit/client/mcp/McpElicitationHandler;)V
 	public abstract fun registerPermissionApprovalHandler (Lio/github/vupoint/cokit/client/approvals/PermissionApprovalHandler;)V
@@ -1100,6 +1101,18 @@ public final class io/github/vupoint/cokit/client/CodexServerRequest$CommandAppr
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class io/github/vupoint/cokit/client/CodexServerRequest$DynamicToolCall : io/github/vupoint/cokit/client/CodexServerRequest {
+	public fun <init> (Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;
+	public final fun copy (Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;)Lio/github/vupoint/cokit/client/CodexServerRequest$DynamicToolCall;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/CodexServerRequest$DynamicToolCall;Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/CodexServerRequest$DynamicToolCall;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMethod ()Ljava/lang/String;
+	public final fun getRequest ()Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class io/github/vupoint/cokit/client/CodexServerRequest$FileChangeApproval : io/github/vupoint/cokit/client/CodexServerRequest {
 	public fun <init> (Lio/github/vupoint/cokit/client/approvals/FileChangeApprovalRequest;)V
 	public final fun component1 ()Lio/github/vupoint/cokit/client/approvals/FileChangeApprovalRequest;
@@ -1561,6 +1574,7 @@ public final class io/github/vupoint/cokit/client/ItemType$Companion {
 	public final fun getCommandExecution-a5JpuFg ()Ljava/lang/String;
 	public final fun getCompacted-a5JpuFg ()Ljava/lang/String;
 	public final fun getContextCompaction-a5JpuFg ()Ljava/lang/String;
+	public final fun getDynamicToolCall-a5JpuFg ()Ljava/lang/String;
 	public final fun getEnteredReviewMode-a5JpuFg ()Ljava/lang/String;
 	public final fun getExitedReviewMode-a5JpuFg ()Ljava/lang/String;
 	public final fun getFileChange-a5JpuFg ()Ljava/lang/String;
@@ -2573,8 +2587,8 @@ public final class io/github/vupoint/cokit/client/SortDirection$Companion {
 
 public final class io/github/vupoint/cokit/client/StartThreadRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/StartThreadRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-jDxPufw ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/Boolean;
 	public final fun component11-_DN9rSQ ()Ljava/lang/String;
@@ -2582,6 +2596,7 @@ public final class io/github/vupoint/cokit/client/StartThreadRequest {
 	public final fun component13-QW4I_Q0 ()Ljava/lang/String;
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15-NjkVTUE ()Ljava/lang/String;
+	public final fun component16 ()Ljava/util/List;
 	public final fun component2-rulvwug ()Ljava/lang/String;
 	public final fun component3 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component4-GRC-wQg ()Ljava/lang/String;
@@ -2590,8 +2605,8 @@ public final class io/github/vupoint/cokit/client/StartThreadRequest {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9-XPLVcvA ()Ljava/lang/String;
-	public final fun copy-HWtNGJk (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/StartThreadRequest;
-	public static synthetic fun copy-HWtNGJk$default (Lio/github/vupoint/cokit/client/StartThreadRequest;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/StartThreadRequest;
+	public final fun copy-3GdfQdA (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/github/vupoint/cokit/client/StartThreadRequest;
+	public static synthetic fun copy-3GdfQdA$default (Lio/github/vupoint/cokit/client/StartThreadRequest;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/StartThreadRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
@@ -2599,6 +2614,7 @@ public final class io/github/vupoint/cokit/client/StartThreadRequest {
 	public final fun getConfig ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDeveloperInstructions ()Ljava/lang/String;
+	public final fun getDynamicTools ()Ljava/util/List;
 	public final fun getEphemeral ()Ljava/lang/Boolean;
 	public final fun getModel-QW4I_Q0 ()Ljava/lang/String;
 	public final fun getModelProvider ()Ljava/lang/String;
@@ -3774,12 +3790,17 @@ public final class io/github/vupoint/cokit/client/ThreadItemEntry$Companion {
 
 public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadItemSummary$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-V5UzJTE ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/lang/Integer;
 	public final fun component12 ()Ljava/lang/Long;
+	public final fun component13 ()Ljava/lang/String;
+	public final fun component14 ()Ljava/lang/String;
+	public final fun component15 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun component16 ()Ljava/util/List;
+	public final fun component17 ()Ljava/lang/Boolean;
 	public final fun component2-a5JpuFg ()Ljava/lang/String;
 	public final fun component3-AO2s5XM ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
@@ -3788,20 +3809,25 @@ public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8-rulvwug ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy-wOwSoFE (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
-	public static synthetic fun copy-wOwSoFE$default (Lio/github/vupoint/cokit/client/ThreadItemSummary;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
+	public final fun copy-3-1T2X8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
+	public static synthetic fun copy-3-1T2X8$default (Lio/github/vupoint/cokit/client/ThreadItemSummary;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAggregatedOutput ()Ljava/lang/String;
+	public final fun getArguments ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCommand ()Ljava/lang/String;
+	public final fun getContentItems ()Ljava/util/List;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDurationMs ()Ljava/lang/Long;
 	public final fun getExitCode ()Ljava/lang/Integer;
 	public final fun getId-V5UzJTE ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
 	public final fun getPath-rulvwug ()Ljava/lang/String;
 	public final fun getQuery ()Ljava/lang/String;
 	public final fun getReview ()Ljava/lang/String;
 	public final fun getStatus-AO2s5XM ()Ljava/lang/String;
+	public final fun getSuccess ()Ljava/lang/Boolean;
 	public final fun getText ()Ljava/lang/String;
+	public final fun getTool ()Ljava/lang/String;
 	public final fun getType-a5JpuFg ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -5132,8 +5158,8 @@ public final class io/github/vupoint/cokit/client/ThreadSourceKind$Companion {
 
 public final class io/github/vupoint/cokit/client/ThreadStartParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadStartParams$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-jDxPufw ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/Boolean;
 	public final fun component11-_DN9rSQ ()Ljava/lang/String;
@@ -5141,6 +5167,7 @@ public final class io/github/vupoint/cokit/client/ThreadStartParams {
 	public final fun component13-QW4I_Q0 ()Ljava/lang/String;
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15-NjkVTUE ()Ljava/lang/String;
+	public final fun component16 ()Ljava/util/List;
 	public final fun component2-rulvwug ()Ljava/lang/String;
 	public final fun component3 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component4-GRC-wQg ()Ljava/lang/String;
@@ -5149,8 +5176,8 @@ public final class io/github/vupoint/cokit/client/ThreadStartParams {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9-XPLVcvA ()Ljava/lang/String;
-	public final fun copy-HWtNGJk (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadStartParams;
-	public static synthetic fun copy-HWtNGJk$default (Lio/github/vupoint/cokit/client/ThreadStartParams;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadStartParams;
+	public final fun copy-3GdfQdA (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/github/vupoint/cokit/client/ThreadStartParams;
+	public static synthetic fun copy-3GdfQdA$default (Lio/github/vupoint/cokit/client/ThreadStartParams;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadStartParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
@@ -5158,6 +5185,7 @@ public final class io/github/vupoint/cokit/client/ThreadStartParams {
 	public final fun getConfig ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDeveloperInstructions ()Ljava/lang/String;
+	public final fun getDynamicTools ()Ljava/util/List;
 	public final fun getEphemeral ()Ljava/lang/Boolean;
 	public final fun getModel-QW4I_Q0 ()Ljava/lang/String;
 	public final fun getModelProvider ()Ljava/lang/String;
@@ -16033,6 +16061,301 @@ public final synthetic class io/github/vupoint/cokit/client/skills/SkillsListRes
 }
 
 public final class io/github/vupoint/cokit/client/skills/SkillsListResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/vupoint/cokit/client/tools/DynamicToolCallHandler {
+	public abstract fun call (Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Companion;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio : io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAudioUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Audio$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image : io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImageUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Image$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text : io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Text$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Unknown : io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent {
+	public fun <init> (Lio/github/vupoint/cokit/client/CodexJsonPayload;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun copy (Lio/github/vupoint/cokit/client/CodexJsonPayload;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Unknown;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Unknown;Lio/github/vupoint/cokit/client/CodexJsonPayload;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPayload ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallOutputContentSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContentSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallOutputContent;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallRequest {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2-XuLNRMQ ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy-NXCHxuI (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;
+	public static synthetic fun copy-NXCHxuI$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArguments ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun getCallId ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public final fun getTool ()Ljava/lang/String;
+	public final fun getTurnId-XuLNRMQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolCallRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallResponse {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse$Companion;
+	public fun <init> (Ljava/util/List;Z)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Z
+	public final fun copy (Ljava/util/List;Z)Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse;Ljava/util/List;ZILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContentItems ()Ljava/util/List;
+	public final fun getSuccess ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolCallResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolCallResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolCallResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Companion;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function : io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun component4 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Z)Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ZILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDeferLoading ()Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getInputSchema ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolNamespaceTool$Function$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/vupoint/cokit/client/tools/DynamicToolSpec {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Companion;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Function : io/github/vupoint/cokit/client/tools/DynamicToolSpec {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun component4 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Z)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ZILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDeferLoading ()Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getInputSchema ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Function$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Function;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Function$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace : io/github/vupoint/cokit/client/tools/DynamicToolSpec {
+	public static final field Companion Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTools ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/tools/DynamicToolSpec$Namespace$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

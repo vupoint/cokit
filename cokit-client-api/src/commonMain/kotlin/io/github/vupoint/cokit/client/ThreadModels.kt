@@ -1,5 +1,7 @@
 package io.github.vupoint.cokit.client
 
+import io.github.vupoint.cokit.client.tools.DynamicToolSpec
+
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -278,6 +280,7 @@ data class LoadedThreadList(
     val nextCursor: CodexCursor? = null,
 )
 
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class StartThreadRequest(
     val serviceTier: ServiceTier? = null,
@@ -295,6 +298,9 @@ data class StartThreadRequest(
     val model: ModelName? = null,
     val modelProvider: String? = null,
     val personality: Personality? = null,
+    /** Experimental tools for this thread; null omits the field, while an empty list is explicit. */
+    @ExperimentalCodexApi
+    val dynamicTools: List<DynamicToolSpec>? = null,
 )
 
 @Serializable

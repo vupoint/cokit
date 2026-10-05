@@ -18,7 +18,8 @@ CoKit is in early development and tracks Codex CLI **0.157.1**. The current code
 - Deny-by-default handling for server-initiated approval-like requests.
 - Stable section/history and attachment APIs, explicit Gateway OAuth, and richer
   thread, turn, model, MCP and managed-policy metadata.
-- Opt-in experimental projects, thread queues and local user verification.
+- Opt-in experimental projects, thread queues, local user verification, and
+  client-executed dynamic tools.
 - JVM stdio JSONL transport.
 - A guarded integration smoke test for a real local `codex app-server`.
 - A schema generation Gradle workflow for app-server JSON Schema.
@@ -134,6 +135,58 @@ val turn = client.request(
     ),
 ).turn
 ```
+
+## Dynamic Tools (Experimental)
+
+Dynamic tools run in your application without a separate MCP server. Connect with
+`InitializeCapabilities(experimentalApi = true)` in `CodexClientConnection.capabilities`,
+then opt into `ExperimentalCodexApi` where you define tools and register a handler:
+
+```kotlin
+import io.github.vupoint.cokit.client.*
+import io.github.vupoint.cokit.client.tools.*
+
+@OptIn(ExperimentalCodexApi::class)
+suspend fun startToolThread(client: CodexClient): Thread {
+    client.registerDynamicToolCallHandler { call ->
+        if (call.namespace == null && call.tool == "ping" &&
+            call.arguments == CodexJsonPayload.parse("{}")) {
+            DynamicToolCallResponse(
+                contentItems = listOf(DynamicToolCallOutputContent.Text("pong")),
+                success = true,
+            )
+        } else {
+            DynamicToolCallResponse(contentItems = emptyList(), success = false)
+        }
+    }
+    return client.threads.start(
+        StartThreadRequest(dynamicTools = listOf(
+            DynamicToolSpec.Function(
+                name = "ping",
+                description = "Check whether the application is responding.",
+                inputSchema = CodexJsonPayload.parse(
+                    """{"type":"object","properties":{},"additionalProperties":false}""",
+                ),
+            ),
+        )),
+    )
+}
+```
+
+Start a turn on the returned thread to let the model use the tool. The handler
+returns the result to app-server, which continues the turn. It must validate
+arguments and authorize side effects before executing them. The app-server
+sandbox does not sandbox application callbacks. An absent handler returns a
+failure without executing a tool.
+
+`ThreadStartParams.dynamicTools` supports the same definitions through the typed
+RPC API. Namespaces use `DynamicToolSpec.Namespace` and
+`DynamicToolNamespaceTool.Function`. Results support text, image URLs and audio
+URLs. Existing item notifications expose dynamic tool progress and results.
+Runtime tool replacement and tool-search orchestration are not provided.
+See [security](docs/security.md#dynamic-tool-execution) and
+[protocol compatibility](docs/protocol-compatibility.md#dynamic-tools-experimental)
+for policy, lifecycle and wire details.
 
 ## Sample CLI
 

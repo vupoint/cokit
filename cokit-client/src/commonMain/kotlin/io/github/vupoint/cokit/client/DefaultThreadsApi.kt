@@ -1,12 +1,17 @@
+@file:OptIn(ExperimentalCodexApi::class)
+
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.rpc.JsonRpcSession
 
 internal class DefaultThreadsApi(
     private val rpc: JsonRpcSession,
+    private val experimentalApi: Boolean = false,
 ) : ThreadsApi {
     override suspend fun start(request: StartThreadRequest): Thread {
-        return rpc.request(CodexRpc.Thread.Start, request.toRpcParams()).thread
+        val params = request.toRpcParams()
+        params.requireDynamicToolsOptIn(experimentalApi)
+        return rpc.request(CodexRpc.Thread.Start, params).thread
     }
 
     override suspend fun resume(request: ResumeThreadRequest): Thread {
@@ -67,6 +72,7 @@ private fun StartThreadRequest.toRpcParams(): ThreadStartParams = ThreadStartPar
     model = model,
     modelProvider = modelProvider,
     personality = personality,
+    dynamicTools = dynamicTools,
 )
 
 private fun ResumeThreadRequest.toRpcParams(): ThreadResumeParams = ThreadResumeParams(
