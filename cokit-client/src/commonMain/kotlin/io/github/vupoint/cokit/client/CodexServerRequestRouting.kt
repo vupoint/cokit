@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCodexApi::class)
+
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.approvals.ApprovalDecision
@@ -11,6 +13,8 @@ import io.github.vupoint.cokit.client.mcp.McpElicitationRequest
 import io.github.vupoint.cokit.client.mcp.McpElicitationResponse
 import io.github.vupoint.cokit.client.server.UserInputRequest
 import io.github.vupoint.cokit.client.server.UserInputResponse
+import io.github.vupoint.cokit.client.tools.DynamicToolCallRequest
+import io.github.vupoint.cokit.client.tools.DynamicToolCallResponse
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.protocol.JsonRpcErrorObject
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
@@ -62,6 +66,11 @@ internal fun JsonRpcRequest.toCodexServerRequest(): CodexServerRequest {
         }.getOrElse {
             CodexServerRequest.Unsupported(method)
         }
+        "item/tool/call" -> runCatching {
+            CodexServerRequest.DynamicToolCall(decodeDynamicToolCallRequest())
+        }.getOrElse {
+            CodexServerRequest.Unsupported(method)
+        }
         else -> CodexServerRequest.Unsupported(method)
     }
 }
@@ -106,6 +115,21 @@ internal fun JsonRpcRequest.decodeAttestationGenerateRequest(): AttestationGener
         "Expected attestation generate request params"
     }
     return CodexProtocolJson.decodeFromJsonElement(AttestationGenerateRequest.serializer(), paramsElement)
+}
+
+internal fun JsonRpcRequest.decodeDynamicToolCallRequest(): DynamicToolCallRequest =
+    CodexProtocolJson.decodeFromJsonElement(
+        DynamicToolCallRequest.serializer(),
+        requireNotNull(params) { "Expected dynamic tool call params" },
+    )
+
+internal fun DynamicToolCallResponse.toProtocolPayload(): CodexJsonPayload =
+    CodexProtocolJson.encodeToJsonElement(DynamicToolCallResponse.serializer(), this).toCodexPayload()
+
+internal fun ThreadStartParams.requireDynamicToolsOptIn(experimentalApi: Boolean) {
+    require(dynamicTools == null || experimentalApi) {
+        "Dynamic tools require InitializeCapabilities(experimentalApi = true)"
+    }
 }
 
 internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
@@ -176,9 +200,9 @@ internal fun defaultServerRequestResult(method: String): CodexJsonPayload? {
     return when (method) {
         COMMAND_APPROVAL_METHOD,
         FILE_CHANGE_APPROVAL_METHOD,
-        "item/tool/call",
         -> buildJsonObject { put("decision", "decline") }.toCodexPayload()
 
+        "item/tool/call" -> DynamicToolCallResponse(emptyList(), false).toProtocolPayload()
         PERMISSION_APPROVAL_METHOD -> PermissionApprovalResponse.Decline.toProtocolPayload()
         USER_INPUT_REQUEST_METHOD -> UserInputResponse.Cancel.toProtocolPayload()
         MCP_ELICITATION_REQUEST_METHOD -> McpElicitationResponse.Decline.toProtocolPayload()

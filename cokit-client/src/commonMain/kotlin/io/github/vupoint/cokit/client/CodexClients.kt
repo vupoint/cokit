@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCodexApi::class)
+
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.approvals.CommandApprovalHandler
@@ -10,6 +12,10 @@ import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
 import io.github.vupoint.cokit.protocol.JsonRpcResponse
 import io.github.vupoint.cokit.rpc.JsonRpcSession
+import io.github.vupoint.cokit.client.tools.DynamicToolCallHandler
+import io.github.vupoint.cokit.client.tools.DynamicToolCallResponse
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -58,6 +64,7 @@ internal class DefaultCodexClient(
     private var permissionApprovalHandler: PermissionApprovalHandler? = null
     private var userInputRequestHandler: UserInputRequestHandler? = null
     private var mcpElicitationHandler: McpElicitationHandler? = null
+    private var dynamicToolCallHandler: DynamicToolCallHandler? = null
     private var attestationGenerateHandler: AttestationGenerateHandler? = null
     private val serverRequestJob: Job = scope.launch {
         rpc.serverRequests.collect { request ->
@@ -73,7 +80,7 @@ internal class DefaultCodexClient(
 
     override val notifications: SharedFlow<CodexNotification> = mutableNotifications
     override val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
-    override val threads: ThreadsApi = DefaultThreadsApi(rpc)
+    override val threads: ThreadsApi = DefaultThreadsApi(rpc, experimentalApi)
     override val turns: TurnsApi = DefaultTurnsApi(rpc)
     override val isInitialized: Boolean = true
 
@@ -90,6 +97,7 @@ internal class DefaultCodexClient(
         require(!method.requiresExperimentalApi || experimentalApi) {
             "${method.method} requires InitializeCapabilities(experimentalApi = true)"
         }
+        if (params is ThreadStartParams) params.requireDynamicToolsOptIn(experimentalApi)
         return rpc.request(method, params, onRequestId)
     }
 
@@ -117,6 +125,11 @@ internal class DefaultCodexClient(
         attestationGenerateHandler = handler
     }
 
+    override fun registerDynamicToolCallHandler(handler: DynamicToolCallHandler) {
+        require(experimentalApi) { "Dynamic tools require InitializeCapabilities(experimentalApi = true)" }
+        dynamicToolCallHandler = handler
+    }
+
     override fun close() {
         notificationJob.cancel()
         serverRequestJob.cancel()
@@ -124,6 +137,21 @@ internal class DefaultCodexClient(
     }
 
     private suspend fun resolveServerRequest(request: JsonRpcRequest): JsonRpcResponse {
+        if (request.method == "item/tool/call") {
+            val call = try {
+                request.decodeDynamicToolCallRequest()
+            } catch (_: Exception) {
+                return JsonRpcResponse(request.id, error = invalidServerRequestParamsError(request.method))
+            }
+            return try {
+                val result = if (experimentalApi) dynamicToolCallHandler?.call(call) else null
+                JsonRpcResponse(request.id, result = (result ?: DynamicToolCallResponse(emptyList(), false)).toProtocolPayload().toJsonElement())
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
+                JsonRpcResponse(request.id, error = serverRequestHandlerError())
+            }
+        }
+
         val handler = commandApprovalHandler
         if (request.method == "item/commandExecution/requestApproval" && handler != null) {
             val commandRequest = try {

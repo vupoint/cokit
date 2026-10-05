@@ -83,6 +83,39 @@ explicit attestation handler, and return only an opaque client-owned token in th
 `token` field. Malformed params and handler failures use the same JSON-RPC error
 behavior as command approvals.
 
+## Dynamic Tool Execution
+
+Dynamic tool definitions and the execution handler require Kotlin
+`ExperimentalCodexApi` opt-in. Both thread-start APIs reject non-null
+`dynamicTools` (including an empty list) before sending unless initialization
+advertised `experimentalApi: true`. Handler registration requires the same
+capability. Advertising tools never grants permission to execute them.
+
+For a valid `item/tool/call`, an absent handler or disabled experimental capability
+returns `{"contentItems":[],"success":false}`. Malformed params return JSON-RPC
+`-32602` without invoking application code. Handler exceptions return generic
+`-32000` diagnostics. Application-owned handler timeouts fail that call without
+stopping subsequent requests; dispatcher cancellation propagates so shutdown
+does not send an invented failure response. Responses use the original JSON-RPC request id,
+not the tool's `callId`.
+
+The handler runs in the client application's process and security context. Codex
+sandbox and approval settings do not sandbox that callback, grant application
+permissions, or automatically apply MCP approvals. The application must check
+thread, namespace, tool and arguments, enforce its own authorization/confirmation
+policy, and return failure for unsupported tools. Register the handler before
+starting turns, including after reconnecting to a thread with persisted tools.
+A handler must not dispatch arbitrary commands or paths supplied by the model.
+
+Calls share the existing serial, bounded server-request dispatcher. Handlers
+should finish promptly, cooperate with cancellation, and apply application-owned
+time limits to external operations. CoKit adds no retries or background executor.
+Tool schemas, arguments, outputs and URLs are untrusted; opaque JSON and unknown
+result variants are data, not instructions. Request/response diagnostic strings
+omit argument and output content, but explicitly accessed payloads and item
+summaries can contain sensitive data and should not be logged indiscriminately.
+CoKit does not fetch image/audio URLs or authenticate services for a handler.
+
 ## JSON-RPC Message Limits
 
 CoKit rejects malformed JSON-RPC envelopes during protocol decode. Requests and

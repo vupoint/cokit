@@ -2,6 +2,48 @@
 
 CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 
+## Dynamic Tools (Experimental)
+
+CoKit supports `thread/start.dynamicTools` through `StartThreadRequest` and
+`ThreadStartParams`. Definitions model the 0.157.1 experimental schema's
+`type: "function"` and `type: "namespace"` alternatives; namespaces contain
+function definitions only. Function definitions preserve `inputSchema` as
+`CodexJsonPayload` and expose optional `deferLoading` (false is omitted).
+Names and schemas are subject to upstream validation. CoKit does not orchestrate
+tool search for deferred definitions.
+
+Tool construction/handler registration require `ExperimentalCodexApi` opt-in.
+Their container types remain usable in stable thread request signatures so
+ordinary thread creation does not require experimental opt-in. Non-null tool
+lists, including empty lists, require `InitializeCapabilities(experimentalApi =
+true)` through both `client.threads.start` and `client.request` overloads.
+Null tool lists are omitted, preserving stable thread-start behavior.
+
+`item/tool/call` is decoded into `DynamicToolCallRequest` with `threadId`, `turnId`,
+`callId`, `tool`, required opaque `arguments` (including JSON null), and optional
+`namespace`. `registerDynamicToolCallHandler` installs a suspending callback;
+CoKit replies on the original JSON-RPC id with `contentItems` and `success`.
+Results use `inputText`/`text`, `inputImage`/`imageUrl`, and
+`inputAudio`/`audioUrl`, distinct from the snake_case turn-tool-output format.
+Unknown output variants retain their complete JSON payload.
+
+`item/started` and `item/completed` continue through existing item notifications.
+`ItemType.DynamicToolCall` and the optional summary fields `tool`, `namespace`,
+`arguments`, `contentItems`, and `success` expose dynamic tool progress/results.
+Without a handler, valid calls return `{"contentItems":[],"success":false}`;
+this replaces the earlier approval-shaped `decision: "decline"` placeholder.
+Malformed params return `-32602`, and handler exceptions return generic `-32000`.
+Handlers own permissions and side effects; see [security](security.md#dynamic-tool-execution).
+
+The contract tests use literal payloads checked against the existing generated
+0.157.1 experimental schema. Its aggregate SHA-256 is
+`ff9bcc67a07f763a9e61954019c652937ae96b1f7ca2319f2ad23d9cb567c571`, matching
+`cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
+No schema version or generated artifacts are changed by this addition.
+Upstream persists tool definitions for resumed threads; the execution callback
+remains application-owned and must be registered on each new client connection.
+Runtime tool replacement and automatic tool discovery remain deferred.
+
 ## Codex 0.157.1 Upgrade
 
 The current baseline is Codex CLI 0.157.1. This release aligns approval kinds,

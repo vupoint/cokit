@@ -1,5 +1,6 @@
 package io.github.vupoint.cokit.client
 
+import io.github.vupoint.cokit.client.tools.DynamicToolCallOutputContent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,6 +17,8 @@ value class ItemType(val value: String) {
         val Reasoning = ItemType("reasoning")
         val CommandExecution = ItemType("commandExecution")
         val FileChange = ItemType("fileChange")
+        @ExperimentalCodexApi
+        val DynamicToolCall = ItemType("dynamicToolCall")
         val McpToolCall = ItemType("mcpToolCall")
         val CollabToolCall = ItemType("collabToolCall")
         val WebSearch = ItemType("webSearch")
@@ -38,6 +41,7 @@ value class ItemStatus(val value: String) {
     }
 }
 
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadItemSummary(
     val id: ItemId,
@@ -52,4 +56,9 @@ data class ThreadItemSummary(
     val aggregatedOutput: String? = null,
     val exitCode: Int? = null,
     val durationMs: Long? = null,
+    @ExperimentalCodexApi val tool: String? = null,
+    @ExperimentalCodexApi val namespace: String? = null,
+    @ExperimentalCodexApi val arguments: CodexJsonPayload? = null,
+    @ExperimentalCodexApi val contentItems: List<DynamicToolCallOutputContent>? = null,
+    @ExperimentalCodexApi val success: Boolean? = null,
 )

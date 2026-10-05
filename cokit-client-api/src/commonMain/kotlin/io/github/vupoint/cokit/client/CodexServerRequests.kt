@@ -10,6 +10,7 @@ import io.github.vupoint.cokit.client.mcp.McpElicitationRequest
 import io.github.vupoint.cokit.client.mcp.McpElicitationResponse
 import io.github.vupoint.cokit.client.server.UserInputRequest
 import io.github.vupoint.cokit.client.server.UserInputResponse
+import io.github.vupoint.cokit.client.tools.DynamicToolCallRequest
 
 internal const val COMMAND_APPROVAL_METHOD = "item/commandExecution/requestApproval"
 internal const val FILE_CHANGE_APPROVAL_METHOD = "item/fileChange/requestApproval"
@@ -55,6 +56,13 @@ sealed interface CodexServerRequest {
         val request: AttestationGenerateRequest,
     ) : CodexServerRequest {
         override val method: String = ATTESTATION_GENERATE_METHOD
+    }
+
+    @ExperimentalCodexApi
+    data class DynamicToolCall(
+        val request: DynamicToolCallRequest,
+    ) : CodexServerRequest {
+        override val method: String = "item/tool/call"
     }
 
     data class Unsupported(

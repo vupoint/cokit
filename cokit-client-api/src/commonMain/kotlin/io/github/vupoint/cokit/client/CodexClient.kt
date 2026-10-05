@@ -6,6 +6,7 @@ import io.github.vupoint.cokit.client.approvals.PermissionApprovalHandler
 import io.github.vupoint.cokit.client.attestation.AttestationGenerateHandler
 import io.github.vupoint.cokit.client.mcp.McpElicitationHandler
 import io.github.vupoint.cokit.client.server.UserInputRequestHandler
+import io.github.vupoint.cokit.client.tools.DynamicToolCallHandler
 import io.github.vupoint.cokit.rpc.JsonRpcTransport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharedFlow
@@ -47,4 +48,8 @@ interface CodexClient : AutoCloseable {
     fun registerMcpElicitationHandler(handler: McpElicitationHandler)
 
     fun registerAttestationGenerateHandler(handler: AttestationGenerateHandler)
+
+    /** Registers an explicit tool executor. Requires experimentalApi=true at initialization. */
+    @ExperimentalCodexApi
+    fun registerDynamicToolCallHandler(handler: DynamicToolCallHandler)
 }
