@@ -11,10 +11,17 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonEncoder
 
+/**
+ * An arbitrary JSON value retained without a typed protocol projection.
+ *
+ * Unknown variants and extension data can be inspected with [toJsonString] and sent back without
+ * losing their JSON structure. Equality compares JSON values, not the original source formatting.
+ */
 @Serializable(with = CodexJsonPayloadSerializer::class)
 class CodexJsonPayload internal constructor(
     internal val element: JsonElement,
 ) {
+    /** Encodes this value as JSON; original whitespace and source formatting are not retained. */
     fun toJsonString(): String = CodexProtocolJson.encodeToString(JsonElement.serializer(), element)
 
     override fun equals(other: Any?): Boolean =
@@ -25,11 +32,13 @@ class CodexJsonPayload internal constructor(
     override fun toString(): String = toJsonString()
 
     companion object {
+        /** Parses a complete JSON value, throwing a serialization error for invalid JSON. */
         fun parse(json: String): CodexJsonPayload =
             CodexJsonPayload(CodexProtocolJson.parseToJsonElement(json))
     }
 }
 
+/** Serializes [CodexJsonPayload] directly as its JSON value; non-JSON encoders are unsupported. */
 object CodexJsonPayloadSerializer : KSerializer<CodexJsonPayload> {
     override val descriptor: SerialDescriptor = JsonElement.serializer().descriptor
 

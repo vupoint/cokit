@@ -10,16 +10,19 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/** Experimental remote-control installation identifier; treat it as private host metadata. */
 @ExperimentalCodexApi
 @JvmInline
 @Serializable
 value class RemoteControlInstallationId(val value: String)
 
+/** Experimental remote-control environment identifier used for pairing and controller management. */
 @ExperimentalCodexApi
 @JvmInline
 @Serializable
 value class RemoteControlEnvironmentId(val value: String)
 
+/** Experimental server remote-control connection state; unknown wire strings are retained. */
 @ExperimentalCodexApi
 @JvmInline
 @Serializable
@@ -32,6 +35,11 @@ value class RemoteControlConnectionStatus(val value: String) {
     }
 }
 
+/**
+ * Experimental remote-control state reported by app-server. Identifiers and host names are private metadata; reading this state does not enable access.
+ *
+ * @property environmentId Optional environment identity; absence is not evidence of a connected controller.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlStatusSnapshot(
@@ -41,22 +49,36 @@ data class RemoteControlStatusSnapshot(
     val environmentId: RemoteControlEnvironmentId? = null,
 )
 
+/**
+ * Explicit experimental request to enable app-server remote control. Applications own remote-access policy and must opt into the experimental descriptor.
+ *
+ * @property ephemeral Optional request for a process-only change; null uses the server default.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlEnableParams(
     val ephemeral: Boolean? = null,
 )
 
+/**
+ * Explicit experimental request to disable app-server remote control.
+ *
+ * @property ephemeral Optional request for a process-only change; null uses the server default.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlDisableParams(
     val ephemeral: Boolean? = null,
 )
 
+/** Empty parameters for reading experimental remote-control connection state. */
 @ExperimentalCodexApi
 @Serializable
 data object RemoteControlStatusReadParams
 
+/**
+ * Private experimental pairing artifact; its string representation is redacted, but [value] and serialization expose the original code.
+ */
 @ExperimentalCodexApi
 @Serializable(with = RemoteControlPairingCodeSerializer::class)
 class RemoteControlPairingCode(
@@ -70,6 +92,7 @@ class RemoteControlPairingCode(
     override fun toString(): String = "<redacted>"
 }
 
+/** Serializes the original pairing code as a wire string; serialization is not redacted. */
 @ExperimentalCodexApi
 object RemoteControlPairingCodeSerializer : KSerializer<RemoteControlPairingCode> {
     override val descriptor: SerialDescriptor =
@@ -83,6 +106,7 @@ object RemoteControlPairingCodeSerializer : KSerializer<RemoteControlPairingCode
     }
 }
 
+/** Private experimental user-entered pairing code; string rendering is redacted, while [value] remains sensitive. */
 @ExperimentalCodexApi
 @Serializable(with = RemoteControlManualPairingCodeSerializer::class)
 class RemoteControlManualPairingCode(
@@ -96,6 +120,7 @@ class RemoteControlManualPairingCode(
     override fun toString(): String = "<redacted>"
 }
 
+/** Serializes the original manual pairing code as a wire string; serialization is not redacted. */
 @ExperimentalCodexApi
 object RemoteControlManualPairingCodeSerializer : KSerializer<RemoteControlManualPairingCode> {
     override val descriptor: SerialDescriptor =
@@ -109,6 +134,7 @@ object RemoteControlManualPairingCodeSerializer : KSerializer<RemoteControlManua
     }
 }
 
+/** Private experimental controller identity used for revocation; its string representation is redacted. */
 @ExperimentalCodexApi
 @Serializable(with = RemoteControlClientIdSerializer::class)
 class RemoteControlClientId(
@@ -122,6 +148,7 @@ class RemoteControlClientId(
     override fun toString(): String = "<redacted>"
 }
 
+/** Serializes the original remote controller id as a wire string; serialization is not redacted. */
 @ExperimentalCodexApi
 object RemoteControlClientIdSerializer : KSerializer<RemoteControlClientId> {
     override val descriptor: SerialDescriptor =
@@ -135,12 +162,20 @@ object RemoteControlClientIdSerializer : KSerializer<RemoteControlClientId> {
     }
 }
 
+/**
+ * Starts explicit experimental controller pairing.
+ *
+ * @property manualCode Optional request to include a user-entered pairing code.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlPairingStartParams(
     val manualCode: Boolean? = null,
 )
 
+/**
+ * Short-lived experimental pairing artifacts and server-reported expiry. Raw codes must be handled as sensitive data and displayed only for the intended pairing flow.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlPairingStartResult(
@@ -155,6 +190,9 @@ data class RemoteControlPairingStartResult(
             "environmentId=$environmentId, expiresAt=$expiresAt)"
 }
 
+/**
+ * Queries experimental pairing claim status using a pairing artifact; raw codes remain sensitive even though string rendering is redacted.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlPairingStatusParams(
@@ -167,12 +205,14 @@ data class RemoteControlPairingStatusParams(
             "manualPairingCode=${if (manualPairingCode == null) null else "<redacted>"})"
 }
 
+/** Whether the server reports the selected experimental pairing artifact as claimed. */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlPairingStatusResult(
     val claimed: Boolean,
 )
 
+/** Experimental controller-list ordering selector; unknown wire strings are retained. */
 @ExperimentalCodexApi
 @JvmInline
 @Serializable
@@ -183,6 +223,7 @@ value class RemoteControlClientsListOrder(val value: String) {
     }
 }
 
+/** Lists experimental remote controllers for one environment with optional server-controlled paging and ordering. */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlClientsListParams(
@@ -192,6 +233,7 @@ data class RemoteControlClientsListParams(
     val order: RemoteControlClientsListOrder? = null,
 )
 
+/** One page of experimental controller metadata; null [nextCursor] means no continuation was reported. */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlClientsListResult(
@@ -199,6 +241,9 @@ data class RemoteControlClientsListResult(
     val nextCursor: CodexCursor? = null,
 )
 
+/**
+ * Experimental remote-controller identity and optional device metadata. String rendering redacts the id but other reported device fields may still be private.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlClient(
@@ -217,6 +262,7 @@ data class RemoteControlClient(
             "deviceModel=$deviceModel, appVersion=$appVersion, lastSeenAt=$lastSeenAt)"
 }
 
+/** Explicit experimental revocation of one controller in an environment; applications must authorize the access change. */
 @ExperimentalCodexApi
 @Serializable
 data class RemoteControlClientsRevokeParams(
@@ -227,6 +273,7 @@ data class RemoteControlClientsRevokeParams(
         "RemoteControlClientsRevokeParams(environmentId=$environmentId, clientId=<redacted>)"
 }
 
+/** Empty acknowledgment of an experimental controller revocation request. */
 @ExperimentalCodexApi
 @Serializable
 data object RemoteControlClientsRevokeResult

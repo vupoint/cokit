@@ -3,14 +3,17 @@ package io.github.vupoint.cokit.client
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
 
+/** Opaque identifier for one turn of work within a conversation. */
 @Serializable
 @JvmInline
 value class TurnId(val value: String)
 
+/** Caller-supplied message identity used to correlate submitted user input with server events. */
 @Serializable
 @JvmInline
 value class ClientMessageId(val value: String)
 
+/** Server list ordering direction; unknown strings remain representable. */
 @Serializable
 @JvmInline
 value class SortDirection(val value: String) {
@@ -20,6 +23,7 @@ value class SortDirection(val value: String) {
     }
 }
 
+/** Item detail level reported or requested for turn history. */
 @Serializable
 @JvmInline
 value class TurnItemsView(val value: String) {
@@ -30,6 +34,7 @@ value class TurnItemsView(val value: String) {
     }
 }
 
+/** Turn lifecycle state. A terminal state can be completed, interrupted, or failed. */
 @Serializable
 @JvmInline
 value class TurnStatus(val value: String) {
@@ -41,6 +46,16 @@ value class TurnStatus(val value: String) {
     }
 }
 
+/**
+ * Snapshot of a turn and its available items.
+ *
+ * [items] preserves raw item JSON, including fields not modeled by [ThreadItemSummary].
+ * An empty list may reflect [itemsView], rather than the absence of work.
+ *
+ * @property startedAt Optional start timestamp in Unix seconds.
+ * @property completedAt Optional completion timestamp in Unix seconds.
+ * @property durationMs Optional elapsed duration in milliseconds.
+ */
 @Serializable
 data class Turn(
     val id: TurnId,
@@ -54,6 +69,11 @@ data class Turn(
     val durationMs: Long? = null,
 )
 
+/**
+ * Failure or interruption details attached to a turn.
+ *
+ * [codexErrorInfo] preserves structured server error data without narrowing its variants.
+ */
 @Serializable
 data class TurnError(
     val message: String,
@@ -61,6 +81,12 @@ data class TurnError(
     val additionalDetails: String? = null,
 )
 
+/**
+ * Submits input or tool output through [TurnsApi.start].
+ *
+ * The empty [input] list is sent explicitly. Null configuration overrides are omitted;
+ * start returns a turn snapshot, while notifications report subsequent progress and completion.
+ */
 @Serializable
 data class StartTurnRequest(
     val threadId: ThreadId,
@@ -85,6 +111,12 @@ data class StartTurnRequest(
     val personality: Personality? = null,
 )
 
+/**
+ * Adds input to an active turn through [TurnsApi.steer].
+ *
+ * [expectedTurnId] identifies the turn the caller expects to be active so the server
+ * can reject steering that would target a different turn.
+ */
 @Serializable
 data class SteerTurnRequest(
     val threadId: ThreadId,
@@ -93,6 +125,11 @@ data class SteerTurnRequest(
     val clientUserMessageId: ClientMessageId? = null,
 )
 
+/**
+ * Requests interruption of the identified turn through [TurnsApi.interrupt].
+ *
+ * The response acknowledges the request; terminal state is reported through turn notifications.
+ */
 @Serializable
 data class InterruptTurnRequest(
     val threadId: ThreadId,

@@ -25,6 +25,17 @@ import kotlinx.serialization.encodeToString
 
 internal val DefaultCodexAppServerStdioCommand = listOf("codex", "app-server", "--stdio")
 
+/**
+ * JVM transport using one UTF-8 JSON envelope per line over a child process's standard streams.
+ *
+ * Public construction starts the process immediately and owns its streams and shutdown.
+ * Standard error is drained and discarded to avoid blocking the process. Incoming EOF or
+ * decode/read failure does not complete [incoming] or deliver an error through that flow;
+ * reader failures are reported through the reader coroutine's exception handling.
+ * Raw lines are read and decoded without a transport-level size limit.
+ *
+ * @property command Executable and argument list used to start the process, without shell expansion.
+ */
 class StdioCodexTransport internal constructor(
     val command: List<String>,
     input: InputStream,
@@ -41,6 +52,18 @@ class StdioCodexTransport internal constructor(
         onClose = onClose,
     )
 
+    /**
+     * Starts a local process directly with [ProcessBuilder], without invoking a shell.
+     *
+     * The executable is resolved by the platform; choose a trusted command and working directory.
+     * Environment values are merged into the inherited process environment rather than replacing
+     * it. This constructor does not sanitize executable paths, arguments, or environment values.
+     *
+     * @param command Executable followed by arguments; defaults to `codex app-server --stdio`.
+     * @param cwd Working directory, or `null` to inherit the current process directory.
+     * @param env Environment overrides; empty by default, retaining all inherited variables.
+     * @throws java.io.IOException If process creation fails.
+     */
     constructor(
         command: List<String> = DefaultCodexAppServerStdioCommand,
         cwd: File? = null,
@@ -72,17 +95,41 @@ class StdioCodexTransport internal constructor(
         onClose = { process.destroy() },
     )
 
+    /**
+     * Hot decoded message stream replaying the last 64 messages to new subscribers, with
+     * capacity for 64 additional messages for slow subscribers and oldest-message dropping
+     * on overflow. The flow remains open after EOF, reader failure, or [close].
+     */
     override val incoming: SharedFlow<JsonRpcMessage> = delegate.incoming
 
+    /**
+     * Serializes, writes, and flushes one newline-delimited envelope under a write mutex.
+     * Serialization and stream write failures propagate to the caller; no retry is performed.
+     */
     override suspend fun send(message: JsonRpcMessage) {
         delegate.send(message)
     }
 
+    /**
+     * Cancels stream reader jobs, closes owned streams, and requests child termination with
+     * [Process.destroy]. Stream-close failures are suppressed. This does not wait for process
+     * exit or force termination, and repeated calls do nothing.
+     */
     override fun close() {
         delegate.close()
     }
 
+    /** Factory for a local app-server proxy process. */
     companion object {
+        /**
+         * Starts `codex app-server proxy` with an optional socket path passed as one argument.
+         * The command inherits the working directory and environment; no shell expansion occurs.
+         * Callers must select a trusted local executable and socket endpoint.
+         *
+         * @param sockPath Socket path argument, or `null` to use the proxy's default endpoint.
+         * @return Transport owning the newly started proxy process.
+         * @throws java.io.IOException If process creation fails.
+         */
         fun proxy(sockPath: String? = null): StdioCodexTransport {
             val command = buildList {
                 add("codex")

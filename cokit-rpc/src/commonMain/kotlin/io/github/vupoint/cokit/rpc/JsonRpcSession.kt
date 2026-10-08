@@ -22,6 +22,23 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 
+/**
+ * Correlates requests and routes incoming notifications and server requests.
+ *
+ * Collection starts in [scope] at construction. Incoming collection failures fail currently
+ * pending requests; normal flow completion does not complete them. Requests have no built-in
+ * timeout, retry, or concurrency limit, so callers should bound their lifetime and volume.
+ * This low-level session does not perform the initialization handshake or answer server requests.
+ *
+ * Message sizes are checked by re-encoding envelopes as UTF-8 before sending or routing.
+ * This limits routed payload size, not the transport's raw frame or parsing allocations.
+ *
+ * @param transport Transport owned by this session and closed by [close].
+ * @param scope Caller-owned scope for incoming collection; closing the session cancels
+ * only its collector job, not the scope.
+ * @param maxMessageBytes Positive maximum encoded envelope size in bytes, inclusive;
+ * defaults to [DEFAULT_MAX_MESSAGE_BYTES] (16 MiB).
+ */
 class JsonRpcSession(
     private val transport: JsonRpcTransport,
     private val scope: CoroutineScope,
@@ -51,9 +68,27 @@ class JsonRpcSession(
         }
     }
 
+    /**
+     * Hot notification stream with no replay and a 64-message buffer that drops the oldest
+     * buffered message when subscribers fall behind. Messages without subscribers are lost.
+     * The flow does not complete when the session closes; collectors need their own lifetime.
+     */
     val notifications: SharedFlow<JsonRpcNotification> = mutableNotifications
+
+    /**
+     * Hot server-request stream with no replay and a 64-message buffer that drops the oldest
+     * buffered request when subscribers fall behind. Requests without subscribers are lost.
+     * No response or approval is sent automatically, and closing the session does not complete
+     * the flow. Applications must collect and respond with [sendResponse].
+     */
     val serverRequests: SharedFlow<JsonRpcRequest> = mutableServerRequests
 
+    /**
+     * Sends a notification with no parameters or response tracking.
+     *
+     * @throws CancellationException If the session is closed.
+     * @throws JsonRpcMessageSizeException If the encoded envelope exceeds the configured limit.
+     */
     suspend fun notify(method: String) {
         requireOpen()
         val message = JsonRpcNotification(method = method)
@@ -61,6 +96,16 @@ class JsonRpcSession(
         transport.send(message)
     }
 
+    /**
+     * Sends a request with an incrementing numeric identifier, without awaiting or retaining
+     * its response. Incoming responses without a pending [request] correlation are ignored.
+     *
+     * @param method App-server method name.
+     * @param params Optional raw parameters; absent by default.
+     * @return Identifier assigned to the sent request.
+     * @throws CancellationException If the session is closed.
+     * @throws JsonRpcMessageSizeException If the encoded envelope exceeds the configured limit.
+     */
     suspend fun sendRequest(method: String, params: JsonElementResult = null): JsonRpcId {
         val id = nextId()
         val message = JsonRpcRequest(id = id, method = method, params = params)
@@ -69,9 +114,35 @@ class JsonRpcSession(
         return id
     }
 
+    /**
+     * Sends a request and suspends until a matching response arrives.
+     *
+     * Cancellation removes the local pending correlation without cancelling remote work.
+     * There is no built-in timeout or retry; use a caller-controlled coroutine timeout if needed.
+     *
+     * @param method App-server method name.
+     * @param params Optional raw parameters; absent by default.
+     * @return Raw response result, which may be `null`.
+     * @throws JsonRpcRemoteException If the matching response contains an error.
+     * @throws JsonRpcMessageSizeException If an outgoing envelope is oversized, or incoming
+     * collection fails while this request is pending because an envelope is oversized.
+     * @throws CancellationException If the caller is cancelled or the session closes.
+     */
     suspend fun request(method: String, params: JsonElementResult = null): JsonElementResult =
         request(method, params) {}
 
+    /**
+     * Sends and awaits a request, reporting its identifier after [JsonRpcTransport.send] returns.
+     *
+     * The callback runs in the requesting coroutine before awaiting the response. A callback
+     * failure or caller cancellation removes the pending correlation; remote work may continue.
+     * Remote errors, transport failures, and size-limit failures propagate without retry.
+     *
+     * @param method App-server method name.
+     * @param params Optional raw parameters.
+     * @param onRequestId Callback receiving the assigned identifier after the send succeeds.
+     * @return Raw response result, which may be `null`.
+     */
     suspend fun request(
         method: String,
         params: JsonElementResult,
@@ -95,12 +166,23 @@ class JsonRpcSession(
         }
     }
 
+    /**
+     * Sends an application-created response, typically for a request from [serverRequests].
+     * The caller is responsible for the matching identifier and the approval decision.
+     *
+     * @throws CancellationException If the session is closed.
+     * @throws JsonRpcMessageSizeException If the encoded envelope exceeds the configured limit.
+     */
     suspend fun sendResponse(response: JsonRpcResponse) {
         requireOpen()
         requireWithinMessageLimit(response)
         transport.send(response)
     }
 
+    /**
+     * Routes a decoded envelope directly for tests, applying the normal size check and correlation.
+     * This bypasses the transport and does not check whether the session is closed.
+     */
     suspend fun publishForTests(message: JsonRpcMessage) {
         routeIncoming(message)
     }
@@ -152,6 +234,10 @@ class JsonRpcSession(
         requests.forEach { it.completeExceptionally(error) }
     }
 
+    /**
+     * Cancels incoming collection, closes the owned transport, and cancels pending requests.
+     * Repeated calls do nothing. The supplied scope and the exposed shared flows remain open.
+     */
     override fun close() {
         if (closed) return
         closed = true
@@ -172,7 +258,9 @@ class JsonRpcSession(
         }
     }
 
+    /** Default session size limit. */
     companion object {
+        /** Maximum encoded envelope size in bytes used by default: 16 MiB. */
         const val DEFAULT_MAX_MESSAGE_BYTES: Int = 16 * 1024 * 1024
     }
 }
@@ -180,19 +268,34 @@ class JsonRpcSession(
 private fun closedCancellationException(): CancellationException =
     CancellationException("JSON-RPC session closed")
 
+/** Raw JSON request parameters or response results, including an absent or null value. */
 typealias JsonElementResult = kotlinx.serialization.json.JsonElement?
 
+/**
+ * Failure reported in a matching JSON-RPC response, with the original server error retained.
+ *
+ * @property error Server-provided code, message, and optional raw details.
+ */
 class JsonRpcRemoteException(
     val error: JsonRpcErrorObject,
 ) : RuntimeException(error.message) {
+    /** Whether the code signals server overload; this hint does not trigger an automatic retry. */
     val isRetryableOverload: Boolean
         get() = error.code == SERVER_OVERLOADED_CODE
 
+    /** Recognized app-server error codes. */
     companion object {
+        /** App-server overload error code used by [isRetryableOverload]. */
         const val SERVER_OVERLOADED_CODE: Int = -32001
     }
 }
 
+/**
+ * An envelope exceeded a session's limit when re-encoded as UTF-8 JSON.
+ *
+ * @property actualMessageBytes Encoded envelope size in bytes, excluding transport framing.
+ * @property maxMessageBytes Configured inclusive maximum size in bytes.
+ */
 class JsonRpcMessageSizeException(
     val actualMessageBytes: Int,
     val maxMessageBytes: Int,

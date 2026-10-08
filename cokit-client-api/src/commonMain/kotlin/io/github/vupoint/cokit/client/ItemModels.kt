@@ -5,10 +5,12 @@ import io.github.vupoint.cokit.client.mcp.McpAppUi
 import io.github.vupoint.cokit.client.mcp.McpResourceUri
 import kotlinx.serialization.Serializable
 
+/** Opaque identifier for an item emitted within a turn. */
 @Serializable
 @JvmInline
 value class ItemId(val value: String)
 
+/** Server item discriminator. Unknown strings remain representable without defining a typed item. */
 @Serializable
 @JvmInline
 value class ItemType(val value: String) {
@@ -32,6 +34,7 @@ value class ItemType(val value: String) {
     }
 }
 
+/** Item execution state, including failure and explicit decline. */
 @Serializable
 @JvmInline
 value class ItemStatus(val value: String) {
@@ -43,6 +46,15 @@ value class ItemStatus(val value: String) {
     }
 }
 
+/**
+ * Typed projection used by item lifecycle notifications.
+ *
+ * Only fields relevant to the item kind are populated. This projection does not retain every raw
+ * item field; use thread-item history or [Turn.items] for complete JSON payloads.
+ *
+ * @property durationMs Optional execution duration in milliseconds.
+ * @property exitCode Optional process exit code for command items.
+ */
 @OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadItemSummary(

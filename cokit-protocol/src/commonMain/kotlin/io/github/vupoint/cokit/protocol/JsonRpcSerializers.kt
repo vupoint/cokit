@@ -18,9 +18,24 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.longOrNull
 
+/**
+ * JSON-only serializer for app-server request, notification, and response envelopes.
+ *
+ * Decoding requires an object with a recognized field combination. Requests contain
+ * `id` and `method`, responses contain `id` and either `result` or `error`, and
+ * notifications contain `method` without `id`. Unknown-field handling follows the
+ * supplied [Json] configuration; unknown envelope fields are not retained.
+ */
 object JsonRpcMessageSerializer : KSerializer<JsonRpcMessage> {
+    /** Descriptor for the polymorphic envelope encoded by this serializer. */
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("JsonRpcMessage")
 
+    /**
+     * Decodes an envelope using the decoder's JSON configuration.
+     *
+     * @throws SerializationException If decoding is not JSON, the shape is unrecognized,
+     * or the selected envelope's fields are invalid.
+     */
     override fun deserialize(decoder: Decoder): JsonRpcMessage {
         val jsonDecoder = decoder as? JsonDecoder
             ?: throw SerializationException("JsonRpcMessage requires JSON decoding")
@@ -45,6 +60,11 @@ object JsonRpcMessageSerializer : KSerializer<JsonRpcMessage> {
         }
     }
 
+    /**
+     * Encodes the concrete envelope without adding a `jsonrpc` field.
+     *
+     * @throws SerializationException If the encoder does not support JSON.
+     */
     override fun serialize(encoder: Encoder, value: JsonRpcMessage) {
         val jsonEncoder = encoder as? JsonEncoder
             ?: throw SerializationException("JsonRpcMessage requires JSON encoding")
@@ -57,10 +77,18 @@ object JsonRpcMessageSerializer : KSerializer<JsonRpcMessage> {
     }
 }
 
+/** JSON-only serializer preserving string identifiers and signed 64-bit integer identifiers. */
 object JsonRpcIdSerializer : KSerializer<JsonRpcId> {
+    /** Logical descriptor; numeric identifiers are still encoded as JSON numbers. */
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("JsonRpcId", PrimitiveKind.STRING)
 
+    /**
+     * Decodes strings as [JsonRpcId.StringId] and integers as [JsonRpcId.Number].
+     *
+     * @throws SerializationException For non-JSON decoding, other JSON kinds, or
+     * numeric values that cannot be represented as a [Long].
+     */
     override fun deserialize(decoder: Decoder): JsonRpcId {
         val jsonDecoder = decoder as? JsonDecoder
             ?: throw SerializationException("JsonRpcId requires JSON decoding")
@@ -76,6 +104,11 @@ object JsonRpcIdSerializer : KSerializer<JsonRpcId> {
         }
     }
 
+    /**
+     * Encodes the identifier using its original JSON kind.
+     *
+     * @throws SerializationException If the encoder does not support JSON.
+     */
     override fun serialize(encoder: Encoder, value: JsonRpcId) {
         val jsonEncoder = encoder as? JsonEncoder
             ?: throw SerializationException("JsonRpcId requires JSON encoding")
@@ -87,6 +120,12 @@ object JsonRpcIdSerializer : KSerializer<JsonRpcId> {
     }
 }
 
+/**
+ * Shared protocol JSON configuration that ignores unknown fields in typed envelopes.
+ *
+ * Raw parameters, results, and error data remain [JsonElement] values. Other serialization
+ * settings retain their [Json] defaults, including omission of properties with default values.
+ */
 val CodexProtocolJson: Json = Json {
     ignoreUnknownKeys = true
 }

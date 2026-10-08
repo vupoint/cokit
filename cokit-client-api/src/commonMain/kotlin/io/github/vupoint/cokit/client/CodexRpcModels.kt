@@ -6,6 +6,12 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Wire parameters for `thread/start`; [StartThreadRequest] is the high-level equivalent.
+ *
+ * Null overrides are omitted by the protocol JSON defaults. A non-null [dynamicTools] list
+ * requires experimental initialization and Kotlin API opt-in.
+ */
 @OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadStartParams(
@@ -29,6 +35,7 @@ data class ThreadStartParams(
     val dynamicTools: List<DynamicToolSpec>? = null,
 )
 
+/** Thread created by `thread/start`, together with effective server configuration. */
 @Serializable
 data class ThreadStartResult(
     val thread: Thread,
@@ -44,6 +51,11 @@ data class ThreadStartResult(
     val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
+/**
+ * Wire parameters for `thread/resume`; [ResumeThreadRequest] is the high-level equivalent.
+ *
+ * Null overrides are omitted. [excludeTurns] controls whether returned turn history is included.
+ */
 @Serializable
 data class ThreadResumeParams(
     val threadId: ThreadId,
@@ -61,6 +73,7 @@ data class ThreadResumeParams(
     val serviceTier: ServiceTier? = null,
 )
 
+/** Resumed thread and effective configuration, with cursors for available paginated history. */
 @Serializable
 data class ThreadResumeResult(
     val thread: Thread,
@@ -79,6 +92,11 @@ data class ThreadResumeResult(
     val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
+/**
+ * Wire parameters for `thread/fork`; [ForkThreadRequest] is the high-level equivalent.
+ *
+ * [threadId] selects the source conversation; null overrides and history-boundary options are omitted.
+ */
 @Serializable
 data class ThreadForkParams(
     val threadId: ThreadId,
@@ -98,6 +116,7 @@ data class ThreadForkParams(
     val serviceTier: ServiceTier? = null,
 )
 
+/** New forked thread and its effective server configuration. */
 @Serializable
 data class ThreadForkResult(
     val thread: Thread,
@@ -113,6 +132,12 @@ data class ThreadForkResult(
     val instructionSources: List<CodexHostPath> = emptyList(),
 )
 
+/**
+ * Wire filters and pagination for `thread/list`; [ListThreadsRequest] is the high-level equivalent.
+ *
+ * [sectionId] distinguishes an omitted filter from an explicit null selecting unsectioned
+ * threads. Other null filters are omitted.
+ */
 @Serializable
 data class ThreadListParams(
     val sourceKinds: List<ThreadSourceKind>? = null,
@@ -130,6 +155,7 @@ data class ThreadListParams(
     val sortKey: ThreadSortKey? = null,
 )
 
+/** Thread page from `thread/list`; [threads] is encoded under the wire key `data`. */
 @Serializable
 data class ThreadListResult(
     @SerialName("data")
@@ -138,12 +164,14 @@ data class ThreadListResult(
     val backwardsCursor: CodexCursor? = null,
 )
 
+/** Wire pagination for `thread/loaded/list`, which lists currently loaded server threads. */
 @Serializable
 data class ThreadLoadedListParams(
     val cursor: CodexCursor? = null,
     val limit: Int? = null,
 )
 
+/** Loaded thread IDs from `thread/loaded/list`, encoded under the wire key `data`. */
 @Serializable
 data class ThreadLoadedListResult(
     @SerialName("data")
@@ -151,59 +179,78 @@ data class ThreadLoadedListResult(
     val nextCursor: CodexCursor? = null,
 )
 
+/** Wire parameters for `thread/read`, optionally requesting inline turn history. */
 @Serializable
 data class ThreadReadParams(
     val threadId: ThreadId,
     val includeTurns: Boolean? = null,
 )
 
+/** Thread snapshot returned by `thread/read`. */
 @Serializable
 data class ThreadReadResult(
     val thread: Thread,
 )
 
+/** Selects a thread for `thread/archive`. */
 @Serializable
 data class ThreadArchiveParams(
     val threadId: ThreadId,
 )
 
+/** Selects a thread for `thread/unarchive`. */
 @Serializable
 data class ThreadUnarchiveParams(
     val threadId: ThreadId,
 )
 
+/** Thread snapshot after `thread/unarchive`. */
 @Serializable
 data class ThreadUnarchiveResult(
     val thread: Thread,
 )
 
+/** Selects a thread for the `thread/delete` operation. */
 @Serializable
 data class ThreadDeleteParams(
     val threadId: ThreadId,
 )
 
+/** Selects a thread for `thread/unsubscribe`, ending its notification subscription. */
 @Serializable
 data class ThreadUnsubscribeParams(
     val threadId: ThreadId,
 )
 
+/** Wire name update for `thread/name/set`. */
 @Serializable
 data class ThreadSetNameParams(
     val threadId: ThreadId,
     val name: String,
 )
 
+/**
+ * Wire metadata update for `thread/metadata/update`.
+ *
+ * A null [gitInfo] omits the patch; individual patch fields distinguish preserving and clearing.
+ */
 @Serializable
 data class ThreadMetadataUpdateParams(
     val threadId: ThreadId,
     val gitInfo: ThreadGitInfoPatch? = null,
 )
 
+/** Updated thread snapshot from `thread/metadata/update`. */
 @Serializable
 data class ThreadMetadataUpdateResult(
     val thread: Thread,
 )
 
+/**
+ * Sets or updates a thread goal through `thread/goal/set`.
+ *
+ * [tokenBudget] is a token count rather than a time limit. Null fields are omitted.
+ */
 @Serializable
 data class ThreadGoalSetParams(
     val threadId: ThreadId,
@@ -212,36 +259,43 @@ data class ThreadGoalSetParams(
     val tokenBudget: Long? = null,
 )
 
+/** Goal snapshot returned by `thread/goal/set`. */
 @Serializable
 data class ThreadGoalSetResult(
     val goal: ThreadGoal,
 )
 
+/** Selects a thread for `thread/goal/get`. */
 @Serializable
 data class ThreadGoalGetParams(
     val threadId: ThreadId,
 )
 
+/** Goal lookup result; null [goal] means the server supplied no goal. */
 @Serializable
 data class ThreadGoalGetResult(
     val goal: ThreadGoal? = null,
 )
 
+/** Selects a thread whose goal should be cleared by `thread/goal/clear`. */
 @Serializable
 data class ThreadGoalClearParams(
     val threadId: ThreadId,
 )
 
+/** Reports whether `thread/goal/clear` cleared a goal. */
 @Serializable
 data class ThreadGoalClearResult(
     val cleared: Boolean,
 )
 
+/** Selects a thread for the `thread/compact/start` operation. */
 @Serializable
 data class ThreadCompactionStartParams(
     val threadId: ThreadId,
 )
 
+/** Wire pagination and item-detail selection for `thread/turns/list`. */
 @Serializable
 data class ThreadTurnsListParams(
     val threadId: ThreadId,
@@ -251,6 +305,7 @@ data class ThreadTurnsListParams(
     val itemsView: TurnItemsView? = null,
 )
 
+/** Page of turns with opaque continuation tokens for either direction. */
 @Serializable
 data class ThreadTurnsListResult(
     val data: List<Turn> = emptyList(),
@@ -258,6 +313,12 @@ data class ThreadTurnsListResult(
     val backwardsCursor: CodexCursor? = null,
 )
 
+/**
+ * Wire parameters for `turn/start`; [StartTurnRequest] is the high-level equivalent.
+ *
+ * The [input] list is always encoded, including when empty. Null overrides are omitted.
+ * [sandbox] uses the wire key `sandboxPolicy`.
+ */
 @Serializable
 data class TurnStartParams(
     val threadId: ThreadId,
@@ -283,11 +344,13 @@ data class TurnStartParams(
     val personality: Personality? = null,
 )
 
+/** Initial turn snapshot from `turn/start`; notifications report later progress and completion. */
 @Serializable
 data class TurnStartResult(
     val turn: Turn,
 )
 
+/** Wire input for `turn/steer`, guarded by the caller's [expectedTurnId]. */
 @Serializable
 data class TurnSteerParams(
     val threadId: ThreadId,
@@ -296,16 +359,19 @@ data class TurnSteerParams(
     val clientUserMessageId: ClientMessageId? = null,
 )
 
+/** Identifier of the turn that accepted `turn/steer` input. */
 @Serializable
 data class TurnSteerResult(
     val turnId: TurnId,
 )
 
+/** Selects a thread and turn for `turn/interrupt`; acknowledgement is distinct from completion. */
 @Serializable
 data class TurnInterruptParams(
     val threadId: ThreadId,
     val turnId: TurnId,
 )
 
+/** Empty JSON object result used by RPC operations that return no structured data. */
 @Serializable
 data object CodexRpcUnit

@@ -15,27 +15,44 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
+/**
+ * One input element submitted to a turn.
+ *
+ * Known variants have typed fields; [Custom] retains JSON for variants CoKit does not recognize.
+ */
 @Serializable(with = TurnInputSerializer::class)
 sealed interface TurnInput {
+    /** Plain text included in the user input. */
     data class Text(val text: String) : TurnInput
 
+    /** Image referenced by a URL understood by app-server. */
     data class Image(val url: String) : TurnInput
 
+    /** Image file path on the app-server host; CoKit does not upload the client filesystem file. */
     data class LocalImage(val path: String) : TurnInput
 
+    /** Named skill reference whose [path] is interpreted by app-server. */
     data class Skill(
         val name: String,
         val path: String,
     ) : TurnInput
 
+    /** Named resource reference whose [path] is interpreted by app-server. */
     data class Mention(
         val name: String,
         val path: String,
     ) : TurnInput
 
+    /** Raw input payload preserved when no typed variant matches, or supplied for protocol extensions. */
     data class Custom(val payload: CodexJsonPayload) : TurnInput
 }
 
+/**
+ * JSON serializer for typed inputs and raw fallback payloads.
+ *
+ * Unknown variants and recognized variants missing required fields decode as [TurnInput.Custom].
+ * Additional fields on recognized typed variants are not retained by those variants.
+ */
 object TurnInputSerializer : KSerializer<TurnInput> {
     override val descriptor: SerialDescriptor = JsonElement.serializer().descriptor
 

@@ -25,7 +25,20 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.encodeToJsonElement
 
+/** Factory for the default [CodexClient] implementation backed by an app-server transport. */
 object CodexClients {
+    /**
+     * Sends `initialize`, awaits its response, then sends `initialized` before returning the client.
+     *
+     * The returned client owns [CodexClientConnection.transport] and uses the caller's scope for
+     * incoming messages. Keep that scope active and close the client when finished. A failed or
+     * cancelled handshake closes the transport and propagates the error. No timeout is imposed;
+     * wrap the call in a coroutine timeout when needed.
+     *
+     * Enable [InitializeCapabilities.experimentalApi] in [connection] before using experimental
+     * descriptors or dynamic tools. Approval-like requests remain deny-by-default until handlers
+     * are registered on the returned client.
+     */
     suspend fun connect(connection: CodexClientConnection): CodexClient {
         val session = JsonRpcSession(connection.transport, connection.scope)
         return try {
