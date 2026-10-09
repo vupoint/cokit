@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.SharedFlow
  * @property clientInfo Application identity sent to the app-server during initialization.
  * @property scope Caller-owned scope for incoming messages and server-request handling. Keep it active
  * for the connection's lifetime; closing the client does not cancel the scope itself.
- * @property capabilities Optional initialization flags. Experimental APIs require an explicit opt-in here.
+ * @property capabilities Optional initialization flags. The client enforces experimental initialization
+ * for descriptors with [CodexRpcMethod.requiresExperimentalApi] and for dynamic tools.
+ * Kotlin [ExperimentalCodexApi] opt-in alone does not add this runtime check.
  */
 data class CodexClientConnection(
     val transport: JsonRpcTransport,
