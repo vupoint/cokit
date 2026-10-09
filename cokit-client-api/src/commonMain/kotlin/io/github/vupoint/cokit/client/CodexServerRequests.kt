@@ -79,7 +79,10 @@ sealed interface CodexServerRequest {
         override val method: String = "item/tool/call"
     }
 
-    /** Unrecognized server-request method. This view retains the method name, not its raw parameters. */
+    /**
+     * Unrecognized server-request method or a recognized request whose parameters cannot be decoded.
+     * This view retains only the method name, not the raw parameters or decoding failure details.
+     */
     data class Unsupported(
         override val method: String,
     ) : CodexServerRequest
