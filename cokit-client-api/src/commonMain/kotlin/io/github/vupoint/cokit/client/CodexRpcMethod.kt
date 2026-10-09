@@ -132,8 +132,10 @@ class CodexRpcMethod<P : Any, R : Any> internal constructor(
 /**
  * Catalog of typed app-server request descriptors, grouped by protocol domain.
  *
- * Call [CodexClient.request] with a descriptor and its matching parameter model. Results acknowledge
- * the corresponding operation; streaming work continues through [CodexClient.notifications].
+ * Call [CodexClient.request] with a descriptor and its matching parameter model.
+ * Read/list operations return requested data; [CodexRpc.Command.Exec] returns command completion.
+ * For asynchronous operations such as [CodexRpc.Turn.Start], subsequent execution is streamed
+ * through [CodexClient.notifications].
  * Surfaces marked [ExperimentalCodexApi] require Kotlin opt-in. Descriptors with
  * [CodexRpcMethod.requiresExperimentalApi] also require experimental initialization.
  */
