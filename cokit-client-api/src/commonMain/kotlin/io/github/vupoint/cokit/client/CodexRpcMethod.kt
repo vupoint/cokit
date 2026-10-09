@@ -660,7 +660,13 @@ object CodexRpc {
     /** Experimental unsandboxed host process control; use only with a trusted app-server. */
     @ExperimentalCodexApi
     object Process {
-        /** Starts an unsandboxed host process; output and exit arrive as notifications. */
+        /**
+         * Starts an unsandboxed host process and returns only an acknowledgement.
+         *
+         * Typed routing for `process/outputDelta` and `process/exited` is deferred. These events
+         * become [CodexNotification.Unknown], so output and exit details are unavailable through
+         * [CodexClient.notifications].
+         */
         val Spawn: CodexRpcMethod<ProcessSpawnParams, CodexRpcUnit> = CodexRpcMethod(
             method = "process/spawn",
             paramsSerializer = ProcessSpawnParams.serializer(),
