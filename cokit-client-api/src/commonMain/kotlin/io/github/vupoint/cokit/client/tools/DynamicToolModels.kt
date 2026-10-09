@@ -26,6 +26,11 @@ import kotlinx.serialization.json.jsonObject
 /** Client-owned tools advertised when starting a thread. Registration does not authorize execution. */
 @Serializable
 sealed interface DynamicToolSpec {
+    /**
+     * Experimental function advertised to app-server. The input schema is preserved as JSON and execution still requires an explicit handler.
+     *
+     * @property deferLoading Leaves discovery/loading to app-server; CoKit does not implement tool search.
+     */
     @ExperimentalCodexApi
     @Serializable
     @SerialName("function")
@@ -36,6 +41,7 @@ sealed interface DynamicToolSpec {
         val deferLoading: Boolean = false,
     ) : DynamicToolSpec
 
+    /** Experimental group of function tools; nested namespaces are not supported by the upstream schema. */
     @ExperimentalCodexApi
     @Serializable
     @SerialName("namespace")
@@ -50,6 +56,11 @@ sealed interface DynamicToolSpec {
 @ExperimentalCodexApi
 @Serializable
 sealed interface DynamicToolNamespaceTool {
+    /**
+     * Experimental function advertised to app-server. The input schema is preserved as JSON and execution still requires an explicit handler.
+     *
+     * @property deferLoading Leaves discovery/loading to app-server; CoKit does not implement tool search.
+     */
     @ExperimentalCodexApi
     @Serializable
     @SerialName("function")
@@ -85,27 +96,34 @@ data class DynamicToolCallResponse(
     override fun toString(): String = "DynamicToolCallResponse(contentItemCount=${contentItems.size}, success=$success)"
 }
 
-/** Runs in the application's environment; implementations own validation, authorization and confirmation. */
+/**
+ * Runs in the application's environment; implementations own validation, authorization and confirmation.
+ * Without a registered handler, CoKit returns empty content with success=false and executes nothing.
+ */
 @ExperimentalCodexApi
 fun interface DynamicToolCallHandler {
+    /** Validates and authorizes untrusted arguments before running application-owned behavior and reporting its outcome. */
     suspend fun call(request: DynamicToolCallRequest): DynamicToolCallResponse
 }
 
 /** Dynamic tool results use camelCase wire types, unlike turn tool outputs. */
 @Serializable(with = DynamicToolCallOutputContentSerializer::class)
 sealed interface DynamicToolCallOutputContent {
+    /** Text result using the dynamic-tool inputText wire tag. */
     @ExperimentalCodexApi
     @Serializable
     data class Text(val text: String) : DynamicToolCallOutputContent {
         override fun toString(): String = "Text(<redacted>)"
     }
 
+    /** Image reference using the dynamic-tool inputImage wire tag; CoKit does not fetch or render it. */
     @ExperimentalCodexApi
     @Serializable
     data class Image(val imageUrl: String) : DynamicToolCallOutputContent {
         override fun toString(): String = "Image(<redacted>)"
     }
 
+    /** Audio reference using the dynamic-tool inputAudio wire tag; CoKit does not fetch or play it. */
     @ExperimentalCodexApi
     @Serializable
     data class Audio(val audioUrl: String) : DynamicToolCallOutputContent {
@@ -119,6 +137,9 @@ sealed interface DynamicToolCallOutputContent {
     }
 }
 
+/**
+ * JSON-only serializer using camelCase dynamic-tool content tags and preserving unknown variants without interpreting their payloads.
+ */
 @ExperimentalCodexApi
 object DynamicToolCallOutputContentSerializer : KSerializer<DynamicToolCallOutputContent> {
     override val descriptor = JsonElement.serializer().descriptor

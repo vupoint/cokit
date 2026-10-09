@@ -23,6 +23,14 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
+/**
+ * Server-initiated authorization request for a command execution item or stdin write. Optional details are server-reported context, not a guarantee that an action is safe.
+ *
+ * @property startedAtMs Server-reported request start time in Unix epoch milliseconds.
+ * @property kind Distinguishes command execution from writing to an existing process.
+ * @property proposedExecpolicyAmendment Suggested command-prefix policy amendment, requiring an explicit policy decision.
+ * @property proposedNetworkPolicyAmendments Suggested host rules; inspecting them does not install them.
+ */
 @Serializable
 data class CommandApprovalRequest(
     val threadId: ThreadId,
@@ -68,16 +76,19 @@ value class CommandApprovalKind(val value: String) {
     }
 }
 
+/** Server identifier for one approval within a command item, separate from the JSON-RPC request id. */
 @Serializable
 @JvmInline
 value class CommandApprovalId(val value: String)
 
+/** Network destination presented for approval; the application must evaluate the host and protocol together. */
 @Serializable
 data class NetworkApprovalContext(
     val host: String,
     val protocol: NetworkApprovalProtocol,
 )
 
+/** Server-reported network protocol; unfamiliar strings remain readable for policy handlers. */
 @Serializable
 @JvmInline
 value class NetworkApprovalProtocol(val value: String) {
@@ -89,12 +100,14 @@ value class NetworkApprovalProtocol(val value: String) {
     }
 }
 
+/** Proposed network host rule carried in a command approval request. */
 @Serializable
 data class NetworkPolicyAmendment(
     val action: NetworkPolicyRuleAction,
     val host: String,
 )
 
+/** Allow or deny action for a network rule; unknown wire strings are retained. */
 @Serializable
 @JvmInline
 value class NetworkPolicyRuleAction(val value: String) {
@@ -104,29 +117,37 @@ value class NetworkPolicyRuleAction(val value: String) {
     }
 }
 
+/**
+ * Server interpretation of command intent for an approval prompt. Classification is descriptive and does not authorize execution; future variants retain their JSON in [Custom].
+ */
 @Serializable(with = CommandActionSerializer::class)
 sealed interface CommandAction {
+    /** Server-classified file read, including the displayed name and host path. */
     data class Read(
         val command: String,
         val name: String,
         val path: CodexHostPath,
     ) : CommandAction
 
+    /** Server-classified directory listing with an optional reported path. */
     data class ListFiles(
         val command: String,
         val path: String? = null,
     ) : CommandAction
 
+    /** Server-classified search with optional path and query details. */
     data class Search(
         val command: String,
         val path: String? = null,
         val query: String? = null,
     ) : CommandAction
 
+    /** Command the server did not classify as a known action. */
     data class Unknown(
         val command: String,
     ) : CommandAction
 
+    /** Unrecognized action variant preserved as its complete JSON payload; handlers must evaluate it explicitly. */
     data class Custom(
         val payload: CodexJsonPayload,
     ) : CommandAction

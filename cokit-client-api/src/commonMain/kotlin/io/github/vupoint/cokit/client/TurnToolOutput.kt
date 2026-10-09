@@ -15,21 +15,28 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
+/** Tool result supplied as turn input, identified by [name] and optional [namespace]. */
 @Serializable
 data class TurnToolOutput(val name: String, val output: ToolOutputBody, val namespace: String? = null)
 
+/** Tool-result body encoded as either a JSON string or an array of typed content elements. */
 @Serializable(with = ToolOutputBodySerializer::class)
 sealed interface ToolOutputBody {
+    /** Plain tool-result text encoded as a JSON string. */
     data class Text(val text: String) : ToolOutputBody
+    /** Ordered multimodal tool-result elements encoded as a JSON array. */
     data class Content(val items: List<ToolOutputContent>) : ToolOutputBody
 }
 
+/** One element of a multimodal tool-result body. */
 @Serializable
 sealed interface ToolOutputContent {
+    /** Text element inside a multimodal tool-result content array. */
     @Serializable
     @SerialName("input_text")
     data class Text(val text: String) : ToolOutputContent
 
+    /** Image tool-result element. Exactly one of [imageUrl] and [fileId] must be supplied. */
     @Serializable
     @SerialName("input_image")
     data class Image(
@@ -40,15 +47,18 @@ sealed interface ToolOutputContent {
         init { require((imageUrl != null) != (fileId != null)) { "Provide exactly one image URL or file ID" } }
     }
 
+    /** Audio tool-result element referenced by [audioUrl]. */
     @Serializable
     @SerialName("input_audio")
     data class Audio(@SerialName("audio_url") val audioUrl: String) : ToolOutputContent
 
+    /** Opaque encrypted tool-result content, passed through without decryption. */
     @Serializable
     @SerialName("encrypted_content")
     data class Encrypted(@SerialName("encrypted_content") val encryptedContent: String) : ToolOutputContent
 }
 
+/** JSON serializer accepting only tool-result strings or typed content arrays. */
 object ToolOutputBodySerializer : KSerializer<ToolOutputBody> {
     override val descriptor = JsonElement.serializer().descriptor
     override fun serialize(encoder: Encoder, value: ToolOutputBody) {

@@ -5,6 +5,7 @@ import io.github.vupoint.cokit.client.CodexHostPath
 import io.github.vupoint.cokit.client.ThreadId
 import kotlinx.serialization.Serializable
 
+/** Server hook trigger name; unknown event names remain readable as catalog metadata. */
 @Serializable
 @JvmInline
 value class HookEventName(val value: String) {
@@ -22,6 +23,7 @@ value class HookEventName(val value: String) {
     }
 }
 
+/** Configured hook implementation kind; listing it does not execute a command, prompt, or agent. */
 @Serializable
 @JvmInline
 value class HookHandlerType(val value: String) {
@@ -32,6 +34,7 @@ value class HookHandlerType(val value: String) {
     }
 }
 
+/** Configuration source that supplied a hook; unknown sources remain readable. */
 @Serializable
 @JvmInline
 value class HookSource(val value: String) {
@@ -50,6 +53,7 @@ value class HookSource(val value: String) {
     }
 }
 
+/** Server-reported hook trust state; CoKit does not grant trust from this value. */
 @Serializable
 @JvmInline
 value class HookTrustStatus(val value: String) {
@@ -61,16 +65,19 @@ value class HookTrustStatus(val value: String) {
     }
 }
 
+/** Lists hook metadata for app-server host working directories; CoKit does not execute the returned hooks. */
 @Serializable
 data class HooksListParams(
     val cwds: List<CodexHostPath> = emptyList(),
 )
 
+/** Hook discovery grouped by the working directories evaluated by app-server. */
 @Serializable
 data class HooksListResult(
     val data: List<HooksListEntry> = emptyList(),
 )
 
+/** Hooks, parse errors, and warnings for one app-server host directory. */
 @Serializable
 data class HooksListEntry(
     val cwd: CodexHostPath,
@@ -79,12 +86,21 @@ data class HooksListEntry(
     val warnings: List<String> = emptyList(),
 )
 
+/** Hook discovery failure with the server-reported source path and diagnostic message. */
 @Serializable
 data class HookErrorInfo(
     val message: String,
     val path: CodexHostPath,
 )
 
+/**
+ * Server-reported hook configuration and trust metadata, treated as catalog data rather than executable instructions.
+ *
+ * @property timeoutSec Configured hook timeout in seconds.
+ * @property currentHash Server-reported current content hash.
+ * @property command Optional configured command; CoKit does not execute it while listing hooks.
+ * @property isManaged Whether app-server reports the hook as managed configuration.
+ */
 @Serializable
 data class HookMetadata(
     val key: String,
@@ -104,21 +120,30 @@ data class HookMetadata(
     val statusMessage: String? = null,
 )
 
+/** Server app or connector identifier used by catalogs and plugin app summaries. */
 @Serializable
 @JvmInline
 value class AppId(val value: String)
 
+/** Reads installed app state, optionally refreshing it and selecting a thread context. */
 @Serializable
 data class AppsInstalledParams(
     val forceRefresh: Boolean = false,
     val threadId: ThreadId? = null,
 )
 
+/** Installed app metadata reported by app-server; enablement and callability are separate properties. */
 @Serializable
 data class AppsInstalledResult(
     val apps: List<InstalledApp>,
 )
 
+/**
+ * Installed connector state.
+ *
+ * @property enabled Whether the app is enabled.
+ * @property callable Whether app-server currently reports it as callable.
+ */
 @Serializable
 data class InstalledApp(
     val id: AppId,
@@ -127,6 +152,7 @@ data class InstalledApp(
     val runtimeName: String? = null,
 )
 
+/** Queries the app catalog for an optional thread context; invocation of the experimental descriptor requires explicit opt-in. */
 @Serializable
 data class AppsListParams(
     val cursor: CodexCursor? = null,
@@ -135,12 +161,19 @@ data class AppsListParams(
     val threadId: ThreadId? = null,
 )
 
+/** One page of app catalog entries; null [nextCursor] means no continuation was reported. */
 @Serializable
 data class AppsListResult(
     val data: List<AppInfo> = emptyList(),
     val nextCursor: CodexCursor? = null,
 )
 
+/**
+ * App catalog and presentation metadata; CoKit does not install, authenticate, render, or invoke an app from this record.
+ *
+ * @property isAccessible Server-reported account access, separate from enablement.
+ * @property isEnabled Server-reported app enablement.
+ */
 @Serializable
 data class AppInfo(
     val id: AppId,
@@ -158,6 +191,7 @@ data class AppInfo(
     val pluginDisplayNames: List<String> = emptyList(),
 )
 
+/** App discovery and publisher presentation metadata supplied by the catalog. */
 @Serializable
 data class AppBranding(
     val isDiscoverableApp: Boolean,
@@ -168,6 +202,7 @@ data class AppBranding(
     val website: String? = null,
 )
 
+/** Optional app catalog details for presentation, installation hints, and version information. */
 @Serializable
 data class AppMetadata(
     val categories: List<String>? = null,
@@ -184,11 +219,13 @@ data class AppMetadata(
     val versionNotes: String? = null,
 )
 
+/** Review status reported by the app catalog; CoKit does not interpret it as a trust decision. */
 @Serializable
 data class AppReview(
     val status: String,
 )
 
+/** Catalog screenshot reference and its illustrative prompt; no media is fetched or rendered by this model. */
 @Serializable
 data class AppScreenshot(
     val userPrompt: String,

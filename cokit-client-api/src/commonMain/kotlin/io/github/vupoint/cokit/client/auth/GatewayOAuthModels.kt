@@ -2,6 +2,7 @@ package io.github.vupoint.cokit.client.auth
 
 import kotlinx.serialization.Serializable
 
+/** Gateway credential readiness state; success does not prove a subsequent gateway request will succeed. */
 @Serializable
 @JvmInline
 value class GatewayOAuthStatus(val value: String) {

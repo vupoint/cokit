@@ -15,10 +15,18 @@ import kotlinx.serialization.json.encodeToJsonElement
 /** A field whose omission differs from an explicitly supplied null. */
 @Serializable(with = CodexOptionalSerializer::class)
 sealed interface CodexOptional<out T : Any> {
+    /** Leaves the field absent when its containing property uses `EncodeDefault.NEVER`. */
     data object Omitted : CodexOptional<Nothing>
+    /** Supplies a field explicitly, including JSON null when [value] is null. */
     data class Value<T : Any>(val value: T?) : CodexOptional<T>
 }
 
+/**
+ * JSON serializer for explicit values and nulls.
+ *
+ * [CodexOptional.Omitted] must be a default property value with `EncodeDefault.NEVER`;
+ * serializing it as a standalone value fails.
+ */
 class CodexOptionalSerializer<T : Any>(private val serializer: KSerializer<T>) : KSerializer<CodexOptional<T>> {
     override val descriptor = serializer.nullable.descriptor
 

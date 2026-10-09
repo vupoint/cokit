@@ -11,6 +11,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/**
+ * Private account email whose string representation is redacted; accessing [value] or serializing it reveals the original address.
+ */
 @Serializable(with = AccountEmailSerializer::class)
 class AccountEmail(
     val value: String,
@@ -23,6 +26,9 @@ class AccountEmail(
     override fun toString(): String = "<redacted>"
 }
 
+/**
+ * Encodes and decodes the original account email as a wire string; redaction applies only to the model's string representation.
+ */
 object AccountEmailSerializer : KSerializer<AccountEmail> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("AccountEmail", PrimitiveKind.STRING)
@@ -35,6 +41,7 @@ object AccountEmailSerializer : KSerializer<AccountEmail> {
     }
 }
 
+/** Server-reported subscription plan; unknown plan strings remain readable for forward compatibility. */
 @Serializable
 @JvmInline
 value class AccountPlanType(val value: String) {
@@ -55,23 +62,41 @@ value class AccountPlanType(val value: String) {
     }
 }
 
+/**
+ * Options for reading the current app-server authentication state.
+ *
+ * @property refreshToken Optional request to refresh authentication tokens; null leaves the server default in effect.
+ */
 @Serializable
 data class AccountReadParams(
     val refreshToken: Boolean? = null,
 )
 
+/**
+ * Current account state without credential material.
+ *
+ * @property requiresOpenaiAuth Whether the server requires OpenAI authentication.
+ * @property account Null when the server reports no authenticated account.
+ */
 @Serializable
 data class AccountReadResult(
     val requiresOpenaiAuth: Boolean,
     val account: CodexAccount? = null,
 )
 
+/** Authentication mode reported by app-server; ChatGPT accounts expose private email and plan metadata but no access token. */
 @Serializable
 sealed interface CodexAccount {
+    /**
+     * Account authenticated by API key; the key is not exposed in this read result.
+     */
     @Serializable
     @SerialName("apiKey")
     data object ApiKey : CodexAccount
 
+    /**
+     * ChatGPT account identity and subscription plan. The email is private even though string rendering redacts it.
+     */
     @Serializable
     @SerialName("chatgpt")
     data class ChatGpt(
@@ -82,20 +107,31 @@ sealed interface CodexAccount {
             "ChatGpt(email=<redacted>, planType=$planType)"
     }
 
+    /**
+     * Account using the Amazon Bedrock authentication mode reported by app-server.
+     */
     @Serializable
     @SerialName("amazonBedrock")
     data object AmazonBedrock : CodexAccount
 }
 
+/** Empty parameters for explicitly logging the app-server account out. */
 @Serializable
 data object LogoutAccountParams
 
+/** Identifier of a pending login flow, used by cancellation and login-completion notifications. */
 @Serializable
 @JvmInline
 value class LoginAccountId(val value: String)
 
+/**
+ * Selects an explicit account login flow. Applications own consent, browser interaction, and secure handling of raw credentials.
+ */
 @Serializable
 sealed interface LoginAccountParams {
+    /**
+     * Submits an API key to app-server. String rendering redacts the key; the raw property and wire payload remain sensitive.
+     */
     @Serializable
     @SerialName("apiKey")
     data class ApiKey(
@@ -105,16 +141,25 @@ sealed interface LoginAccountParams {
             "ApiKey(apiKey=<redacted>)"
     }
 
+    /**
+     * Starts browser-mediated ChatGPT login; optional streamlined-login behavior is delegated to app-server.
+     */
     @Serializable
     @SerialName("chatgpt")
     data class ChatGpt(
         val codexStreamlinedLogin: Boolean? = null,
     ) : LoginAccountParams
 
+    /**
+     * Starts ChatGPT device-code login, requiring later user verification.
+     */
     @Serializable
     @SerialName("chatgptDeviceCode")
     data object ChatGptDeviceCode : LoginAccountParams
 
+    /**
+     * Experimental external-token login. The application owns token acquisition, storage, and consent; raw token and account-id fields are sensitive.
+     */
     @ExperimentalCodexApi
     @Serializable
     @SerialName("chatgptAuthTokens")
@@ -128,12 +173,21 @@ sealed interface LoginAccountParams {
     }
 }
 
+/**
+ * Login flow outcome or continuation data. Browser and device-code results require user interaction and later completion confirmation.
+ */
 @Serializable
 sealed interface LoginAccountResult {
+    /**
+     * Acknowledges the API-key login flow without returning the key.
+     */
     @Serializable
     @SerialName("apiKey")
     data object ApiKey : LoginAccountResult
 
+    /**
+     * Pending browser login with a flow id and sensitive authorization URL; the application must await login completion.
+     */
     @Serializable
     @SerialName("chatgpt")
     data class ChatGpt(
@@ -144,6 +198,9 @@ sealed interface LoginAccountResult {
             "ChatGpt(loginId=$loginId, authUrl=<redacted>)"
     }
 
+    /**
+     * Pending device verification with a flow id, verification URL, and sensitive user code.
+     */
     @Serializable
     @SerialName("chatgptDeviceCode")
     data class ChatGptDeviceCode(
@@ -155,17 +212,22 @@ sealed interface LoginAccountResult {
             "ChatGptDeviceCode(loginId=$loginId, verificationUrl=<redacted>, userCode=<redacted>)"
     }
 
+    /**
+     * Acknowledges the experimental external-token login flow without returning the tokens.
+     */
     @ExperimentalCodexApi
     @Serializable
     @SerialName("chatgptAuthTokens")
     data object ChatGptAuthTokens : LoginAccountResult
 }
 
+/** Cancels the pending login identified by [loginId]. */
 @Serializable
 data class CancelLoginAccountParams(
     val loginId: LoginAccountId,
 )
 
+/** Whether a pending login was canceled or no matching flow existed; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class CancelLoginAccountStatus(val value: String) {
@@ -175,26 +237,32 @@ value class CancelLoginAccountStatus(val value: String) {
     }
 }
 
+/** Server outcome of a login cancellation, which may report that the flow no longer exists. */
 @Serializable
 data class CancelLoginAccountResult(
     val status: CancelLoginAccountStatus,
 )
 
+/** Empty parameters for reading account usage limits without consuming reset credits. */
 @Serializable
 data object AccountRateLimitsReadParams
 
+/** Empty parameters for reading account token-usage history. */
 @Serializable
 data object AccountUsageReadParams
 
+/** Empty parameters for reading server-provided workspace announcements. */
 @Serializable
 data object AccountWorkspaceMessagesReadParams
 
+/** Workspace announcements and whether the server has enabled the message feature. */
 @Serializable
 data class AccountWorkspaceMessagesResult(
     val featureEnabled: Boolean,
     val messages: List<WorkspaceMessage>,
 )
 
+/** Server-provided workspace announcement with optional creation and archival timestamps. */
 @Serializable
 data class WorkspaceMessage(
     val messageId: String,
@@ -204,6 +272,7 @@ data class WorkspaceMessage(
     val archivedAt: CodexTimestamp? = null,
 )
 
+/** Announcement presentation category; unknown wire strings are retained. */
 @Serializable
 @JvmInline
 value class WorkspaceMessageType(val value: String) {
@@ -214,17 +283,25 @@ value class WorkspaceMessageType(val value: String) {
     }
 }
 
+/**
+ * Explicit rate-limit reset attempt that may consume an account credit.
+ *
+ * @property idempotencyKey Reuse this key when retrying the same logical redemption; do not generate a new key for each retry.
+ * @property creditId Optional specific credit selector; null delegates selection to app-server.
+ */
 @Serializable
 data class ConsumeAccountRateLimitResetCreditParams(
     val idempotencyKey: String,
     val creditId: String? = null,
 )
 
+/** Outcome of a reset attempt; only the reset outcome confirms a rate-limit reset. */
 @Serializable
 data class ConsumeAccountRateLimitResetCreditResult(
     val outcome: ConsumeAccountRateLimitResetCreditOutcome,
 )
 
+/** Reset-credit redemption outcome, including no available credit or an already redeemed attempt; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ConsumeAccountRateLimitResetCreditOutcome(val value: String) {
@@ -236,12 +313,21 @@ value class ConsumeAccountRateLimitResetCreditOutcome(val value: String) {
     }
 }
 
+/**
+ * Account usage-limit snapshots.
+ *
+ * @property rateLimits Legacy aggregate snapshot.
+ * @property rateLimitsByLimitId Optional per-limit snapshots; absence does not imply unlimited usage.
+ */
 @Serializable
 data class AccountRateLimitsResult(
     val rateLimits: AccountRateLimitSnapshot,
     val rateLimitsByLimitId: Map<String, AccountRateLimitSnapshot>? = null,
 )
 
+/**
+ * Usage windows, credits, plan metadata, and optional spend-control state for a server-reported limit. Null fields mean unavailable data.
+ */
 @Serializable
 data class AccountRateLimitSnapshot(
     val primary: AccountRateLimitWindow? = null,
@@ -254,6 +340,13 @@ data class AccountRateLimitSnapshot(
     val rateLimitReachedType: AccountRateLimitReachedType? = null,
 )
 
+/**
+ * Consumed percentage of an account usage window.
+ *
+ * @property usedPercent Percentage consumed, rather than percentage remaining.
+ * @property resetsAt Optional reset time in Unix epoch seconds.
+ * @property windowDurationMins Optional duration of the window in minutes.
+ */
 @Serializable
 data class AccountRateLimitWindow(
     val usedPercent: Int,
@@ -261,6 +354,7 @@ data class AccountRateLimitWindow(
     val windowDurationMins: Long? = null,
 )
 
+/** Credit availability reported by app-server; [balance] is kept as a string to preserve its server representation. */
 @Serializable
 data class AccountRateLimitStatus(
     val hasCredits: Boolean,
@@ -268,6 +362,12 @@ data class AccountRateLimitStatus(
     val balance: String? = null,
 )
 
+/**
+ * Server-reported account spend-control amounts, preserved as strings rather than converted to floating point.
+ *
+ * @property remainingPercent Percentage remaining under this limit.
+ * @property resetsAt Reset time in Unix epoch seconds.
+ */
 @Serializable
 data class AccountSpendControlLimitSnapshot(
     val limit: String,
@@ -276,6 +376,7 @@ data class AccountSpendControlLimitSnapshot(
     val resetsAt: Long,
 )
 
+/** Server explanation of an exhausted rate or workspace usage limit; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class AccountRateLimitReachedType(val value: String) {
@@ -288,12 +389,18 @@ value class AccountRateLimitReachedType(val value: String) {
     }
 }
 
+/** Account token-usage summary with optional daily history; missing buckets are unavailable rather than zero usage. */
 @Serializable
 data class AccountUsageResult(
     val summary: AccountTokenUsageSummary,
     val dailyUsageBuckets: List<AccountTokenUsageDailyBucket>? = null,
 )
 
+/**
+ * Server-computed lifetime and activity statistics; null fields indicate unavailable statistics.
+ *
+ * @property longestRunningTurnSec Duration of the longest running turn in seconds when reported.
+ */
 @Serializable
 data class AccountTokenUsageSummary(
     val lifetimeTokens: Long? = null,
@@ -303,17 +410,20 @@ data class AccountTokenUsageSummary(
     val longestRunningTurnSec: Long? = null,
 )
 
+/** Token count for a server-reported date bucket; [startDate] retains the original date string. */
 @Serializable
 data class AccountTokenUsageDailyBucket(
     val startDate: String,
     val tokens: Long,
 )
 
+/** Explicit request to send a credit or usage-limit nudge email; reading account limits does not send it. */
 @Serializable
 data class SendAddCreditsNudgeEmailParams(
     val creditType: AddCreditsNudgeCreditType,
 )
 
+/** Credit or usage-limit category selected for an account nudge email; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class AddCreditsNudgeCreditType(val value: String) {
@@ -323,11 +433,13 @@ value class AddCreditsNudgeCreditType(val value: String) {
     }
 }
 
+/** Server result of a nudge email request, including suppression by an active cooldown. */
 @Serializable
 data class SendAddCreditsNudgeEmailResult(
     val status: AddCreditsNudgeEmailStatus,
 )
 
+/** Whether the nudge was sent or withheld by cooldown; unknown wire strings are retained. */
 @Serializable
 @JvmInline
 value class AddCreditsNudgeEmailStatus(val value: String) {

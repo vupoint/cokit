@@ -16,6 +16,7 @@ data class UserVerificationStatusResult(
     override fun toString(): String = "UserVerificationStatusResult(unavailableReason=$unavailableReason)"
 }
 
+/** Experimental reason local user verification is unavailable; arbitrary strings preserve new reasons. */
 @ExperimentalCodexApi
 @Serializable
 @JvmInline
@@ -27,6 +28,11 @@ value class UserVerificationUnavailableReason(val value: String) {
     }
 }
 
+/**
+ * Experimental authenticator enrollment output, including any reported public key.
+ *
+ * Its string representation redacts credential and key fields.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class UserVerificationEnrollResult(
@@ -37,7 +43,13 @@ data class UserVerificationEnrollResult(
     override fun toString(): String = "UserVerificationEnrollResult([redacted])"
 }
 
-/** Signs only caller-approved display context and a backend-supplied challenge. */
+/**
+ * Signs only caller-approved display context and a backend-supplied challenge.
+ *
+ * @property challenge Canonical unpadded base64url encoding of 1 to 4096 challenge bytes.
+ * @property title Display title containing 1 to 256 UTF-8 bytes.
+ * @property description Display description containing at most 4096 UTF-8 bytes.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class UserVerificationVerifyParams(val challenge: String, val title: String, val description: String) {
@@ -55,12 +67,18 @@ data class UserVerificationVerifyParams(val challenge: String, val title: String
     override fun toString(): String = "UserVerificationVerifyParams([redacted])"
 }
 
+/**
+ * Experimental signature proof to forward to the challenge issuer for validation.
+ *
+ * Its string representation redacts the credential ID and signature.
+ */
 @ExperimentalCodexApi
 @Serializable
 data class UserVerificationProof(val credentialId: String, val signature: String) {
     override fun toString(): String = "UserVerificationProof([redacted])"
 }
 
+/** Experimental verification output containing the generated signature proof. */
 @ExperimentalCodexApi
 @Serializable
 data class UserVerificationVerifyResult(val proof: UserVerificationProof)

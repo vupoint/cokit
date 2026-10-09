@@ -16,6 +16,7 @@ import kotlinx.serialization.json.put
 /** Request cursor for item history; response cursors remain [CodexCursor] strings. */
 @Serializable(with = ThreadItemsListCursorSerializer::class)
 sealed interface ThreadItemsListCursor {
+    /** Reuses a response pagination token without interpreting its contents. */
     data class Opaque(val cursor: CodexCursor) : ThreadItemsListCursor
 
     /** Exclusive position within the turn selected by [ThreadItemsListParams.turnId]. */
@@ -26,6 +27,7 @@ sealed interface ThreadItemsListCursor {
     }
 }
 
+/** JSON serializer for opaque string cursors and structured exclusive item anchors. */
 object ThreadItemsListCursorSerializer : KSerializer<ThreadItemsListCursor> {
     override val descriptor = JsonElement.serializer().descriptor
 
@@ -56,6 +58,12 @@ object ThreadItemsListCursorSerializer : KSerializer<ThreadItemsListCursor> {
     }
 }
 
+/**
+ * Pagination for raw thread-item history.
+ *
+ * A [ThreadItemsListCursor.ItemAnchor] requires a non-blank [turnId] selecting its turn.
+ * Null pagination and ordering options are omitted and use server defaults.
+ */
 @Serializable
 data class ThreadItemsListParams(
     val threadId: ThreadId,
@@ -71,6 +79,14 @@ data class ThreadItemsListParams(
     }
 }
 
+/**
+ * Raw history item paired with its owning turn.
+ *
+ * [item] retains the complete JSON item, including unknown types and fields.
+ *
+ * @property startedAtMs Optional item start timestamp in Unix milliseconds.
+ * @property completedAtMs Optional item completion timestamp in Unix milliseconds.
+ */
 @Serializable
 data class ThreadItemEntry(
     val turnId: TurnId,
@@ -79,6 +95,7 @@ data class ThreadItemEntry(
     val completedAtMs: Long? = null,
 )
 
+/** Page of raw history items with opaque continuation tokens for either direction. */
 @Serializable
 data class ThreadItemsListResult(
     val data: List<ThreadItemEntry>,
@@ -90,6 +107,7 @@ data class ThreadItemsListResult(
 @Serializable
 data class ThreadRevertParams(val threadId: ThreadId, val beforeTurnId: TurnId)
 
+/** Thread snapshot and pagination cursors after conversation history was reverted. */
 @Serializable
 data class ThreadRevertResult(
     val thread: Thread,
@@ -97,6 +115,7 @@ data class ThreadRevertResult(
     val turnsBackwardsCursor: CodexCursor? = null,
 )
 
+/** History representation reported by the server: legacy inline history or paginated history. */
 @Serializable
 @JvmInline
 value class ThreadHistoryMode(val value: String) {
@@ -106,9 +125,11 @@ value class ThreadHistoryMode(val value: String) {
     }
 }
 
+/** Thread runtime state and optional active-state flags such as waiting for approval. */
 @Serializable
 data class ThreadStatus(val type: ThreadStatusType, val activeFlags: List<ThreadActiveFlag>? = null)
 
+/** Additional reason an active thread is waiting; unknown string values remain representable. */
 @Serializable
 @JvmInline
 value class ThreadActiveFlag(val value: String) {
@@ -118,12 +139,14 @@ value class ThreadActiveFlag(val value: String) {
     }
 }
 
+/** Server collaboration mode and its effective model and instruction settings. */
 @Serializable
 data class ThreadCollaborationMode(
     val mode: io.github.vupoint.cokit.client.environment.CollaborationModeKind,
     val settings: ThreadCollaborationSettings,
 )
 
+/** Model settings included in a collaboration-mode snapshot. Null fields have no reported value. */
 @Serializable
 data class ThreadCollaborationSettings(
     val model: ModelName,

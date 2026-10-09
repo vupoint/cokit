@@ -9,14 +9,25 @@ import io.github.vupoint.cokit.client.SandboxMode
 import io.github.vupoint.cokit.client.environment.PermissionProfileId
 import kotlinx.serialization.Serializable
 
+/** Empty parameters for reading app-server managed configuration requirements. */
 @Serializable
 data object ManagedPolicyReadParams
 
+/** Managed requirements snapshot; null [requirements] means no requirements payload was reported. */
 @Serializable
 data class ManagedPolicyReadResult(
     val requirements: ManagedPolicyRequirements? = null,
 )
 
+/**
+ * Read-only constraints reported by app-server. CoKit preserves them without relaxing policy or granting access; null members are unspecified, not affirmative permissions.
+ *
+ * @property allowedPermissionProfiles Server-reported availability by profile id.
+ * @property defaultPermissions Optional managed default profile.
+ * @property featureRequirements Required feature states by server-defined key.
+ * @property modelProviders Opaque managed provider configuration.
+ * @property additionalDeveloperInstructions Managed instructions supplied by the server.
+ */
 @Serializable
 data class ManagedPolicyRequirements(
     val allowedApprovalPolicies: List<ApprovalPolicy>? = null,
@@ -52,6 +63,7 @@ data class ManagedPolicyRequirements(
     val models: ManagedModelsRequirements? = null,
 )
 
+/** Managed web-search mode selector; unknown wire strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedWebSearchMode(val value: String) {
@@ -62,6 +74,7 @@ value class ManagedWebSearchMode(val value: String) {
     }
 }
 
+/** Managed Windows sandbox implementation selector; unknown wire strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedWindowsSandboxSetupMode(val value: String) {
@@ -72,6 +85,7 @@ value class ManagedWindowsSandboxSetupMode(val value: String) {
     }
 }
 
+/** Managed data residency requirement reported by the server; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedResidencyRequirement(val value: String) {
@@ -80,11 +94,15 @@ value class ManagedResidencyRequirement(val value: String) {
     }
 }
 
+/** Managed restriction on computer use while the host is locked; null leaves the requirement unspecified. */
 @Serializable
 data class ManagedComputerUseRequirements(
     val allowLockedComputerUse: Boolean? = null,
 )
 
+/**
+ * Legacy managed network constraints retained for older servers. Null fields are unspecified and do not grant network or socket access.
+ */
 @Serializable
 data class ManagedNetworkRequirements(
     val enabled: Boolean? = null,
@@ -99,6 +117,7 @@ data class ManagedNetworkRequirements(
     val allowLocalBinding: Boolean? = null,
 )
 
+/** Allow or deny rule in legacy managed network requirements; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedNetworkPermission(val value: String) {
@@ -108,6 +127,7 @@ value class ManagedNetworkPermission(val value: String) {
     }
 }
 
+/** Authentication methods permitted by managed policy; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedLoginMethod(val value: String) {
@@ -117,6 +137,7 @@ value class ManagedLoginMethod(val value: String) {
     }
 }
 
+/** Managed credential storage selection, including ephemeral storage; CoKit does not implement or change the store itself. */
 @Serializable
 @JvmInline
 value class ManagedCredentialsStore(val value: String) {
@@ -128,18 +149,23 @@ value class ManagedCredentialsStore(val value: String) {
     }
 }
 
+/** Managed automatic-review rules and model restrictions; null lists leave those requirements unspecified. */
 @Serializable
 data class ManagedAutoReviewRequirements(val ignoreRules: List<String>? = null, val requiredOnModels: List<String>? = null)
 
+/** Managed permission for importing external browser settings; an unspecified value is not a local authorization. */
 @Serializable
 data class ManagedInAppBrowserRequirements(val allowExternalBrowserSettingsImport: Boolean? = null)
 
+/** Managed feedback enablement; null indicates no reported requirement. */
 @Serializable
 data class ManagedFeedbackRequirements(val enabled: Boolean? = null)
 
+/** Optional managed model defaults applied to new threads by app-server. */
 @Serializable
 data class ManagedModelsRequirements(val newThread: ManagedNewThreadModelDefaults? = null)
 
+/** Managed model, reasoning effort, and service-tier defaults for newly created threads. */
 @Serializable
 data class ManagedNewThreadModelDefaults(
     val model: ModelName? = null,
@@ -147,6 +173,7 @@ data class ManagedNewThreadModelDefaults(
     val serviceTier: ServiceTier? = null,
 )
 
+/** Managed browser access and approval restrictions. CoKit exposes these as policy state rather than browser capabilities. */
 @Serializable
 data class ManagedBrowserUseRequirements(
     val allowGlobalPersistentApproval: Boolean? = null,
@@ -157,6 +184,7 @@ data class ManagedBrowserUseRequirements(
     val origins: Map<String, ManagedBrowserOriginPolicy>? = null,
 )
 
+/** Managed access, upload, download, and approval rules for a browser origin; null members are unspecified rather than allowed. */
 @Serializable
 data class ManagedBrowserOriginPolicy(
     val access: ManagedRequirementDecision? = null,
@@ -168,6 +196,7 @@ data class ManagedBrowserOriginPolicy(
     val uploads: ManagedRequirementDecision? = null,
 )
 
+/** Explicit allow or deny decision in managed browser requirements; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedRequirementDecision(val value: String) {
@@ -177,6 +206,7 @@ value class ManagedRequirementDecision(val value: String) {
     }
 }
 
+/** Managed browser approval lifetime, scoped to a turn or thread; unknown strings are retained. */
 @Serializable
 @JvmInline
 value class ManagedBrowserApprovalLifetime(val value: String) {

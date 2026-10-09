@@ -15,10 +15,13 @@ import kotlinx.serialization.json.longOrNull
 /** Outbound JSON-RPC request identity, for operations that cancel a specific request. */
 @Serializable(with = CodexRequestIdSerializer::class)
 sealed interface CodexRequestId {
+    /** Preserves an integer JSON-RPC request ID without converting it to a string. */
     data class Number(val value: Long) : CodexRequestId
+    /** Preserves a string JSON-RPC request ID without numeric coercion. */
     data class StringId(val value: String) : CodexRequestId
 }
 
+/** JSON serializer that retains the numeric or string form of an outbound request ID. */
 object CodexRequestIdSerializer : KSerializer<CodexRequestId> {
     override val descriptor = PrimitiveSerialDescriptor("CodexRequestId", PrimitiveKind.STRING)
 
