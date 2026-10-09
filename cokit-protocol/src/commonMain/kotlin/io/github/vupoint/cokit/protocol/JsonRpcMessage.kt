@@ -41,12 +41,17 @@ data class JsonRpcNotification(
 /**
  * Response carrying a result or error for a previously sent request.
  *
- * Construction does not enforce mutually exclusive [result] and [error] values;
- * decoding through [JsonRpcMessageSerializer] rejects envelopes containing both fields.
+ * A wire response must contain exactly one of `result` and `error`. Construction and encoding do
+ * not enforce this invariant; [JsonRpcMessageSerializer] rejects envelopes with both fields or
+ * neither field when decoding.
+ *
+ * [CodexProtocolJson] omits default-valued Kotlin `null` properties. For a successful JSON `null`
+ * response, pass [kotlinx.serialization.json.JsonNull] as [result]; `JsonRpcResponse(id)` alone
+ * omits both fields and is not a valid wire response.
  *
  * @property id Identifier copied from the request, including its JSON kind.
- * @property result Optional successful JSON result; `null` by default.
- * @property error Optional failure details; `null` by default.
+ * @property result Successful JSON result; default Kotlin `null` omits the field.
+ * @property error Failure details, supplied instead of a result; default Kotlin `null` omits the field.
  */
 @Serializable
 data class JsonRpcResponse(
