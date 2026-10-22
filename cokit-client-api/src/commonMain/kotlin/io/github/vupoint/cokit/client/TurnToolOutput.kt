@@ -17,7 +17,13 @@ import kotlinx.serialization.json.encodeToJsonElement
 
 /** Tool result supplied as turn input, identified by [name] and optional [namespace]. */
 @Serializable
-data class TurnToolOutput(val name: String, val output: ToolOutputBody, val namespace: String? = null)
+data class TurnToolOutput(
+    val name: String,
+    val output: ToolOutputBody,
+    val namespace: String? = null,
+    /** Requests retention in the thread's model history; false is omitted. */
+    val retain: Boolean = false,
+)
 
 /** Tool-result body encoded as either a JSON string or an array of typed content elements. */
 @Serializable(with = ToolOutputBodySerializer::class)

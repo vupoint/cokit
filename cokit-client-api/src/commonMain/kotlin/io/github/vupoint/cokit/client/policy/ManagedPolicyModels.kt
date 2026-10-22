@@ -17,6 +17,8 @@ data object ManagedPolicyReadParams
 @Serializable
 data class ManagedPolicyReadResult(
     val requirements: ManagedPolicyRequirements? = null,
+    /** True means Fast and Ultra Fast use independent feature gates; absence retains legacy semantics. */
+    val supportsIndependentSpeedModes: Boolean? = null,
 )
 
 /**
@@ -182,7 +184,18 @@ data class ManagedBrowserUseRequirements(
     val defaultOriginPolicy: ManagedBrowserOriginPolicy? = null,
     val disableAutoReview: Boolean? = null,
     val origins: Map<String, ManagedBrowserOriginPolicy>? = null,
+    val extension: ManagedBrowserExtensionRequirements? = null,
 )
+
+/** Browser-extension request headers reported by managed policy; CoKit does not send them. */
+@Serializable
+data class ManagedBrowserExtensionRequirements(val requestHeaders: List<ManagedRequestHeader>? = null)
+
+/** An untrusted managed header value. Diagnostic string output omits its contents. */
+@Serializable
+data class ManagedRequestHeader(val name: String, val value: String) {
+    override fun toString(): String = "ManagedRequestHeader(<redacted>)"
+}
 
 /** Managed access, upload, download, and approval rules for a browser origin; null members are unspecified rather than allowed. */
 @Serializable

@@ -167,7 +167,6 @@ class ModelCatalogRpcTest {
                 result = buildJsonObject {
                     put("webSearch", true)
                     put("imageGeneration", false)
-                    put("namespaceTools", true)
                 },
             ),
         )
@@ -176,7 +175,6 @@ class ModelCatalogRpcTest {
             ModelProviderCapabilities(
                 webSearch = true,
                 imageGeneration = false,
-                namespaceTools = true,
             ),
             result.await(),
         )

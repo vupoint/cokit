@@ -36,6 +36,8 @@ private fun StartTurnRequest.toRpcParams(): TurnStartParams = TurnStartParams(
     summary = summary,
     outputSchema = outputSchema,
     personality = personality,
+    parentTurnId = parentTurnId,
+    rootTurnId = rootTurnId,
 )
 
 private fun SteerTurnRequest.toRpcParams(): TurnSteerParams = TurnSteerParams(

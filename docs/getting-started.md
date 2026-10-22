@@ -163,7 +163,7 @@ all documented outcomes before invoking that mutation.
 
 ## Sections And Paginated History
 
-The 0.160.0 baseline uses sections in place of the old `isPinned` filter.
+The current baseline uses sections in place of the old `isPinned` filter.
 Omitting `sectionId` leaves the filter unset; explicit null selects threads that
 are not in any section:
 
@@ -279,3 +279,49 @@ own display decisions and resource loading. CoKit supplies metadata only.
 Treat only `TurnStatus.Completed` as successful completion. A `TurnCompleted`
 notification can carry `TurnStatus.Interrupted` and an error such as
 `tooManyDenials`; there may be no separate `CodexNotification.Error` event.
+
+## Codex 0.163.0 thread metadata
+
+Exclude separately loaded threads while paging the remaining history. Reuse the
+same exclusion list and filters with each cursor; invalid IDs and more than 100
+entries are rejected by app-server.
+
+```kotlin
+val page = client.threads.list(
+    ListThreadsRequest(excludedThreadIds = alreadyLoadedThreadIds, limit = 25),
+)
+val owners = client.request(
+    CodexRpc.ThreadAttachmentOwner.List,
+    ThreadAttachmentOwnerListParams(
+        attachmentType = "pull_request",
+        identityKey = canonicalAttachmentIdentity,
+        archived = false,
+    ),
+)
+```
+
+Attachment owners describe current membership in this server's store. The lookup
+is not an atomic check for deciding whether an external resource can be deleted.
+
+For experimental read receipts, initialize with `experimentalApi = true` and
+opt into `ExperimentalCodexApi` at the Kotlin usage site. Read the receipt through
+`CodexRpc.Thread.Read`; high-level `client.threads.read` returns the shared `Thread`
+snapshot, which does not contain a receipt.
+
+```kotlin
+val snapshot = client.request(CodexRpc.Thread.Read, ThreadReadParams(threadId))
+val receipt = snapshot.readState
+// Run only in response to an explicit action on this displayed snapshot.
+if (receipt != null) {
+    client.request(
+        CodexRpc.ThreadReadState.Update,
+        ThreadReadStateUpdateParams(threadId, receipt.revision, ThreadReadStateOperation.Read),
+    )
+}
+```
+
+A null receipt means unavailable. A receipt whose `firstUnread` is null means
+read. On `readStateConflict`, refresh and wait for a new user action; do not retry
+the previous edit with the refreshed revision. Reading/listing alone never marks
+activity as read. See [protocol compatibility](protocol-compatibility.md#codex-01630-alignment)
+for the provider-capability migration and remaining experimental boundaries.

@@ -111,6 +111,7 @@ internal class DefaultCodexClient(
             "${method.method} requires InitializeCapabilities(experimentalApi = true)"
         }
         if (params is ThreadStartParams) params.requireDynamicToolsOptIn(experimentalApi)
+        if (params is ThreadForkParams) params.requirePredictionModeOptIn(experimentalApi)
         return rpc.request(method, params, onRequestId)
     }
 

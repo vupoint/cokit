@@ -67,6 +67,7 @@ data class SkillMetadata(
     val name: SkillName,
     val description: String,
     val enabled: Boolean,
+    /** Server-native path string, which may be a file URI for a remote environment; never resolve it locally. */
     val path: CodexHostPath,
     val scope: SkillScope,
     val shortDescription: String? = null,

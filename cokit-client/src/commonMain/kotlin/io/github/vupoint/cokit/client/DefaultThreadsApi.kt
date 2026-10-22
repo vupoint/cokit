@@ -19,12 +19,14 @@ internal class DefaultThreadsApi(
     }
 
     override suspend fun fork(request: ForkThreadRequest): Thread {
-        return rpc.request(CodexRpc.Thread.Fork, request.toRpcParams()).thread
+        val params = request.toRpcParams()
+        params.requirePredictionModeOptIn(experimentalApi)
+        return rpc.request(CodexRpc.Thread.Fork, params).thread
     }
 
     override suspend fun list(request: ListThreadsRequest): ThreadList {
         val decoded = rpc.request(CodexRpc.Thread.List, request.toRpcParams())
-        return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor)
+        return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor, decoded.readStates)
     }
 
     override suspend fun listLoaded(request: ListLoadedThreadsRequest): LoadedThreadList {
@@ -107,7 +109,14 @@ private fun ForkThreadRequest.toRpcParams(): ThreadForkParams = ThreadForkParams
     model = model,
     modelProvider = modelProvider,
     serviceTier = serviceTier,
+    experimentalPredictionMode = experimentalPredictionMode,
 )
+
+internal fun ThreadForkParams.requirePredictionModeOptIn(experimentalApi: Boolean) {
+    require(experimentalPredictionMode == null || experimentalApi) {
+        "Prediction forks require InitializeCapabilities(experimentalApi = true)"
+    }
+}
 
 private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParams(
     sourceKinds = sourceKinds,
@@ -122,6 +131,7 @@ private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParam
     searchTerm = searchTerm,
     sortDirection = sortDirection,
     sortKey = sortKey,
+    excludedThreadIds = excludedThreadIds,
 )
 
 private fun ReadThreadRequest.toRpcParams(): ThreadReadParams = ThreadReadParams(

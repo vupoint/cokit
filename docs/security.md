@@ -425,4 +425,40 @@ An interrupted turn may carry `tooManyDenials` without a separate error event.
 Applications must check terminal turn status and preserve its error; the sample
 fails interrupted runs instead of reporting success. This does not alter approval
 defaults or Guardian configuration. Experimental bearer-token environment params
-and all unreleased main protocol changes are excluded from this upgrade.
+and unreleased main protocol changes remain excluded from the current baseline.
+
+## Codex 0.163.0 contract boundaries
+
+Read-state edits, prediction requests, bounded item reads and Bedrock advisories
+require Kotlin opt-in and experimental initialization. Prediction fork fields are
+checked before sending through either request overload or the high-level facade.
+Environment registration now enforces the initialization gate locally as well.
+Approval handling and transport limits are unchanged and remain deny-by-default.
+
+Read-state revisions are opaque compare-and-set tokens scoped to one thread and
+store. A conflict retains the server's current receipt in error data; CoKit never
+retries an edit or marks activity read from a snapshot. Applications must obtain a
+fresh user action after refreshing a conflict. Unknown receipt/prediction variants
+retain their JSON; malformed known payloads do not become successful typed events.
+Item-read requests require 1 to 100 IDs. No automatic page filling or new buffers
+are introduced. Server thread-list failures and shutdown admission reasons remain
+errors, with no fallback to a successful empty list or automatic replay.
+
+Goal origins carry caller-supplied provenance. Missing origin does not authorize a
+user-only mutation, and CoKit never supplies `user` implicitly. Attachment-owner
+lookups report current membership in one server store; they do not authorize
+deleting a resource and cannot prove an atomic last-owner condition.
+
+MCP login IDs correlate explicit login attempts. CoKit does not open authorization
+URLs, start replacement login attempts, or retry partially applied configuration
+reloads. MCP OAuth URL/error diagnostics and managed request-header values are
+redacted from model string output. Serialized wire payloads can still contain
+sensitive values and must not be logged indiscriminately.
+
+Environment required skills and WebSocket request IDs are forwarded to app-server,
+which owns execution-host connection, secure-transport/loopback checks and reconnects.
+CoKit does not connect, install skills or send headers itself. Environment model
+diagnostics redact endpoints and request IDs; bearer-token params remain deferred.
+Remote skill file URIs, subagent metadata, and prediction text are data, not local
+paths to open, commands to run or permissions to execute work. The Bedrock GovCloud
+check is advisory and does not certify network policy or authorize login.

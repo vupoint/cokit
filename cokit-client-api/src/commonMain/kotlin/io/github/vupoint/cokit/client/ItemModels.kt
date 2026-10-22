@@ -79,4 +79,8 @@ data class ThreadItemSummary(
     val mcpAppUi: McpAppUi? = null,
     /** Legacy URI retained even when no supported display preference was supplied. */
     val mcpAppResourceUri: McpResourceUri? = null,
+    /** Effective model reported for subagent activity. */
+    val model: ModelName? = null,
+    /** Effective reasoning effort reported for subagent activity. */
+    val reasoningEffort: ReasoningEffort? = null,
 )

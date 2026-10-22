@@ -103,6 +103,22 @@ data class ThreadItemsListResult(
     val backwardsCursor: CodexCursor? = null,
 )
 
+/** Retrieves 1 to 100 persisted items from one turn; results follow canonical stored order. */
+@ExperimentalCodexApi
+@Serializable
+data class ThreadItemsReadParams(
+    val threadId: ThreadId,
+    val turnId: TurnId,
+    val itemIds: List<ItemId>,
+) {
+    init { require(itemIds.size in 1..100) { "Supply 1 to 100 item IDs" } }
+}
+
+/** Selected persisted items; unknown item payloads retain their complete JSON. */
+@ExperimentalCodexApi
+@Serializable
+data class ThreadItemsReadResult(val data: List<ThreadItemEntry>)
+
 /** Replaces paginated conversation history before a turn; does not revert filesystem changes. */
 @Serializable
 data class ThreadRevertParams(val threadId: ThreadId, val beforeTurnId: TurnId)

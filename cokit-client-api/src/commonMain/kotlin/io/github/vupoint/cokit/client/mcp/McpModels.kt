@@ -82,7 +82,11 @@ value class McpServerOauthClientRegistration(val value: String) {
 @Serializable
 data class McpServerOauthLoginResult(
     val authorizationUrl: String,
-)
+    /** Correlates the completion event and can be passed to account/login/cancel. */
+    val loginId: io.github.vupoint.cokit.client.auth.LoginAccountId? = null,
+) {
+    override fun toString(): String = "McpServerOauthLoginResult(hasLoginId=${loginId != null}, authorizationUrl=<redacted>)"
+}
 
 /** Empty parameters requesting reload of app-server MCP configuration. */
 @Serializable

@@ -17,6 +17,27 @@ import kotlinx.serialization.Serializable
 sealed interface CodexNotification {
     val method: String
 
+    /** Experimental receipt change; refresh on conflicting revisions instead of ordering them. */
+    @ExperimentalCodexApi
+    @Serializable
+    data class ThreadReadStateChanged(
+        val threadId: ThreadId,
+        val readState: ThreadReadState,
+    ) : CodexNotification {
+        override val method: String get() = "thread/readState/changed"
+    }
+
+    /** Experimental prediction outcome, correlated to the source turn. */
+    @ExperimentalCodexApi
+    @Serializable
+    data class ThreadPredictionUpdated(
+        val threadId: ThreadId,
+        val sourceTurnId: TurnId,
+        val result: ThreadPredictionResult,
+    ) : CodexNotification {
+        override val method: String get() = "thread/prediction/updated"
+    }
+
     /** Experimental project change signal; re-read the project when its current metadata is needed. */
     @ExperimentalCodexApi
     @Serializable
@@ -201,6 +222,19 @@ sealed interface CodexNotification {
         val error: String? = null,
     ) : CodexNotification {
         override val method: String = "account/login/completed"
+    }
+
+    /** MCP sign-in outcome; match [loginId] to the explicit login attempt when supplied. */
+    @Serializable
+    data class McpServerOauthLoginCompleted(
+        val name: io.github.vupoint.cokit.client.mcp.McpServerName,
+        val success: Boolean,
+        val loginId: LoginAccountId? = null,
+        val threadId: ThreadId? = null,
+        val error: String? = null,
+    ) : CodexNotification {
+        override val method: String get() = "mcpServer/oauthLogin/completed"
+        override fun toString(): String = "McpServerOauthLoginCompleted(success=$success, hasLoginId=${loginId != null}, hasError=${error != null})"
     }
 
     /** Latest rate-limit snapshot pushed by the server. */

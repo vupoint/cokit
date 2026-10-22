@@ -67,6 +67,8 @@ data class Turn(
     val startedAt: CodexTimestamp? = null,
     val completedAt: CodexTimestamp? = null,
     val durationMs: Long? = null,
+    /** Original turn in the chain of delegated work, when reported by the server. */
+    val rootTurnId: TurnId? = null,
 )
 
 /**
@@ -109,6 +111,10 @@ data class StartTurnRequest(
     val summary: ReasoningSummary? = null,
     val outputSchema: CodexJsonPayload? = null,
     val personality: Personality? = null,
+    /** Causing turn for delegated work; ignored when adding input to an active turn. */
+    val parentTurnId: TurnId? = null,
+    /** Original turn in the work chain; omission makes the new turn its own root. */
+    val rootTurnId: TurnId? = null,
 )
 
 /**
