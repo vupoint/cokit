@@ -148,6 +148,16 @@ value class ThreadGoalStatus(val value: String) {
     }
 }
 
+/** Provenance of a goal mutation; applications must not infer user authorization from omission. */
+@Serializable
+@JvmInline
+value class ThreadGoalMutationOrigin(val value: String) {
+    companion object {
+        val User = ThreadGoalMutationOrigin("user")
+        val Automatic = ThreadGoalMutationOrigin("automatic")
+    }
+}
+
 /**
  * Server thread snapshot with metadata and any included turn history.
  *
@@ -299,11 +309,15 @@ object ThreadGitInfoPatchSerializer : KSerializer<ThreadGitInfoPatch> {
  *
  * Reuse non-null cursors unchanged for continuation in the corresponding direction.
  */
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadList(
     val threads: List<Thread> = emptyList(),
     val nextCursor: CodexCursor? = null,
     val backwardsCursor: CodexCursor? = null,
+    /** Eligible rows only; null means durable read state is unavailable. */
+    @ExperimentalCodexApi
+    val readStates: Map<ThreadId, ThreadReadState>? = null,
 )
 
 /**
@@ -384,6 +398,7 @@ data class ResumeThreadRequest(
  * Null configuration overrides are omitted. [lastTurnId] optionally selects the history boundary;
  * [excludeTurns] controls returned turn history.
  */
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ForkThreadRequest(
     val threadId: ThreadId,
@@ -401,6 +416,9 @@ data class ForkThreadRequest(
     val model: ModelName? = null,
     val modelProvider: String? = null,
     val serviceTier: ServiceTier? = null,
+    /** Requires a loaded persisted parent, ephemeral=true, and no config or history overrides. */
+    @ExperimentalCodexApi
+    val experimentalPredictionMode: ThreadPredictionMode? = null,
 )
 
 /**
@@ -425,6 +443,8 @@ data class ListThreadsRequest(
     val searchTerm: String? = null,
     val sortDirection: SortDirection? = null,
     val sortKey: ThreadSortKey? = null,
+    /** Up to 100 IDs, including duplicates; reuse the same exclusions on subsequent pages. */
+    val excludedThreadIds: List<ThreadId>? = null,
 )
 
 /** Reads stored thread metadata through [ThreadsApi.read]; [includeTurns] optionally requests history. */

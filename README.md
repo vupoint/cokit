@@ -8,7 +8,7 @@ separate modules.
 
 ## Status
 
-CoKit is in early development and tracks Codex CLI **0.160.0**. The current codebase includes:
+CoKit is in early development and tracks Codex CLI **0.163.0**. The current codebase includes:
 
 - JSON-RPC protocol envelopes and serializers.
 - A coroutine JSON-RPC session with response correlation and notification flows.
@@ -20,8 +20,11 @@ CoKit is in early development and tracks Codex CLI **0.160.0**. The current code
   thread, turn, model, MCP and managed-policy metadata.
 - Stable item-anchor history cursors, scoped MCP discovery and OAuth options,
   and explicit MCP presentation metadata.
+- Thread exclusions, attachment-owner lookup, OAuth login correlation, turn
+  ancestry and current managed requirements.
 - Opt-in experimental projects, thread queues, local user verification, and
-  client-executed dynamic tools.
+  client-executed dynamic tools, bounded item reads, read receipts, predictions
+  and Bedrock GovCloud advisories.
 - JVM stdio JSONL transport.
 - A guarded integration smoke test for a real local `codex app-server`.
 - A schema generation Gradle workflow for app-server JSON Schema.

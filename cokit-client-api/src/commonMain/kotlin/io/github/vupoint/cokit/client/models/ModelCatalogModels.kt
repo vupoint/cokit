@@ -102,12 +102,11 @@ data class ModelUpgradeInfo(
 @Serializable
 data object ModelProviderCapabilitiesReadParams
 
-/** Server-reported provider support for web search, image generation, and namespace tools. */
+/** Server-reported provider support for web search and image generation. */
 @Serializable
 data class ModelProviderCapabilities(
     val webSearch: Boolean,
     val imageGeneration: Boolean,
-    val namespaceTools: Boolean,
 )
 
 /** Cyber access programs reported for a model; this record does not enroll the account in a program. */

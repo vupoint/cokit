@@ -2,6 +2,7 @@ package io.github.vupoint.cokit.client.environment
 
 import io.github.vupoint.cokit.client.CodexCursor
 import io.github.vupoint.cokit.client.CodexHostPath
+import io.github.vupoint.cokit.client.ExperimentalCodexApi
 import io.github.vupoint.cokit.client.ModelName
 import io.github.vupoint.cokit.client.ReasoningEffort
 import kotlinx.serialization.SerialName
@@ -76,8 +77,21 @@ data class CollaborationModePreset(
  *
  * @property execServerUrl Execution server endpoint, not a URL CoKit opens or verifies locally.
  */
+@OptIn(ExperimentalCodexApi::class)
+@ExperimentalCodexApi
 @Serializable
 data class EnvironmentAddParams(
     val environmentId: EnvironmentId,
     val execServerUrl: String,
-)
+    /** Required skills checked by app-server before inference. */
+    val skills: EnvironmentSkillsParams? = null,
+    /** Direct WebSocket upgrade correlation, including reconnects; requires secure transport or loopback. */
+    val websocketRequestId: String? = null,
+) {
+    override fun toString(): String = "EnvironmentAddParams(environmentId=$environmentId, execServerUrl=<redacted>, hasSkills=${skills != null}, hasWebsocketRequestId=${websocketRequestId != null})"
+}
+
+/** Required environment skill names; omission retains server defaults. */
+@ExperimentalCodexApi
+@Serializable
+data class EnvironmentSkillsParams(val required: List<String>? = null)

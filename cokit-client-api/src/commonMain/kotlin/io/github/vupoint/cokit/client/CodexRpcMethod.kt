@@ -107,6 +107,7 @@ import io.github.vupoint.cokit.client.skills.SkillsExtraRootsSetParams
 import io.github.vupoint.cokit.client.skills.SkillsListParams
 import io.github.vupoint.cokit.client.skills.SkillsListResult
 import io.github.vupoint.cokit.client.auth.GatewayOAuthReadResult
+import io.github.vupoint.cokit.client.auth.BedrockGovCloudRequirementsResult
 import kotlinx.serialization.KSerializer
 
 /**
@@ -438,6 +439,15 @@ object CodexRpc {
             resultSerializer = ThreadItemsListResult.serializer(),
         )
 
+        /** Reads a bounded set of persisted items from one turn in stored order. */
+        @ExperimentalCodexApi
+        val ReadItems: CodexRpcMethod<ThreadItemsReadParams, ThreadItemsReadResult> = CodexRpcMethod(
+            method = "thread/items/read",
+            paramsSerializer = ThreadItemsReadParams.serializer(),
+            resultSerializer = ThreadItemsReadResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
         /** Reverts conversation history to before the requested turn; filesystem changes are not reverted. */
         val Revert: CodexRpcMethod<ThreadRevertParams, ThreadRevertResult> = CodexRpcMethod(
             method = "thread/revert",
@@ -503,6 +513,52 @@ object CodexRpc {
             method = "thread/attachment/remove",
             paramsSerializer = ThreadAttachmentRemoveParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
+        )
+    }
+
+    /** Experimental durable thread read receipts. */
+    @ExperimentalCodexApi
+    object ThreadReadState {
+        /** Applies an explicit receipt edit; stale revisions return an error without automatic retry. */
+        val Update: CodexRpcMethod<ThreadReadStateUpdateParams, ThreadReadStateUpdateResult> = CodexRpcMethod(
+            method = "thread/readState/update",
+            paramsSerializer = ThreadReadStateUpdateParams.serializer(),
+            resultSerializer = ThreadReadStateUpdateResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+    }
+
+    /** Experimental predictions delivered through thread/prediction/updated. */
+    @ExperimentalCodexApi
+    object ThreadPrediction {
+        /** Requests a prediction for the selected source turn. */
+        val Request: CodexRpcMethod<ThreadPredictionRequestParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/prediction/request",
+            paramsSerializer = ThreadPredictionRequestParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            requiresExperimentalApi = true,
+        )
+    }
+
+    /** Experimental provider policy advisories; setup and login remain application-owned. */
+    @ExperimentalCodexApi
+    object Bedrock {
+        /** Checks the active provider's GovCloud requirements without changing login policy. */
+        val CheckGovCloudRequirements: CodexRpcMethod<CodexRpcUnit, BedrockGovCloudRequirementsResult> = CodexRpcMethod(
+            method = "account/bedrock/checkGovCloudRequirements",
+            paramsSerializer = CodexRpcUnit.serializer(),
+            resultSerializer = BedrockGovCloudRequirementsResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+    }
+
+    /** Reverse lookup of stored attachment membership. */
+    object ThreadAttachmentOwner {
+        /** Lists threads with an exact attachment identity in this app-server's store. */
+        val List: CodexRpcMethod<ThreadAttachmentOwnerListParams, ThreadAttachmentOwnerListResult> = CodexRpcMethod(
+            method = "thread/attachmentOwner/list",
+            paramsSerializer = ThreadAttachmentOwnerListParams.serializer(),
+            resultSerializer = ThreadAttachmentOwnerListResult.serializer(),
         )
     }
 
@@ -1040,6 +1096,7 @@ object CodexRpc {
             paramsSerializer = EnvironmentAddParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
+            requiresExperimentalApi = true,
         )
     }
 

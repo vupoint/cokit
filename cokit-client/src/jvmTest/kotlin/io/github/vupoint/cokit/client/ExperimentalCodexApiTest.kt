@@ -7,6 +7,16 @@ import kotlin.test.assertTrue
 
 class ExperimentalCodexApiTest {
     @Test
+    fun stableForkAndSnapshotConstructionDoesNotRequireExperimentalOptIn() {
+        val threadId = ThreadId("thr_1")
+        assertEquals(threadId, ThreadForkParams(threadId).threadId)
+        assertEquals(threadId, ForkThreadRequest(threadId).threadId)
+        assertEquals(emptyList(), ThreadListResult().threads)
+        assertEquals(emptyList(), ThreadList().threads)
+        assertEquals(threadId, ThreadReadResult(Thread(threadId)).thread.id)
+    }
+
+    @Test
     fun markerRequiresExplicitErrorLevelOptIn() {
         val source = loadDocument("cokit-client-api/src/commonMain/kotlin/io/github/vupoint/cokit/client/ExperimentalCodexApi.kt")
 

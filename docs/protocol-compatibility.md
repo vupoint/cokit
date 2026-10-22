@@ -2,10 +2,85 @@
 
 CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 
+## Codex 0.163.0 alignment
+
+The baseline is Codex CLI 0.163.0, release commit
+`83086188ae0614bd882818ff1aa23f3194962012`, reviewed on 2026-10-22.
+The generated stable schema has 105 client requests and 10 server requests;
+the experimental bundle has 172 client requests and 11 server requests.
+CoKit adds the one new stable request and all four new experimental requests.
+
+Stable contract changes since 0.160.0:
+
+- `ModelProviderCapabilities` drops the removed `namespaceTools` property.
+  Remove that constructor argument and property access when upgrading. The
+  latest response decodes with only `webSearch` and `imageGeneration`; old extra
+  response fields are ignored. CoKit does not infer namespace-tool support.
+- `ThreadListParams` and `ListThreadsRequest` expose `excludedThreadIds`.
+  Keep the same exclusions with every cursor. Omission/null/empty excludes
+  nothing; app-server rejects invalid IDs or more than 100 entries with `-32602`.
+  Duplicates count toward the bound and CoKit never truncates or deduplicates.
+  Listing failures (`-32603`), including repeated store cursors, propagate as
+  errors rather than empty exhausted pages.
+- `CodexRpc.ThreadAttachmentOwner.List` finds stored owners by exact attachment
+  type and identity. An omitted archive filter includes active and archived
+  threads. Results are scoped to one store and are not an atomic cleanup check.
+- Goal set/clear params accept `ThreadGoalMutationOrigin.User` or `.Automatic`.
+  Omission does not imply user authorization.
+- MCP OAuth results and `McpServerOauthLoginCompleted` expose optional `loginId`
+  for correlation and cancellation. Older servers may omit it. A successful
+  enterprise login requires a new session to use the saved grant. MCP reload
+  failures can follow successful refreshes of other threads; do not assume rollback.
+- Turn requests forward `parentTurnId` and `rootTurnId`; turn snapshots preserve
+  `rootTurnId`. These ancestry inputs are ignored when adding input to an active
+  turn. `TurnToolOutput.retain` requests retention in model history.
+- Managed requirements expose independent Fast/Ultra Fast gates and browser
+  extension request headers. Header contents are redacted from string output.
+  Item summaries preserve subagent model/reasoning metadata. Skill paths retain
+  server-native strings, including remote file URIs, without local resolution.
+
+New experimental contracts require `ExperimentalCodexApi` and
+`InitializeCapabilities(experimentalApi = true)`:
+
+- `CodexRpc.Thread.ReadItems` retrieves 1–100 persisted item IDs from one turn
+  in stored order, preserving opaque item payloads.
+- `CodexRpc.ThreadReadState.Update` sends the exact receipt revision observed by
+  the application. `ThreadReadResult.readState`, `ThreadListResult.readStates`
+  and `ThreadList.readStates` expose receipts; `thread/readState/changed` is typed.
+  Null receipts mean unavailable; a receipt with `firstUnread = null` means read.
+  Shared `Thread` snapshots do not carry receipts: use `CodexRpc.Thread.Read`
+  after start/resume/fork. Conflicts preserve error data and are never retried.
+- `CodexRpc.ThreadPrediction.Request` acknowledges dispatch; the typed
+  `thread/prediction/updated` event carries completed/failed outcomes. Future
+  variants are preserved. Set `experimentalPredictionMode = ThreadPredictionMode(true)`
+  to request a prediction fork. It requires a loaded, persisted parent,
+  `ephemeral = true`, and no configuration or history overrides; app-server
+  validates those constraints. Both raw and facade fork calls check opt-in locally.
+- `CodexRpc.Bedrock.CheckGovCloudRequirements` exposes an advisory result without
+  changing login policy or certifying the network configuration.
+- Environment registration accepts required skills and `websocketRequestId`.
+  `CodexRpc.Environment.Add` now rejects calls locally without experimental
+  initialization. CoKit does not connect to the execution endpoint itself;
+  app-server requires secure transport or loopback for the request-ID header.
+
+Existing deferred surfaces remain deferred. Upstream also adds realtime voices
+and a `v3` voice list, `partial_answer` message phases, raw response-item status,
+encrypted content and annotations/logprobs, and misalignment review targets.
+`Turn.items`, thread-item history and `Turn.error.codexErrorInfo` preserve
+those fields as opaque payloads. This upgrade does not add typed realtime or
+raw response-item APIs. Environment bearer tokens, connection
+timeouts, info/status and Bedrock discover/setup remain outside the modeled API.
+Experimental notification types present in the stable bundle remain experimental
+according to the upstream capability contract. Post-release main changes are excluded.
+
+Shutdown admission errors preserve `-32600` and
+`data.reason = "serverShuttingDown"` through `JsonRpcRemoteException`.
+The upgrade adds no automatic retries, approvals, authentication or resource deletion.
+
 ## Dynamic Tools (Experimental)
 
 CoKit supports `thread/start.dynamicTools` through `StartThreadRequest` and
-`ThreadStartParams`. Definitions model the 0.160.0 experimental schema's
+`ThreadStartParams`. Definitions model the 0.163.0 experimental schema's
 `type: "function"` and `type: "namespace"` alternatives; namespaces contain
 function definitions only. Function definitions preserve `inputSchema` as
 `CodexJsonPayload` and expose optional `deferLoading` (false is omitted).
@@ -35,19 +110,17 @@ this replaces the earlier approval-shaped `decision: "decline"` placeholder.
 Malformed params return `-32602`, and handler exceptions return generic `-32000`.
 Handlers own permissions and side effects; see [security](security.md#dynamic-tool-execution).
 
-The contract tests use literal payloads checked against the existing generated
-0.160.0 experimental schema. Its aggregate SHA-256 is
-`0c5c56bb19890527ff10c1fc32b069b2afcce7a1463ede19e71f43bb662441af`, matching
+The contract tests use literal payloads checked against the generated
+0.163.0 experimental schema. Its aggregate SHA-256 is
+`1704f041a5237f66853ce58f4ac30fbf52703cf462be901da3309271f52401d2`, matching
 `cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
-The 0.160.0 stable alignment refreshes schema provenance without expanding
-experimental implementation coverage.
 Upstream persists tool definitions for resumed threads; the execution callback
 remains application-owned and must be registered on each new client connection.
 Runtime tool replacement and automatic tool discovery remain deferred.
 
 ## Codex 0.160.0 Stable Alignment
 
-The current baseline is Codex CLI 0.160.0. The stable schema still has 104 client
+The previous baseline was Codex CLI 0.160.0. Its stable schema had 104 client
 requests and 10 server requests; no request descriptors were added or removed by
 this upgrade. Existing experimental APIs keep their opt-in gates and scope.
 The experimental schema is regenerated for provenance, not to enable new APIs;
@@ -83,9 +156,9 @@ The experimental schema is regenerated for provenance, not to enable new APIs;
 - Upstream removed `PluginSummary.extensions` and its supporting types. CoKit did
   not expose these fields, so no compatibility alias or replacement is added.
 
-Unreleased main changes, including removal of provider `namespaceTools`, goal
-mutation origins, OAuth login IDs, attachment-owner lookup and prediction APIs,
-are excluded. `namespaceTools` remains required by the 0.160.0 response schema.
+The 0.163.0 alignment above supersedes the former exclusion of provider
+`namespaceTools` removal, goal origins, OAuth login IDs, attachment-owner lookup
+and prediction APIs, which have now shipped upstream.
 
 ## Codex 0.157.1 Upgrade
 
@@ -123,7 +196,7 @@ enable the matching upstream experimental capability before use.
 Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
 status models require `@ExperimentalCodexApi`, and applications should enable
 the matching upstream experimental capability before use. Current local
-`codex-cli 0.160.0` generated schema exposes the enable/disable params and
+`codex-cli 0.163.0` generated schema exposes the enable/disable params and
 status-changed notification shape; the upstream README also documents the
 `remoteControl/enable`, `remoteControl/disable`, and
 `remoteControl/status/read` request methods.
@@ -195,9 +268,9 @@ remain deny-by-default unless a typed handler is registered.
 ## Upstream Coverage Snapshot
 
 This snapshot was reviewed against the upstream app-server README and generated
-`codex-cli 0.160.0` stable and experimental schemas on 2026-10-05:
+`codex-cli 0.163.0` stable and experimental schemas on 2026-10-22:
 
-https://github.com/openai/codex/blob/rust-v0.160.0/codex-rs/app-server/README.md
+https://github.com/openai/codex/blob/rust-v0.163.0/codex-rs/app-server/README.md
 
 The checked protocol inventory groups upstream request, notification, and
 server-request surfaces by current CoKit coverage:
@@ -215,16 +288,16 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 9 | 8 | 5 | 12 | 114 public `CodexRpc` request descriptors |
-| Notification groups | 6 | 5 | 7 | 8 | Not counted by this helper |
+| Request groups | 9 | 8 | 5 | 13 | 119 public `CodexRpc` request descriptors |
+| Notification groups | 6 | 6 | 6 | 9 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
-The pinned stable schema contains 104 client requests; CoKit exposes 83 of them
-as public descriptors and implements `initialize` internally (84/104, 80.8%).
-The experimental bundle contains 167 client requests, including stable methods;
-CoKit exposes 114 descriptors in total and implements `initialize` internally
-(115/167, 68.9%). These are method counts, not claims of complete field or event
+The pinned stable schema contains 105 client requests; CoKit exposes 84 of them
+as public descriptors and implements `initialize` internally (85/105, 81.0%).
+The experimental bundle contains 172 client requests, including stable methods;
+CoKit exposes 119 descriptors in total and implements `initialize` internally
+(120/172, 69.8%). These are method counts, not claims of complete field or event
 coverage. No current descriptor is absent from the pinned experimental bundle.
 
 Typed notification and server-request coverage is intentionally smaller than the
@@ -273,7 +346,7 @@ Model catalog APIs are modeled as read-only protocol data. `CodexRpc.Model.List`
 returns typed catalog entries with display names, selected provider model names,
 reasoning options, input modalities, service tiers, and pagination cursors.
 `CodexRpc.Model.ReadProviderCapabilities` exposes provider feature flags for web
-search, image generation, and namespace tools without adding UI policy.
+search and image generation without adding UI policy.
 
 Config read and write APIs are partially modeled. `CodexRpc.Config.Read` returns
 the effective app-server config plus optional layer metadata, while keeping
@@ -291,7 +364,7 @@ Permission profile and environment catalog APIs are modeled according to the
 current generated schema. `CodexRpc.PermissionProfile.List` reads server-defined
 permission profile ids and descriptions for an optional host cwd.
 `CodexRpc.CollaborationMode.List` and `CodexRpc.Environment.Add` are
-experimental and require `ExperimentalCodexApi`; current `codex-cli 0.160.0`
+experimental and require `ExperimentalCodexApi`; current `codex-cli 0.163.0`
 schema defines collaboration mode listing and environment registration, but not
 environment list/read or collaboration mode read descriptors.
 
@@ -300,7 +373,7 @@ Skills and hooks APIs are modeled as data-oriented protocol descriptors.
 declarations, and optional interface metadata without loading or executing skill
 content in CoKit. `CodexRpc.Skills.SetExtraRoots` updates the app-server skill
 search roots, and `CodexRpc.Skills.WriteConfig` changes a skill's enabled state
-by name or path. Current `codex-cli 0.160.0` schema defines
+by name or path. Current `codex-cli 0.163.0` schema defines
 `skills/config/write` but not a `skills/config/read` request.
 `CodexRpc.Hooks.List` returns per-cwd hook metadata, warnings, and parse errors
 without executing hook handlers in CoKit.
@@ -563,8 +636,8 @@ Schema provenance is recorded in
 The file records the Codex CLI version, upstream Codex commit, stable schema
 command, experimental schema command, generation timestamp, and canonical
 SHA-256 digests for both schema modes. The current stable baseline is
-`codex-cli 0.160.0` at upstream release commit
-`a956835d020762cb2b570053af06f643a11c0ecc`.
+`codex-cli 0.163.0` at upstream release commit
+`83086188ae0614bd882818ff1aa23f3194962012`.
 
 Run:
 
@@ -591,7 +664,7 @@ schema fixtures or generated DTOs, update the provenance file with:
 
 ```bash
 codex --version
-git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.160.0^{}'
+git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.163.0^{}'
 ```
 
 Then update `generatedAt` to the refresh timestamp. The Gradle schema generation

@@ -97,6 +97,7 @@ data class ThreadResumeResult(
  *
  * [threadId] selects the source conversation; null overrides and history-boundary options are omitted.
  */
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadForkParams(
     val threadId: ThreadId,
@@ -114,6 +115,9 @@ data class ThreadForkParams(
     val model: ModelName? = null,
     val modelProvider: String? = null,
     val serviceTier: ServiceTier? = null,
+    /** Requires a loaded persisted parent, ephemeral=true, and no config or history overrides. */
+    @ExperimentalCodexApi
+    val experimentalPredictionMode: ThreadPredictionMode? = null,
 )
 
 /** New forked thread and its effective server configuration. */
@@ -153,15 +157,21 @@ data class ThreadListParams(
     val searchTerm: String? = null,
     val sortDirection: SortDirection? = null,
     val sortKey: ThreadSortKey? = null,
+    /** Up to 100 IDs, including duplicates; reuse the same exclusions on subsequent pages. */
+    val excludedThreadIds: List<ThreadId>? = null,
 )
 
 /** Thread page from `thread/list`; [threads] is encoded under the wire key `data`. */
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadListResult(
     @SerialName("data")
     val threads: List<Thread> = emptyList(),
     val nextCursor: CodexCursor? = null,
     val backwardsCursor: CodexCursor? = null,
+    /** Eligible rows only; null means durable read state is unavailable. */
+    @ExperimentalCodexApi
+    val readStates: Map<ThreadId, ThreadReadState>? = null,
 )
 
 /** Wire pagination for `thread/loaded/list`, which lists currently loaded server threads. */
@@ -187,9 +197,13 @@ data class ThreadReadParams(
 )
 
 /** Thread snapshot returned by `thread/read`. */
+@OptIn(ExperimentalCodexApi::class)
 @Serializable
 data class ThreadReadResult(
     val thread: Thread,
+    /** Null means unavailable, not read; use this receipt's revision for explicit edits. */
+    @ExperimentalCodexApi
+    val readState: ThreadReadState? = null,
 )
 
 /** Selects a thread for `thread/archive`. */
@@ -257,6 +271,8 @@ data class ThreadGoalSetParams(
     val objective: String? = null,
     val status: ThreadGoalStatus? = null,
     val tokenBudget: Long? = null,
+    /** Missing provenance does not supply user authorization. */
+    val origin: ThreadGoalMutationOrigin? = null,
 )
 
 /** Goal snapshot returned by `thread/goal/set`. */
@@ -281,6 +297,8 @@ data class ThreadGoalGetResult(
 @Serializable
 data class ThreadGoalClearParams(
     val threadId: ThreadId,
+    /** Missing provenance does not supply user authorization. */
+    val origin: ThreadGoalMutationOrigin? = null,
 )
 
 /** Reports whether `thread/goal/clear` cleared a goal. */
@@ -342,6 +360,10 @@ data class TurnStartParams(
     val summary: ReasoningSummary? = null,
     val outputSchema: CodexJsonPayload? = null,
     val personality: Personality? = null,
+    /** Causing turn for delegated work; ignored when adding input to an active turn. */
+    val parentTurnId: TurnId? = null,
+    /** Original turn in the work chain; omission makes the new turn its own root. */
+    val rootTurnId: TurnId? = null,
 )
 
 /** Initial turn snapshot from `turn/start`; notifications report later progress and completion. */
