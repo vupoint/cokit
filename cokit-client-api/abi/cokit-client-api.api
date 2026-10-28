@@ -992,6 +992,11 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Environment {
 	public final fun getAdd ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
 
+public final class io/github/vupoint/cokit/client/CodexRpc$Feedback {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Feedback;
+	public final fun getSave ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+}
+
 public final class io/github/vupoint/cokit/client/CodexRpc$Filesystem {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Filesystem;
 	public final fun getCopy ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1099,6 +1104,7 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Skills {
 public final class io/github/vupoint/cokit/client/CodexRpc$Thread {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Thread;
 	public final fun getArchive ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getCancelSample ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getClearGoal ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getDelete ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getFork ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1110,8 +1116,10 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Thread {
 	public final fun getMoveToSection ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getRead ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getReadItems ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getReadMemory ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getResume ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getRevert ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getSample ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getSetGoal ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getSetName ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getStart ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1408,10 +1416,82 @@ public final class io/github/vupoint/cokit/client/ConfigTextRange$Companion {
 public abstract interface annotation class io/github/vupoint/cokit/client/ExperimentalCodexApi : java/lang/annotation/Annotation {
 }
 
+public final class io/github/vupoint/cokit/client/FeedbackSaveParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/FeedbackSaveParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-hQ5MtTg ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4-8aMyzWk ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Boolean;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/Map;
+	public final fun copy-L2y7a1Q (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/Map;)Lio/github/vupoint/cokit/client/FeedbackSaveParams;
+	public static synthetic fun copy-L2y7a1Q$default (Lio/github/vupoint/cokit/client/FeedbackSaveParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/FeedbackSaveParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClassification ()Ljava/lang/String;
+	public final fun getExtraLogFiles ()Ljava/util/List;
+	public final fun getIncludeLogs ()Ljava/lang/Boolean;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getSavePath-hQ5MtTg ()Ljava/lang/String;
+	public final fun getTags ()Ljava/util/Map;
+	public final fun getThreadId-8aMyzWk ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/FeedbackSaveParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/FeedbackSaveParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/FeedbackSaveParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/FeedbackSaveParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/FeedbackSaveParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/FeedbackSaveResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/FeedbackSaveResult$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-hQ5MtTg ()Ljava/lang/String;
+	public final fun component2-ND13_qQ ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy-Df7oVA8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/FeedbackSaveResult;
+	public static synthetic fun copy-Df7oVA8$default (Lio/github/vupoint/cokit/client/FeedbackSaveResult;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/FeedbackSaveResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPromptHash ()Ljava/lang/String;
+	public final fun getSavedPath-hQ5MtTg ()Ljava/lang/String;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/FeedbackSaveResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/FeedbackSaveResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/FeedbackSaveResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/FeedbackSaveResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/FeedbackSaveResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/ForkThreadRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/ForkThreadRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/Boolean;
 	public final fun component11-TS0qUWw ()Ljava/lang/String;
@@ -1420,6 +1500,8 @@ public final class io/github/vupoint/cokit/client/ForkThreadRequest {
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15-jDxPufw ()Ljava/lang/String;
 	public final fun component16-tMBWMFE ()Lio/github/vupoint/cokit/client/ThreadPredictionMode;
+	public final fun component17-hmR92g4 ()Lio/github/vupoint/cokit/client/ThreadAttachmentMode;
+	public final fun component18-lxdhq28 ()Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component4-GRC-wQg ()Ljava/lang/String;
@@ -1428,17 +1510,19 @@ public final class io/github/vupoint/cokit/client/ForkThreadRequest {
 	public final fun component7-rulvwug ()Ljava/lang/String;
 	public final fun component8-_DN9rSQ ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy-3YSBE48 (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;)Lio/github/vupoint/cokit/client/ForkThreadRequest;
-	public static synthetic fun copy-3YSBE48$default (Lio/github/vupoint/cokit/client/ForkThreadRequest;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ForkThreadRequest;
+	public final fun copy-BqITrrY (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;)Lio/github/vupoint/cokit/client/ForkThreadRequest;
+	public static synthetic fun copy-BqITrrY$default (Lio/github/vupoint/cokit/client/ForkThreadRequest;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ForkThreadRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
+	public final fun getAttachToSource-hmR92g4 ()Lio/github/vupoint/cokit/client/ThreadAttachmentMode;
 	public final fun getBaseInstructions ()Ljava/lang/String;
 	public final fun getConfig ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDeveloperInstructions ()Ljava/lang/String;
 	public final fun getEphemeral ()Ljava/lang/Boolean;
 	public final fun getExcludeTurns ()Ljava/lang/Boolean;
+	public final fun getExperimentalDisablePredictionMcp-lxdhq28 ()Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;
 	public final fun getExperimentalPredictionMode-tMBWMFE ()Lio/github/vupoint/cokit/client/ThreadPredictionMode;
 	public final fun getLastTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getModel-QW4I_Q0 ()Ljava/lang/String;
@@ -1741,13 +1825,14 @@ public final class io/github/vupoint/cokit/client/ListLoadedThreadsRequest$Compa
 
 public final class io/github/vupoint/cokit/client/ListThreadsRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/ListThreadsRequest$Companion;
-	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11-szBUR5Y ()Ljava/lang/String;
 	public final fun component12-1wsEHRc ()Ljava/lang/String;
 	public final fun component13 ()Ljava/util/List;
+	public final fun component14-tGYwG2c ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3-Uss3h8Q ()Ljava/lang/String;
 	public final fun component4 ()Lio/github/vupoint/cokit/client/ThreadListCwdFilter;
@@ -1756,10 +1841,11 @@ public final class io/github/vupoint/cokit/client/ListThreadsRequest {
 	public final fun component7 ()Ljava/lang/Integer;
 	public final fun component8 ()Ljava/util/List;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy-V8LwPpY (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/github/vupoint/cokit/client/ListThreadsRequest;
-	public static synthetic fun copy-V8LwPpY$default (Lio/github/vupoint/cokit/client/ListThreadsRequest;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ListThreadsRequest;
+	public final fun copy-AT0IvFU (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ListThreadsRequest;
+	public static synthetic fun copy-AT0IvFU$default (Lio/github/vupoint/cokit/client/ListThreadsRequest;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ListThreadsRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getArchived ()Ljava/lang/Boolean;
+	public final fun getAttachedToThreadId-tGYwG2c ()Ljava/lang/String;
 	public final fun getCursor-Uss3h8Q ()Ljava/lang/String;
 	public final fun getCwd ()Lio/github/vupoint/cokit/client/ThreadListCwdFilter;
 	public final fun getExcludedThreadIds ()Ljava/util/List;
@@ -2769,8 +2855,8 @@ public final class io/github/vupoint/cokit/client/StartThreadRequest$Companion {
 
 public final class io/github/vupoint/cokit/client/StartTurnRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/StartTurnRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/util/List;
@@ -2783,6 +2869,7 @@ public final class io/github/vupoint/cokit/client/StartTurnRequest {
 	public final fun component18-Hz2D6DE ()Ljava/lang/String;
 	public final fun component19-Hz2D6DE ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
+	public final fun component20-zTDrQdE ()Ljava/util/Map;
 	public final fun component3-rulvwug ()Ljava/lang/String;
 	public final fun component4 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component5-GRC-wQg ()Ljava/lang/String;
@@ -2790,8 +2877,8 @@ public final class io/github/vupoint/cokit/client/StartTurnRequest {
 	public final fun component7-jDxPufw ()Ljava/lang/String;
 	public final fun component8-jDxPufw ()Ljava/lang/String;
 	public final fun component9 ()Lio/github/vupoint/cokit/client/TurnToolOutput;
-	public final fun copy-9EBQA5A (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/StartTurnRequest;
-	public static synthetic fun copy-9EBQA5A$default (Lio/github/vupoint/cokit/client/StartTurnRequest;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/StartTurnRequest;
+	public final fun copy-HmuCA74 (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lio/github/vupoint/cokit/client/StartTurnRequest;
+	public static synthetic fun copy-HmuCA74$default (Lio/github/vupoint/cokit/client/StartTurnRequest;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/StartTurnRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
@@ -2804,6 +2891,7 @@ public final class io/github/vupoint/cokit/client/StartTurnRequest {
 	public final fun getOutputSchema ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getParentTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getPersonality-NjkVTUE ()Ljava/lang/String;
+	public final fun getResponsesapiClientMetadataPatch-zTDrQdE ()Ljava/util/Map;
 	public final fun getRootTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getSandboxPolicy ()Lio/github/vupoint/cokit/client/SandboxPolicy;
 	public final fun getServiceTier-jDxPufw ()Ljava/lang/String;
@@ -2833,18 +2921,20 @@ public final class io/github/vupoint/cokit/client/StartTurnRequest$Companion {
 
 public final class io/github/vupoint/cokit/client/SteerTurnRequest {
 	public static final field Companion Lio/github/vupoint/cokit/client/SteerTurnRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component2-XuLNRMQ ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4-ythwxgc ()Ljava/lang/String;
-	public final fun copy-Qj3kz4o (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/SteerTurnRequest;
-	public static synthetic fun copy-Qj3kz4o$default (Lio/github/vupoint/cokit/client/SteerTurnRequest;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/SteerTurnRequest;
+	public final fun component5-zTDrQdE ()Ljava/util/Map;
+	public final fun copy-28vJQNo (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;)Lio/github/vupoint/cokit/client/SteerTurnRequest;
+	public static synthetic fun copy-28vJQNo$default (Lio/github/vupoint/cokit/client/SteerTurnRequest;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/SteerTurnRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getClientUserMessageId-ythwxgc ()Ljava/lang/String;
 	public final fun getExpectedTurnId-XuLNRMQ ()Ljava/lang/String;
 	public final fun getInput ()Ljava/util/List;
+	public final fun getResponsesapiClientMetadataPatch-zTDrQdE ()Ljava/util/Map;
 	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -3001,6 +3091,36 @@ public final synthetic class io/github/vupoint/cokit/client/ThreadArchiveParams$
 }
 
 public final class io/github/vupoint/cokit/client/ThreadArchiveParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachedTo {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachedTo$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadAttachedTo;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachedTo$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachedTo$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-OhCWvdM (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-Yz7tKpM (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachedTo$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -3222,6 +3342,36 @@ public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentList
 }
 
 public final class io/github/vupoint/cokit/client/ThreadAttachmentListResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentMode {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadAttachmentMode$Companion;
+	public static final synthetic fun box-impl (Z)Lio/github/vupoint/cokit/client/ThreadAttachmentMode;
+	public static fun constructor-impl (Z)Z
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ZLjava/lang/Object;)Z
+	public static final fun equals-impl0 (ZZ)Z
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Z)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Z)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Z
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadAttachmentMode$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadAttachmentMode$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-IzAzrKI (Lkotlinx/serialization/encoding/Decoder;)Z
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-Rve3e9M (Lkotlinx/serialization/encoding/Encoder;Z)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadAttachmentMode$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -3500,8 +3650,8 @@ public final class io/github/vupoint/cokit/client/ThreadDeleteParams$Companion {
 
 public final class io/github/vupoint/cokit/client/ThreadForkParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadForkParams$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/Boolean;
 	public final fun component11-TS0qUWw ()Ljava/lang/String;
@@ -3510,6 +3660,8 @@ public final class io/github/vupoint/cokit/client/ThreadForkParams {
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15-jDxPufw ()Ljava/lang/String;
 	public final fun component16-tMBWMFE ()Lio/github/vupoint/cokit/client/ThreadPredictionMode;
+	public final fun component17-hmR92g4 ()Lio/github/vupoint/cokit/client/ThreadAttachmentMode;
+	public final fun component18-lxdhq28 ()Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component4-GRC-wQg ()Ljava/lang/String;
@@ -3518,17 +3670,19 @@ public final class io/github/vupoint/cokit/client/ThreadForkParams {
 	public final fun component7-rulvwug ()Ljava/lang/String;
 	public final fun component8-_DN9rSQ ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy-3YSBE48 (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;)Lio/github/vupoint/cokit/client/ThreadForkParams;
-	public static synthetic fun copy-3YSBE48$default (Lio/github/vupoint/cokit/client/ThreadForkParams;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadForkParams;
+	public final fun copy-BqITrrY (Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;)Lio/github/vupoint/cokit/client/ThreadForkParams;
+	public static synthetic fun copy-BqITrrY$default (Lio/github/vupoint/cokit/client/ThreadForkParams;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadPredictionMode;Lio/github/vupoint/cokit/client/ThreadAttachmentMode;Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadForkParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
+	public final fun getAttachToSource-hmR92g4 ()Lio/github/vupoint/cokit/client/ThreadAttachmentMode;
 	public final fun getBaseInstructions ()Ljava/lang/String;
 	public final fun getConfig ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDeveloperInstructions ()Ljava/lang/String;
 	public final fun getEphemeral ()Ljava/lang/Boolean;
 	public final fun getExcludeTurns ()Ljava/lang/Boolean;
+	public final fun getExperimentalDisablePredictionMcp-lxdhq28 ()Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;
 	public final fun getExperimentalPredictionMode-tMBWMFE ()Lio/github/vupoint/cokit/client/ThreadPredictionMode;
 	public final fun getLastTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getModel-QW4I_Q0 ()Ljava/lang/String;
@@ -4349,13 +4503,14 @@ public final class io/github/vupoint/cokit/client/ThreadListCwdFilter$Single : i
 
 public final class io/github/vupoint/cokit/client/ThreadListParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadListParams$Companion;
-	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11-szBUR5Y ()Ljava/lang/String;
 	public final fun component12-1wsEHRc ()Ljava/lang/String;
 	public final fun component13 ()Ljava/util/List;
+	public final fun component14-tGYwG2c ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3-Uss3h8Q ()Ljava/lang/String;
 	public final fun component4 ()Lio/github/vupoint/cokit/client/ThreadListCwdFilter;
@@ -4364,10 +4519,11 @@ public final class io/github/vupoint/cokit/client/ThreadListParams {
 	public final fun component7 ()Ljava/lang/Integer;
 	public final fun component8 ()Ljava/util/List;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy-V8LwPpY (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/github/vupoint/cokit/client/ThreadListParams;
-	public static synthetic fun copy-V8LwPpY$default (Lio/github/vupoint/cokit/client/ThreadListParams;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadListParams;
+	public final fun copy-AT0IvFU (Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadListParams;
+	public static synthetic fun copy-AT0IvFU$default (Lio/github/vupoint/cokit/client/ThreadListParams;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadListCwdFilter;Lio/github/vupoint/cokit/client/CodexOptional;Ljava/util/List;Ljava/lang/Integer;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadListParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getArchived ()Ljava/lang/Boolean;
+	public final fun getAttachedToThreadId-tGYwG2c ()Ljava/lang/String;
 	public final fun getCursor-Uss3h8Q ()Ljava/lang/String;
 	public final fun getCwd ()Lio/github/vupoint/cokit/client/ThreadListCwdFilter;
 	public final fun getExcludedThreadIds ()Ljava/util/List;
@@ -4493,6 +4649,62 @@ public final class io/github/vupoint/cokit/client/ThreadLoadedListResult$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/ThreadMemoryReadParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadMemoryReadParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun copy-yN270bQ (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadMemoryReadParams;
+	public static synthetic fun copy-yN270bQ$default (Lio/github/vupoint/cokit/client/ThreadMemoryReadParams;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadMemoryReadParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadMemoryReadParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadMemoryReadParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadMemoryReadParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadMemoryReadParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadMemoryReadParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadMemoryReadResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadMemoryReadResult$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadMemoryReadResult;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/ThreadMemoryReadResult;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadMemoryReadResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSummary ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadMemoryReadResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadMemoryReadResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadMemoryReadResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadMemoryReadResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadMemoryReadResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public abstract interface class io/github/vupoint/cokit/client/ThreadMetadataPatchValue {
 }
 
@@ -4575,6 +4787,36 @@ public final synthetic class io/github/vupoint/cokit/client/ThreadMetadataUpdate
 }
 
 public final class io/github/vupoint/cokit/client/ThreadMetadataUpdateResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadPredictionMcpDisabled {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled$Companion;
+	public static final synthetic fun box-impl (Z)Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled;
+	public static fun constructor-impl (Z)Z
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ZLjava/lang/Object;)Z
+	public static final fun equals-impl0 (ZZ)Z
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Z)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Z)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Z
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadPredictionMcpDisabled$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadPredictionMcpDisabled$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-w26Q77U (Lkotlinx/serialization/encoding/Decoder;)Z
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-acmnayU (Lkotlinx/serialization/encoding/Encoder;Z)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadPredictionMcpDisabled$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -5360,6 +5602,113 @@ public final synthetic class io/github/vupoint/cokit/client/ThreadRevertResult$$
 }
 
 public final class io/github/vupoint/cokit/client/ThreadRevertResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleCancelParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadSampleCancelParams$Companion;
+	public fun <init> (Lio/github/vupoint/cokit/client/CodexRequestId;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/CodexRequestId;
+	public final fun copy (Lio/github/vupoint/cokit/client/CodexRequestId;)Lio/github/vupoint/cokit/client/ThreadSampleCancelParams;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/ThreadSampleCancelParams;Lio/github/vupoint/cokit/client/CodexRequestId;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadSampleCancelParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRequestId ()Lio/github/vupoint/cokit/client/CodexRequestId;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadSampleCancelParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadSampleCancelParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadSampleCancelParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadSampleCancelParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleCancelParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadSampleParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2-XuLNRMQ ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4-vJbbHHU ()Ljava/lang/String;
+	public final fun component5-TS0qUWw ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/util/Map;
+	public final fun component8 ()Ljava/lang/Boolean;
+	public final fun copy-r4p41Fk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
+	public static synthetic fun copy-r4p41Fk$default (Lio/github/vupoint/cokit/client/ThreadSampleParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisableMcp ()Ljava/lang/Boolean;
+	public final fun getEffort-vJbbHHU ()Ljava/lang/String;
+	public final fun getExpectedTurnId-XuLNRMQ ()Ljava/lang/String;
+	public final fun getPrompt ()Ljava/lang/String;
+	public final fun getResponsesapiClientMetadata ()Ljava/util/Map;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public final fun getThreadSource-TS0qUWw ()Ljava/lang/String;
+	public final fun getTurnTrigger ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadSampleParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadSampleParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadSampleParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadSampleResult$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-XuLNRMQ ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/Long;
+	public final fun component5 ()Ljava/lang/Long;
+	public final fun component6 ()Ljava/lang/Long;
+	public final fun copy-xlY7YRs (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;)Lio/github/vupoint/cokit/client/ThreadSampleResult;
+	public static synthetic fun copy-xlY7YRs$default (Lio/github/vupoint/cokit/client/ThreadSampleResult;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadSampleResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCachedInputTokens ()Ljava/lang/Long;
+	public final fun getInputTokens ()Ljava/lang/Long;
+	public final fun getOutputTokens ()Ljava/lang/Long;
+	public final fun getResponseId ()Ljava/lang/String;
+	public final fun getSourceTurnId-XuLNRMQ ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadSampleResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadSampleResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadSampleResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadSampleResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadSampleResult$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -6715,10 +7064,40 @@ public final class io/github/vupoint/cokit/client/TurnItemsView$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/TurnMetadataPatch {
+	public static final field Companion Lio/github/vupoint/cokit/client/TurnMetadataPatch$Companion;
+	public static final synthetic fun box-impl (Ljava/util/Map;)Lio/github/vupoint/cokit/client/TurnMetadataPatch;
+	public static fun constructor-impl (Ljava/util/Map;)Ljava/util/Map;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/util/Map;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/util/Map;Ljava/util/Map;)Z
+	public final fun getEntries ()Ljava/util/Map;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/util/Map;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/util/Map;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/util/Map;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/TurnMetadataPatch$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/TurnMetadataPatch$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-QqVBmHE (Lkotlinx/serialization/encoding/Decoder;)Ljava/util/Map;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-lcfHsA8 (Lkotlinx/serialization/encoding/Encoder;Ljava/util/Map;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/TurnMetadataPatch$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/TurnStartParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/TurnStartParams$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/util/List;
@@ -6731,6 +7110,7 @@ public final class io/github/vupoint/cokit/client/TurnStartParams {
 	public final fun component18-Hz2D6DE ()Ljava/lang/String;
 	public final fun component19-Hz2D6DE ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
+	public final fun component20-zTDrQdE ()Ljava/util/Map;
 	public final fun component3-rulvwug ()Ljava/lang/String;
 	public final fun component4 ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun component5-GRC-wQg ()Ljava/lang/String;
@@ -6738,8 +7118,8 @@ public final class io/github/vupoint/cokit/client/TurnStartParams {
 	public final fun component7-jDxPufw ()Ljava/lang/String;
 	public final fun component8-jDxPufw ()Ljava/lang/String;
 	public final fun component9 ()Lio/github/vupoint/cokit/client/TurnToolOutput;
-	public final fun copy-9EBQA5A (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/TurnStartParams;
-	public static synthetic fun copy-9EBQA5A$default (Lio/github/vupoint/cokit/client/TurnStartParams;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/TurnStartParams;
+	public final fun copy-HmuCA74 (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lio/github/vupoint/cokit/client/TurnStartParams;
+	public static synthetic fun copy-HmuCA74$default (Lio/github/vupoint/cokit/client/TurnStartParams;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/vupoint/cokit/client/ApprovalPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/TurnToolOutput;Ljava/lang/String;Ljava/util/List;Lio/github/vupoint/cokit/client/SandboxPolicy;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/TurnStartParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getApprovalPolicy ()Lio/github/vupoint/cokit/client/ApprovalPolicy;
 	public final fun getApprovalsReviewer-GRC-wQg ()Ljava/lang/String;
@@ -6752,6 +7132,7 @@ public final class io/github/vupoint/cokit/client/TurnStartParams {
 	public final fun getOutputSchema ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getParentTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getPersonality-NjkVTUE ()Ljava/lang/String;
+	public final fun getResponsesapiClientMetadataPatch-zTDrQdE ()Ljava/util/Map;
 	public final fun getRootTurnId-Hz2D6DE ()Ljava/lang/String;
 	public final fun getSandbox ()Lio/github/vupoint/cokit/client/SandboxPolicy;
 	public final fun getServiceTier-jDxPufw ()Ljava/lang/String;
@@ -6842,18 +7223,20 @@ public final class io/github/vupoint/cokit/client/TurnStatus$Companion {
 
 public final class io/github/vupoint/cokit/client/TurnSteerParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/TurnSteerParams$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component2-XuLNRMQ ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4-ythwxgc ()Ljava/lang/String;
-	public final fun copy-Qj3kz4o (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/TurnSteerParams;
-	public static synthetic fun copy-Qj3kz4o$default (Lio/github/vupoint/cokit/client/TurnSteerParams;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/TurnSteerParams;
+	public final fun component5-zTDrQdE ()Ljava/util/Map;
+	public final fun copy-28vJQNo (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;)Lio/github/vupoint/cokit/client/TurnSteerParams;
+	public static synthetic fun copy-28vJQNo$default (Lio/github/vupoint/cokit/client/TurnSteerParams;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/TurnSteerParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getClientUserMessageId-ythwxgc ()Ljava/lang/String;
 	public final fun getExpectedTurnId-XuLNRMQ ()Ljava/lang/String;
 	public final fun getInput ()Ljava/util/List;
+	public final fun getResponsesapiClientMetadataPatch-zTDrQdE ()Ljava/util/Map;
 	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -8082,6 +8465,8 @@ public final class io/github/vupoint/cokit/client/auth/AccountPlanType$Companion
 	public final fun getPro-lSO-_9g ()Ljava/lang/String;
 	public final fun getProLite-lSO-_9g ()Ljava/lang/String;
 	public final fun getProMax-lSO-_9g ()Ljava/lang/String;
+	public final fun getSci-lSO-_9g ()Ljava/lang/String;
+	public final fun getSciPlus-lSO-_9g ()Ljava/lang/String;
 	public final fun getSelfServeBusinessUsageBased-lSO-_9g ()Ljava/lang/String;
 	public final fun getTeam-lSO-_9g ()Ljava/lang/String;
 	public final fun getUnknown-lSO-_9g ()Ljava/lang/String;
@@ -8730,6 +9115,14 @@ public final class io/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt$Comp
 
 public final class io/github/vupoint/cokit/client/auth/CodexAccount$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/CodexAccount$Gcp : io/github/vupoint/cokit/client/auth/CodexAccount {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/CodexAccount$Gcp;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class io/github/vupoint/cokit/client/auth/ConsumeAccountRateLimitResetCreditOutcome {
@@ -10866,8 +11259,10 @@ public final synthetic class io/github/vupoint/cokit/client/extensions/HookEvent
 public final class io/github/vupoint/cokit/client/extensions/HookEventName$Companion {
 	public final fun getPermissionRequest-XQyxMMg ()Ljava/lang/String;
 	public final fun getPostCompact-XQyxMMg ()Ljava/lang/String;
+	public final fun getPostModelRequest-XQyxMMg ()Ljava/lang/String;
 	public final fun getPostToolUse-XQyxMMg ()Ljava/lang/String;
 	public final fun getPreCompact-XQyxMMg ()Ljava/lang/String;
+	public final fun getPreModelRequest-XQyxMMg ()Ljava/lang/String;
 	public final fun getPreToolUse-XQyxMMg ()Ljava/lang/String;
 	public final fun getSessionStart-XQyxMMg ()Ljava/lang/String;
 	public final fun getStop-XQyxMMg ()Ljava/lang/String;
@@ -12555,11 +12950,12 @@ public final class io/github/vupoint/cokit/client/mcp/McpServerOauthLoginResult$
 
 public final class io/github/vupoint/cokit/client/mcp/McpServerStatus {
 	public static final field Companion Lio/github/vupoint/cokit/client/mcp/McpServerStatus$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-GPNfW00 ()Ljava/lang/String;
 	public final fun component10 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun component11 ()Ljava/lang/String;
+	public final fun component12 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun component2-mFAQ64s ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
@@ -12568,8 +12964,8 @@ public final class io/github/vupoint/cokit/client/mcp/McpServerStatus {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9--SmMl2o ()Ljava/lang/String;
-	public final fun copy-jjcJC0I (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;)Lio/github/vupoint/cokit/client/mcp/McpServerStatus;
-	public static synthetic fun copy-jjcJC0I$default (Lio/github/vupoint/cokit/client/mcp/McpServerStatus;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/mcp/McpServerStatus;
+	public final fun copy-UXbI-pE (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;)Lio/github/vupoint/cokit/client/mcp/McpServerStatus;
+	public static synthetic fun copy-UXbI-pE$default (Lio/github/vupoint/cokit/client/mcp/McpServerStatus;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Lio/github/vupoint/cokit/client/mcp/McpServerInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/mcp/McpServerStatus;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAuthStatus-mFAQ64s ()Ljava/lang/String;
 	public final fun getHttpOrigin ()Ljava/lang/String;
@@ -12580,6 +12976,7 @@ public final class io/github/vupoint/cokit/client/mcp/McpServerStatus {
 	public final fun getRuntimeStatus--SmMl2o ()Ljava/lang/String;
 	public final fun getServerCapabilities ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getServerInfo ()Lio/github/vupoint/cokit/client/mcp/McpServerInfo;
+	public final fun getToolListMeta ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getTools ()Ljava/util/Map;
 	public final fun getToolsError ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -14674,6 +15071,96 @@ public final class io/github/vupoint/cokit/client/plugins/SkillSummary$Companion
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements {
+	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements$Companion;
+	public fun <init> (ZLjava/util/Map;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (ZLjava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;ZLjava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDomains ()Ljava/util/Map;
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationRequirements {
+	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements$Companion;
+	public fun <init> ()V
+	public fun <init> (Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;
+	public final fun component2 ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;
+	public final fun copy (Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNetwork ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationNetworkRequirements;
+	public final fun getStorage ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/policy/ManagedApplicationRequirements$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationRequirements$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements {
+	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-rulvwug ()Ljava/lang/String;
+	public final fun component2-rulvwug ()Ljava/lang/String;
+	public final fun copy-YELQ-Qw (Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;
+	public static synthetic fun copy-YELQ-Qw$default (Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDefaultProjectParent-rulvwug ()Ljava/lang/String;
+	public final fun getProjectlessWorkspaceRoot-rulvwug ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedApplicationStorageRequirements$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements {
 	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements$Companion;
 	public fun <init> ()V
@@ -14939,6 +15426,36 @@ public final class io/github/vupoint/cokit/client/policy/ManagedFeedbackRequirem
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/policy/ManagedHooks {
+	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedHooks$Companion;
+	public static final synthetic fun box-impl (Ljava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedHooks;
+	public static fun constructor-impl (Ljava/util/Map;)Ljava/util/Map;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/util/Map;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/util/Map;Ljava/util/Map;)Z
+	public final fun getEvents ()Ljava/util/Map;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/util/Map;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/util/Map;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/util/Map;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/policy/ManagedHooks$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedHooks$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-DRisV2Y (Lkotlinx/serialization/encoding/Decoder;)Ljava/util/Map;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-xoU1ECk (Lkotlinx/serialization/encoding/Encoder;Ljava/util/Map;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedHooks$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements {
 	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements$Companion;
 	public fun <init> ()V
@@ -15064,10 +15581,11 @@ public final class io/github/vupoint/cokit/client/policy/ManagedNetworkPermissio
 public final class io/github/vupoint/cokit/client/policy/ManagedNetworkRequirements {
 	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements$Companion;
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;)V
-	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
 	public final fun component10 ()Ljava/lang/Boolean;
+	public final fun component11 ()Ljava/util/List;
 	public final fun component2 ()Ljava/lang/Integer;
 	public final fun component3 ()Ljava/lang/Integer;
 	public final fun component4 ()Ljava/lang/Boolean;
@@ -15076,8 +15594,8 @@ public final class io/github/vupoint/cokit/client/policy/ManagedNetworkRequireme
 	public final fun component7 ()Ljava/util/Map;
 	public final fun component8 ()Ljava/lang/Boolean;
 	public final fun component9 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;
-	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;
+	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/List;)Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/Boolean;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowLocalBinding ()Ljava/lang/Boolean;
 	public final fun getAllowUpstreamProxy ()Ljava/lang/Boolean;
@@ -15087,6 +15605,7 @@ public final class io/github/vupoint/cokit/client/policy/ManagedNetworkRequireme
 	public final fun getEnabled ()Ljava/lang/Boolean;
 	public final fun getHttpPort ()Ljava/lang/Integer;
 	public final fun getManagedAllowedDomainsOnly ()Ljava/lang/Boolean;
+	public final fun getReviewDomains ()Ljava/util/List;
 	public final fun getSocksPort ()Ljava/lang/Integer;
 	public final fun getUnixSockets ()Ljava/util/Map;
 	public fun hashCode ()I
@@ -15181,8 +15700,8 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyReadResult
 
 public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequirements {
 	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements$Companion;
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component10 ()Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;
 	public final fun component11 ()Ljava/util/Map;
@@ -15207,14 +15726,16 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequiremen
 	public final fun component29 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component30 ()Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;
+	public final fun component31 ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
+	public final fun component32-_sRWajg ()Ljava/util/Map;
 	public final fun component4 ()Ljava/util/Map;
 	public final fun component5-zAsfJ88 ()Ljava/lang/String;
 	public final fun component6 ()Ljava/util/List;
 	public final fun component7 ()Ljava/lang/Boolean;
 	public final fun component8 ()Ljava/lang/Boolean;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy-Hr-3vmU (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
-	public static synthetic fun copy-Hr-3vmU$default (Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
+	public final fun copy-LPKvV6k (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
+	public static synthetic fun copy-LPKvV6k$default (Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAdditionalDeveloperInstructions ()Ljava/lang/String;
 	public final fun getAllowAppshots ()Ljava/lang/Boolean;
@@ -15228,6 +15749,7 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequiremen
 	public final fun getAllowedSandboxModes ()Ljava/util/List;
 	public final fun getAllowedWebSearchModes ()Ljava/util/List;
 	public final fun getAllowedWindowsSandboxImplementations ()Ljava/util/List;
+	public final fun getApplication ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
 	public final fun getAutoReview ()Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;
 	public final fun getBrowserUse ()Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;
 	public final fun getChatgptBaseUrl ()Ljava/lang/String;
@@ -15238,6 +15760,7 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequiremen
 	public final fun getEnforceResidency-6ulyjds ()Ljava/lang/String;
 	public final fun getFeatureRequirements ()Ljava/util/Map;
 	public final fun getFeedback ()Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;
+	public final fun getHooks-_sRWajg ()Ljava/util/Map;
 	public final fun getInAppBrowser ()Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;
 	public final fun getLogDir ()Ljava/lang/String;
 	public final fun getModelCatalogJson ()Ljava/lang/String;

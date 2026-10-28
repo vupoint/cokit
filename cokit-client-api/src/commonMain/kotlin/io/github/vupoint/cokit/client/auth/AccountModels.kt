@@ -58,6 +58,8 @@ value class AccountPlanType(val value: String) {
         val EnterpriseCbpUsageBased = AccountPlanType("enterprise_cbp_usage_based")
         val Enterprise = AccountPlanType("enterprise")
         val Edu = AccountPlanType("edu")
+        val Sci = AccountPlanType("sci")
+        val SciPlus = AccountPlanType("sci_plus")
         val Unknown = AccountPlanType("unknown")
     }
 }
@@ -113,6 +115,11 @@ sealed interface CodexAccount {
     @Serializable
     @SerialName("amazonBedrock")
     data object AmazonBedrock : CodexAccount
+
+    /** Google Cloud Vertex AI using externally managed credentials. */
+    @Serializable
+    @SerialName("gcp")
+    data object Gcp : CodexAccount
 }
 
 /** Empty parameters for explicitly logging the app-server account out. */

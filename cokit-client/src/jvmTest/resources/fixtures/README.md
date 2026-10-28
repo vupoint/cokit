@@ -1,13 +1,14 @@
-# Codex 0.163.0 contract fixtures
+# Codex release contract fixtures
 
-`release-163-contracts.json` contains synthetic payloads checked against the
-0.163.0 stable and experimental schemas generated at release commit
-`83086188ae0614bd882818ff1aa23f3194962012`. The `mode` and `schema` fields select
-the generated schema; `payload` is the wire value exercised by
-`Release163SchemaFixturesTest`. Values use placeholders and do not come from
-account or conversation data.
+`release-165-contracts.json` contains synthetic payloads checked against the
+0.165.0 stable and experimental schemas at release commit
+`360319d8dee62d87e2d59fc0c21805d79519cfed`. `Release165SchemaFixturesTest`
+round-trips them through public contracts. `release-163-contracts.json` retains
+previous regression payloads and is also validated against 0.165.0.
+The `mode` and `schema` fields select a schema; `payload` is the wire value.
+All values are synthetic placeholders, not account or conversation data.
 
-Generation commands and aggregate SHA-256 digests are recorded in
+Generation commands and aggregate SHA-256 digests for the current release are in
 `cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
 Normal tests use these fixtures without invoking Codex or installing a validator.
 To repeat the independent schema check from the repository root, generate the
@@ -21,12 +22,13 @@ from pathlib import Path
 from jsonschema import Draft7Validator
 
 root = Path("cokit-protocol/build/generated/codex-schema")
-fixtures = Path("cokit-client/src/jvmTest/resources/fixtures/release-163-contracts.json")
-cases = json.loads(fixtures.read_text())
-for case in cases:
-    schema = json.loads((root / case["mode"] / "v2" / (case["schema"] + ".json")).read_text())
-    Draft7Validator.check_schema(schema)
-    Draft7Validator(schema).validate(case["payload"])
-print(f"Validated {len(cases)} contract fixtures")
+count = 0
+for fixtures in sorted(Path("cokit-client/src/jvmTest/resources/fixtures").glob("release-*-contracts.json")):
+    for case in json.loads(fixtures.read_text()):
+        schema = json.loads((root / case["mode"] / "v2" / (case["schema"] + ".json")).read_text())
+        Draft7Validator.check_schema(schema)
+        Draft7Validator(schema).validate(case["payload"])
+        count += 1
+print(f"Validated {count} contract fixtures")
 PY
 ```

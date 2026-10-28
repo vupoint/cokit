@@ -1,0 +1,218 @@
+[
+  {
+    "mode": "stable",
+    "schema": "FeedbackSaveParams",
+    "payload": {
+      "classification": "example",
+      "savePath": "/path/to/feedback.zip",
+      "reason": "Example",
+      "threadId": "thr_1",
+      "includeLogs": true,
+      "extraLogFiles": [
+        "/path/to/example.log"
+      ],
+      "tags": {
+        "example": "value"
+      }
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "FeedbackSaveResponse",
+    "payload": {
+      "savedPath": "/path/to/feedback.zip",
+      "threadId": "thr_1",
+      "promptHash": "example-hash"
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "GetAccountResponse",
+    "payload": {
+      "requiresOpenaiAuth": false,
+      "account": {
+        "type": "gcp"
+      }
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ListMcpServerStatusResponse",
+    "payload": {
+      "data": [
+        {
+          "name": "example",
+          "authStatus": "unsupported",
+          "toolListMeta": {
+            "future": {
+              "enabled": true
+            },
+            "revision": 2
+          },
+          "resources": [
+            {
+              "name": "example",
+              "uri": "example://resource"
+            }
+          ],
+          "resourceTemplates": [
+            {
+              "name": "example",
+              "uriTemplate": "example://{id}"
+            }
+          ],
+          "tools": {
+            "example": {
+              "name": "example",
+              "inputSchema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadSampleParams",
+    "payload": {
+      "threadId": "thr_1",
+      "expectedTurnId": "turn_1",
+      "prompt": "Example",
+      "effort": "high",
+      "threadSource": "example",
+      "turnTrigger": "example",
+      "responsesapiClientMetadata": {
+        "example": "value"
+      },
+      "disableMcp": true
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadSampleResponse",
+    "payload": {
+      "sourceTurnId": "turn_1",
+      "responseId": "response_1",
+      "text": "Example",
+      "inputTokens": 12,
+      "cachedInputTokens": 8,
+      "outputTokens": 2
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadSampleCancelParams",
+    "payload": {
+      "requestId": 12
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadSampleCancelParams",
+    "payload": {
+      "requestId": "sample_1"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadMemoryReadParams",
+    "payload": {
+      "threadId": "thr_1"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadMemoryReadResponse",
+    "payload": {
+      "summary": "Example memory"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadForkParams",
+    "payload": {
+      "threadId": "thr_1",
+      "attachToSource": true
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadForkParams",
+    "payload": {
+      "threadId": "thr_1",
+      "ephemeral": true,
+      "experimentalPredictionMode": true,
+      "experimentalDisablePredictionMcp": true
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadListParams",
+    "payload": {
+      "attachedToThreadId": "thr_1",
+      "cursor": "page",
+      "limit": 1
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "TurnStartParams",
+    "payload": {
+      "threadId": "thr_1",
+      "input": [],
+      "responsesapiClientMetadataPatch": {
+        "example": "value"
+      }
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "TurnSteerParams",
+    "payload": {
+      "threadId": "thr_1",
+      "expectedTurnId": "turn_1",
+      "input": [],
+      "responsesapiClientMetadataPatch": {}
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ConfigRequirementsReadResponse",
+    "payload": {
+      "requirements": {
+        "application": {
+          "storage": {
+            "defaultProjectParent": "/path/to/projects",
+            "projectlessWorkspaceRoot": "/path/to/workspaces"
+          }
+        },
+        "hooks": {
+          "PermissionRequest": [],
+          "PostCompact": [],
+          "PostToolUse": [],
+          "PreCompact": [],
+          "PreToolUse": [],
+          "SessionStart": [],
+          "Stop": [],
+          "SubagentStart": [],
+          "SubagentStop": [],
+          "UserPromptSubmit": [],
+          "PreModelRequest": [
+            {
+              "hooks": [],
+              "matcher": null
+            }
+          ],
+          "PostModelRequest": []
+        },
+        "network": {
+          "reviewDomains": [
+            "example.invalid"
+          ]
+        }
+      }
+    }
+  }
+]

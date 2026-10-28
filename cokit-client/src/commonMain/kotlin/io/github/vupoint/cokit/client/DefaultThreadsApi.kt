@@ -20,12 +20,14 @@ internal class DefaultThreadsApi(
 
     override suspend fun fork(request: ForkThreadRequest): Thread {
         val params = request.toRpcParams()
-        params.requirePredictionModeOptIn(experimentalApi)
+        params.requireExperimentalForkOptIn(experimentalApi)
         return rpc.request(CodexRpc.Thread.Fork, params).thread
     }
 
     override suspend fun list(request: ListThreadsRequest): ThreadList {
-        val decoded = rpc.request(CodexRpc.Thread.List, request.toRpcParams())
+        val params = request.toRpcParams()
+        params.requireAttachedThreadsOptIn(experimentalApi)
+        val decoded = rpc.request(CodexRpc.Thread.List, params)
         return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor, decoded.readStates)
     }
 
@@ -110,11 +112,13 @@ private fun ForkThreadRequest.toRpcParams(): ThreadForkParams = ThreadForkParams
     modelProvider = modelProvider,
     serviceTier = serviceTier,
     experimentalPredictionMode = experimentalPredictionMode,
+    attachToSource = attachToSource,
+    experimentalDisablePredictionMcp = experimentalDisablePredictionMcp,
 )
 
-internal fun ThreadForkParams.requirePredictionModeOptIn(experimentalApi: Boolean) {
-    require(experimentalPredictionMode == null || experimentalApi) {
-        "Prediction forks require InitializeCapabilities(experimentalApi = true)"
+internal fun ThreadForkParams.requireExperimentalForkOptIn(experimentalApi: Boolean) {
+    require((experimentalPredictionMode == null && attachToSource == null && experimentalDisablePredictionMcp == null) || experimentalApi) {
+        "Experimental fork options require InitializeCapabilities(experimentalApi = true)"
     }
 }
 
@@ -132,6 +136,7 @@ private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParam
     sortDirection = sortDirection,
     sortKey = sortKey,
     excludedThreadIds = excludedThreadIds,
+    attachedToThreadId = attachedToThreadId,
 )
 
 private fun ReadThreadRequest.toRpcParams(): ThreadReadParams = ThreadReadParams(
@@ -143,3 +148,9 @@ private fun SetThreadNameRequest.toRpcParams(): ThreadSetNameParams = ThreadSetN
     threadId = threadId,
     name = name,
 )
+
+internal fun ThreadListParams.requireAttachedThreadsOptIn(experimentalApi: Boolean) {
+    require(attachedToThreadId == null || experimentalApi) {
+        "Attached thread filters require InitializeCapabilities(experimentalApi = true)"
+    }
+}

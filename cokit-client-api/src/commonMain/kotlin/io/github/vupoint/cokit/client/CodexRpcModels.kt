@@ -115,9 +115,15 @@ data class ThreadForkParams(
     val model: ModelName? = null,
     val modelProvider: String? = null,
     val serviceTier: ServiceTier? = null,
-    /** Requires a loaded persisted parent, ephemeral=true, and no config or history overrides. */
+    /** Requires a loaded persisted parent and ephemeral=true; only config.thread_unload_delay_secs may override inherited config. */
     @ExperimentalCodexApi
     val experimentalPredictionMode: ThreadPredictionMode? = null,
+    /** Persistent attached fork; app-server validates storage and lifecycle constraints. */
+    @ExperimentalCodexApi
+    val attachToSource: ThreadAttachmentMode? = null,
+    /** When enabled, requires prediction mode and disables incremental MCP tools on supported providers. */
+    @ExperimentalCodexApi
+    val experimentalDisablePredictionMcp: ThreadPredictionMcpDisabled? = null,
 )
 
 /** New forked thread and its effective server configuration. */
@@ -159,6 +165,9 @@ data class ThreadListParams(
     val sortKey: ThreadSortKey? = null,
     /** Up to 100 IDs, including duplicates; reuse the same exclusions on subsequent pages. */
     val excludedThreadIds: List<ThreadId>? = null,
+    /** Selects attached forks; omission leaves them hidden from ordinary listings. */
+    @ExperimentalCodexApi
+    val attachedToThreadId: ThreadAttachedTo? = null,
 )
 
 /** Thread page from `thread/list`; [threads] is encoded under the wire key `data`. */
@@ -364,6 +373,9 @@ data class TurnStartParams(
     val parentTurnId: TurnId? = null,
     /** Original turn in the work chain; omission makes the new turn its own root. */
     val rootTurnId: TurnId? = null,
+    /** Merges unprotected turn metadata; reserved keys remain server-controlled. */
+    @ExperimentalCodexApi
+    val responsesapiClientMetadataPatch: TurnMetadataPatch? = null,
 )
 
 /** Initial turn snapshot from `turn/start`; notifications report later progress and completion. */
@@ -379,6 +391,9 @@ data class TurnSteerParams(
     val expectedTurnId: TurnId,
     val input: List<TurnInput>,
     val clientUserMessageId: ClientMessageId? = null,
+    /** Merges unprotected turn metadata; reserved keys remain server-controlled. */
+    @ExperimentalCodexApi
+    val responsesapiClientMetadataPatch: TurnMetadataPatch? = null,
 )
 
 /** Identifier of the turn that accepted `turn/steer` input. */

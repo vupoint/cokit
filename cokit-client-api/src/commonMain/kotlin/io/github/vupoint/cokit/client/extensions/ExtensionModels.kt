@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
 @JvmInline
 value class HookEventName(val value: String) {
     companion object {
+        val PreModelRequest = HookEventName("preModelRequest")
+        val PostModelRequest = HookEventName("postModelRequest")
         val PreToolUse = HookEventName("preToolUse")
         val PermissionRequest = HookEventName("permissionRequest")
         val PostToolUse = HookEventName("postToolUse")

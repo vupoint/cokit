@@ -141,6 +141,16 @@ class CodexRpcMethod<P : Any, R : Any> internal constructor(
  * [CodexRpcMethod.requiresExperimentalApi] also require experimental initialization.
  */
 object CodexRpc {
+    /** Explicit diagnostic archive operations on the app-server host. */
+    object Feedback {
+        /** Saves a local diagnostic ZIP; CoKit neither uploads nor retries it. */
+        val Save: CodexRpcMethod<FeedbackSaveParams, FeedbackSaveResult> = CodexRpcMethod(
+            method = "feedback/save",
+            paramsSerializer = FeedbackSaveParams.serializer(),
+            resultSerializer = FeedbackSaveResult.serializer(),
+        )
+    }
+
     /** Experimental project catalog and organization operations. */
     @ExperimentalCodexApi
     object Project {
@@ -348,6 +358,34 @@ object CodexRpc {
             method = "thread/read",
             paramsSerializer = ThreadReadParams.serializer(),
             resultSerializer = ThreadReadResult.serializer(),
+        )
+
+        /** Samples one response; capture its request ID for explicit cancellation. */
+        @ExperimentalCodexApi
+        val Sample: CodexRpcMethod<ThreadSampleParams, ThreadSampleResult> = CodexRpcMethod(
+            method = "thread/sample",
+            paramsSerializer = ThreadSampleParams.serializer(),
+            resultSerializer = ThreadSampleResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        /** Cancels a sample on this connection by its outbound request ID. */
+        @ExperimentalCodexApi
+        val CancelSample: CodexRpcMethod<ThreadSampleCancelParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "thread/sample/cancel",
+            paramsSerializer = ThreadSampleCancelParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+            requiresExperimentalApi = true,
+        )
+
+        /** Reads the selected memory summary of a loaded thread. */
+        @ExperimentalCodexApi
+        val ReadMemory: CodexRpcMethod<ThreadMemoryReadParams, ThreadMemoryReadResult> = CodexRpcMethod(
+            method = "thread/memory/read",
+            paramsSerializer = ThreadMemoryReadParams.serializer(),
+            resultSerializer = ThreadMemoryReadResult.serializer(),
+            requiresExperimentalApi = true,
         )
 
         /** Archives a thread. */

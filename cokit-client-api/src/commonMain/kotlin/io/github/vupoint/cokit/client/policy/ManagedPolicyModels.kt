@@ -1,6 +1,10 @@
+@file:OptIn(io.github.vupoint.cokit.client.ExperimentalCodexApi::class)
+
 package io.github.vupoint.cokit.client.policy
 
 import io.github.vupoint.cokit.client.CodexJsonPayload
+import io.github.vupoint.cokit.client.CodexHostPath
+import io.github.vupoint.cokit.client.ExperimentalCodexApi
 import io.github.vupoint.cokit.client.ModelName
 import io.github.vupoint.cokit.client.ReasoningEffort
 import io.github.vupoint.cokit.client.ServiceTier
@@ -63,6 +67,12 @@ data class ManagedPolicyRequirements(
     val modelCatalogJson: String? = null,
     val sqliteHome: String? = null,
     val models: ManagedModelsRequirements? = null,
+    /** Experimental application defaults; reading them does not apply host settings. */
+    @ExperimentalCodexApi
+    val application: ManagedApplicationRequirements? = null,
+    /** Experimental hook configuration, retained without running any handler. */
+    @ExperimentalCodexApi
+    val hooks: ManagedHooks? = null,
 )
 
 /** Managed web-search mode selector; unknown wire strings are retained. */
@@ -117,7 +127,42 @@ data class ManagedNetworkRequirements(
     val managedAllowedDomainsOnly: Boolean? = null,
     val unixSockets: Map<String, ManagedNetworkPermission>? = null,
     val allowLocalBinding: Boolean? = null,
+    /** Host patterns reviewed before ordinary network allow rules. */
+    @ExperimentalCodexApi
+    val reviewDomains: List<String>? = null,
 )
+
+/** Experimental application network policy and host storage defaults reported by app-server. */
+@ExperimentalCodexApi
+@Serializable
+data class ManagedApplicationRequirements(
+    val network: ManagedApplicationNetworkRequirements? = null,
+    val storage: ManagedApplicationStorageRequirements? = null,
+)
+
+/** Exact managed domains; enabling this policy permits only explicitly allowed domains. */
+@ExperimentalCodexApi
+@Serializable
+data class ManagedApplicationNetworkRequirements(
+    val enabled: Boolean,
+    val domains: Map<String, ManagedNetworkPermission>,
+)
+
+/** Paths on the app-server host, preserved without local resolution or directory creation. */
+@ExperimentalCodexApi
+@Serializable
+data class ManagedApplicationStorageRequirements(
+    val defaultProjectParent: CodexHostPath? = null,
+    val projectlessWorkspaceRoot: CodexHostPath? = null,
+)
+
+/** Hook event names and opaque matcher groups, including future handlers; diagnostics redact commands. */
+@ExperimentalCodexApi
+@Serializable
+@JvmInline
+value class ManagedHooks(val events: Map<String, List<CodexJsonPayload>>) {
+    override fun toString(): String = "ManagedHooks(<redacted>)"
+}
 
 /** Allow or deny rule in legacy managed network requirements; unknown strings are retained. */
 @Serializable

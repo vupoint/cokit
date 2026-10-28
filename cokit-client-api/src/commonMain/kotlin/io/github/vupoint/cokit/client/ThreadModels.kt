@@ -416,9 +416,15 @@ data class ForkThreadRequest(
     val model: ModelName? = null,
     val modelProvider: String? = null,
     val serviceTier: ServiceTier? = null,
-    /** Requires a loaded persisted parent, ephemeral=true, and no config or history overrides. */
+    /** Requires a loaded persisted parent and ephemeral=true; only config.thread_unload_delay_secs may override inherited config. */
     @ExperimentalCodexApi
     val experimentalPredictionMode: ThreadPredictionMode? = null,
+    /** Persistent attached fork; app-server validates storage and lifecycle constraints. */
+    @ExperimentalCodexApi
+    val attachToSource: ThreadAttachmentMode? = null,
+    /** When enabled, requires prediction mode and disables incremental MCP tools on supported providers. */
+    @ExperimentalCodexApi
+    val experimentalDisablePredictionMcp: ThreadPredictionMcpDisabled? = null,
 )
 
 /**
@@ -445,6 +451,9 @@ data class ListThreadsRequest(
     val sortKey: ThreadSortKey? = null,
     /** Up to 100 IDs, including duplicates; reuse the same exclusions on subsequent pages. */
     val excludedThreadIds: List<ThreadId>? = null,
+    /** Selects attached forks; omission leaves them hidden from ordinary listings. */
+    @ExperimentalCodexApi
+    val attachedToThreadId: ThreadAttachedTo? = null,
 )
 
 /** Reads stored thread metadata through [ThreadsApi.read]; [includeTurns] optionally requests history. */
