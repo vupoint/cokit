@@ -115,6 +115,9 @@ data class StartTurnRequest(
     val parentTurnId: TurnId? = null,
     /** Original turn in the work chain; omission makes the new turn its own root. */
     val rootTurnId: TurnId? = null,
+    /** Merges unprotected turn metadata; reserved keys remain server-controlled. */
+    @ExperimentalCodexApi
+    val responsesapiClientMetadataPatch: TurnMetadataPatch? = null,
 )
 
 /**
@@ -129,6 +132,9 @@ data class SteerTurnRequest(
     val expectedTurnId: TurnId,
     val input: List<TurnInput>,
     val clientUserMessageId: ClientMessageId? = null,
+    /** Merges unprotected turn metadata; reserved keys remain server-controlled. */
+    @ExperimentalCodexApi
+    val responsesapiClientMetadataPatch: TurnMetadataPatch? = null,
 )
 
 /**

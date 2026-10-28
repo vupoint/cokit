@@ -462,3 +462,34 @@ diagnostics redact endpoints and request IDs; bearer-token params remain deferre
 Remote skill file URIs, subagent metadata, and prediction text are data, not local
 paths to open, commands to run or permissions to execute work. The Bedrock GovCloud
 check is advisory and does not certify network policy or authorize login.
+
+
+## Codex 0.165.0 contract boundaries
+
+`feedback/save` writes an archive on the app-server host only when explicitly
+requested. It is not a feedback upload. Logs, reasons, tags and extra files may
+contain private material; CoKit never opts into collecting them, retries the
+request, opens the ZIP or removes it after disconnect. Applications own consent,
+path selection, archive retention and any later sharing. Params/result string
+output is redacted; serializing them still reveals their values.
+
+Sampling, cancellation and memory reads require experimental initialization and
+Kotlin opt-in. Sample cancellation targets a numeric or string request ID on the
+same connection. CoKit does not substitute coroutine cancellation for server
+cancellation, add retries, or turn absent sample text into successful content.
+Prompts, sampled text, memory summaries and metadata patches redact string output.
+Their properties and serialized JSON remain private application data.
+
+Attached forks and attached-thread filters are experimental even when an explicit
+false flag or empty patch is supplied. Both raw request overloads and facades
+reject these fields before dispatch without initialization opt-in. App-server
+owns storage, source-deletion and fork-combination validation. CoKit does not
+silently downgrade an attached fork to an ordinary fork.
+
+Managed application paths, hook matcher groups and network review domains are
+reported constraints. CoKit never applies them to the local host, invokes a hook,
+or treats a domain as authorized because it appears in a review list. Opaque hook
+handlers and MCP tool-list metadata can contain private data. Hook diagnostics
+are redacted; applications must avoid logging arbitrary metadata or wire payloads.
+Approval defaults, request correlation, buffers, transports and process launch
+remain unchanged in this alignment.

@@ -94,7 +94,7 @@ internal class DefaultCodexClient(
     override val notifications: SharedFlow<CodexNotification> = mutableNotifications
     override val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
     override val threads: ThreadsApi = DefaultThreadsApi(rpc, experimentalApi)
-    override val turns: TurnsApi = DefaultTurnsApi(rpc)
+    override val turns: TurnsApi = DefaultTurnsApi(rpc, experimentalApi)
     override val isInitialized: Boolean = true
 
     override suspend fun <P : Any, R : Any> request(
@@ -111,7 +111,10 @@ internal class DefaultCodexClient(
             "${method.method} requires InitializeCapabilities(experimentalApi = true)"
         }
         if (params is ThreadStartParams) params.requireDynamicToolsOptIn(experimentalApi)
-        if (params is ThreadForkParams) params.requirePredictionModeOptIn(experimentalApi)
+        if (params is ThreadForkParams) params.requireExperimentalForkOptIn(experimentalApi)
+        if (params is ThreadListParams) params.requireAttachedThreadsOptIn(experimentalApi)
+        if (params is TurnStartParams) params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
+        if (params is TurnSteerParams) params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
         return rpc.request(method, params, onRequestId)
     }
 

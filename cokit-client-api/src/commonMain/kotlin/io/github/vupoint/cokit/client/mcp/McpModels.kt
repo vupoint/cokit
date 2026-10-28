@@ -148,6 +148,8 @@ data class McpServerStatus(
     val runtimeStatus: McpServerConnectionStatus? = null,
     val serverCapabilities: CodexJsonPayload? = null,
     val toolsError: String? = null,
+    /** Opaque metadata returned by MCP tools/list, including future extension values. */
+    val toolListMeta: CodexJsonPayload? = null,
 )
 
 /** Identity and presentation metadata reported by the MCP server, without any local trust verification. */
