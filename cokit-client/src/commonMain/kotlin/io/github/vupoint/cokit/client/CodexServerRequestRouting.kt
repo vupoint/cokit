@@ -133,12 +133,6 @@ internal fun JsonRpcRequest.decodeDynamicToolCallRequest(): DynamicToolCallReque
 internal fun DynamicToolCallResponse.toProtocolPayload(): CodexJsonPayload =
     CodexProtocolJson.encodeToJsonElement(DynamicToolCallResponse.serializer(), this).toCodexPayload()
 
-internal fun ThreadStartParams.requireDynamicToolsOptIn(experimentalApi: Boolean) {
-    require(dynamicTools == null || experimentalApi) {
-        "Dynamic tools require InitializeCapabilities(experimentalApi = true)"
-    }
-}
-
 internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
     val value = when (this) {
         ApprovalDecision.Accept -> "accept"

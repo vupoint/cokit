@@ -91,6 +91,7 @@ internal class DefaultCodexClient(
     private var mcpElicitationHandler: McpElicitationHandler? = null
     private var dynamicToolCallHandler: DynamicToolCallHandler? = null
     private var attestationGenerateHandler: AttestationGenerateHandler? = null
+    private val requests = ClientRequestExecutor(rpc, experimentalApi)
     private val serverRequestJob: Job = scope.launch {
         rpc.serverRequests.collect { request ->
             mutableServerRequests.tryEmit(request.toCodexServerRequest())
@@ -105,8 +106,8 @@ internal class DefaultCodexClient(
 
     override val notifications: SharedFlow<CodexNotification> = mutableNotifications
     override val serverRequests: SharedFlow<CodexServerRequest> = mutableServerRequests
-    override val threads: ThreadsApi = DefaultThreadsApi(rpc, experimentalApi)
-    override val turns: TurnsApi = DefaultTurnsApi(rpc, experimentalApi)
+    override val threads: ThreadsApi = DefaultThreadsApi(requests)
+    override val turns: TurnsApi = DefaultTurnsApi(requests)
     override val isInitialized: Boolean = true
 
     override suspend fun <P : Any, R : Any> request(
@@ -119,15 +120,7 @@ internal class DefaultCodexClient(
         params: P,
         onRequestId: (CodexRequestId) -> Unit,
     ): R {
-        require(!method.requiresExperimentalApi || experimentalApi) {
-            "${method.method} requires InitializeCapabilities(experimentalApi = true)"
-        }
-        if (params is ThreadStartParams) params.requireDynamicToolsOptIn(experimentalApi)
-        if (params is ThreadForkParams) params.requireExperimentalForkOptIn(experimentalApi)
-        if (params is ThreadListParams) params.requireAttachedThreadsOptIn(experimentalApi)
-        if (params is TurnStartParams) params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
-        if (params is TurnSteerParams) params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
-        return rpc.request(method, params, onRequestId)
+        return requests.request(method, params, onRequestId)
     }
 
     override fun registerCommandApprovalHandler(handler: CommandApprovalHandler) {

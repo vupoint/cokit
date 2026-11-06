@@ -2,26 +2,21 @@
 
 package io.github.vupoint.cokit.client
 
-import io.github.vupoint.cokit.rpc.JsonRpcSession
-
 internal class DefaultTurnsApi(
-    private val rpc: JsonRpcSession,
-    private val experimentalApi: Boolean = false,
+    private val requests: ClientRequestExecutor,
 ) : TurnsApi {
     override suspend fun start(request: StartTurnRequest): Turn {
         val params = request.toRpcParams()
-        params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
-        return rpc.request(CodexRpc.Turn.Start, params).turn
+        return requests.request(CodexRpc.Turn.Start, params).turn
     }
 
     override suspend fun steer(request: SteerTurnRequest): TurnId {
         val params = request.toRpcParams()
-        params.responsesapiClientMetadataPatch.requireMetadataPatchOptIn(experimentalApi)
-        return rpc.request(CodexRpc.Turn.Steer, params).turnId
+        return requests.request(CodexRpc.Turn.Steer, params).turnId
     }
 
     override suspend fun interrupt(request: InterruptTurnRequest) {
-        rpc.request(CodexRpc.Turn.Interrupt, request.toRpcParams())
+        requests.request(CodexRpc.Turn.Interrupt, request.toRpcParams())
     }
 }
 
@@ -60,9 +55,3 @@ private fun InterruptTurnRequest.toRpcParams(): TurnInterruptParams = TurnInterr
     threadId = threadId,
     turnId = turnId,
 )
-
-internal fun TurnMetadataPatch?.requireMetadataPatchOptIn(experimentalApi: Boolean) {
-    require(this == null || experimentalApi) {
-        "Turn metadata patches require InitializeCapabilities(experimentalApi = true)"
-    }
-}
