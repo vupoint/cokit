@@ -3,6 +3,7 @@
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.approvals.ApprovalDecision
+import io.github.vupoint.cokit.client.approvals.CommandApprovalKind
 import io.github.vupoint.cokit.client.approvals.CommandApprovalRequest
 import io.github.vupoint.cokit.client.approvals.FileChangeApprovalRequest
 import io.github.vupoint.cokit.client.approvals.PermissionApprovalRequest
@@ -79,7 +80,13 @@ internal fun JsonRpcRequest.decodeCommandApprovalRequest(): CommandApprovalReque
     val paramsElement = requireNotNull(params) {
         "Expected command approval request params"
     }
-    return CodexProtocolJson.decodeFromJsonElement(CommandApprovalRequest.serializer(), paramsElement)
+    return CodexProtocolJson.decodeFromJsonElement(CommandApprovalRequest.serializer(), paramsElement).also { request ->
+        if (request.kind == CommandApprovalKind.HumanCommand) {
+            require(!request.approvalId?.value.isNullOrBlank() && !request.command.isNullOrBlank()) {
+                "Human approvals require an approval identifier and command"
+            }
+        }
+    }
 }
 
 internal fun JsonRpcRequest.decodeFileChangeApprovalRequest(): FileChangeApprovalRequest {

@@ -160,6 +160,7 @@ public abstract interface class io/github/vupoint/cokit/client/CodexClient : jav
 	public abstract fun registerCommandApprovalHandler (Lio/github/vupoint/cokit/client/approvals/CommandApprovalHandler;)V
 	public abstract fun registerDynamicToolCallHandler (Lio/github/vupoint/cokit/client/tools/DynamicToolCallHandler;)V
 	public abstract fun registerFileChangeApprovalHandler (Lio/github/vupoint/cokit/client/approvals/FileChangeApprovalHandler;)V
+	public abstract fun registerHumanCommandApprovalHandler (Lio/github/vupoint/cokit/client/approvals/CommandApprovalHandler;)V
 	public abstract fun registerMcpElicitationHandler (Lio/github/vupoint/cokit/client/mcp/McpElicitationHandler;)V
 	public abstract fun registerPermissionApprovalHandler (Lio/github/vupoint/cokit/client/approvals/PermissionApprovalHandler;)V
 	public abstract fun registerUserInputRequestHandler (Lio/github/vupoint/cokit/client/server/UserInputRequestHandler;)V
@@ -723,6 +724,36 @@ public final class io/github/vupoint/cokit/client/CodexNotification$ThreadReadSt
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged : io/github/vupoint/cokit/client/CodexNotification {
+	public static final field Companion Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun component2-ksxsH2c ()Ljava/lang/String;
+	public final fun copy-mnlciu0 (Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged;
+	public static synthetic fun copy-mnlciu0$default (Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMethod ()Ljava/lang/String;
+	public final fun getSectionId-ksxsH2c ()Ljava/lang/String;
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/CodexNotification$ThreadSectionChanged$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/CodexNotification$ThreadStarted : io/github/vupoint/cokit/client/CodexNotification {
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/vupoint/cokit/client/Thread;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/vupoint/cokit/client/Thread;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -951,6 +982,12 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Account {
 	public final fun getStartLogin ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
 
+public final class io/github/vupoint/cokit/client/CodexRpc$AccountSession {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$AccountSession;
+	public final fun getList ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getSwitch ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+}
+
 public final class io/github/vupoint/cokit/client/CodexRpc$App {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$App;
 	public final fun getInstalled ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1015,6 +1052,11 @@ public final class io/github/vupoint/cokit/client/CodexRpc$GatewayOAuth {
 	public final fun getCancel ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getLogin ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getRead ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+}
+
+public final class io/github/vupoint/cokit/client/CodexRpc$Gcp {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/CodexRpc$Gcp;
+	public final fun getSetup ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 }
 
 public final class io/github/vupoint/cokit/client/CodexRpc$Hooks {
@@ -1109,6 +1151,7 @@ public final class io/github/vupoint/cokit/client/CodexRpc$Thread {
 	public final fun getDelete ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getFork ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getGetGoal ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
+	public final fun getGuardianReview ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getList ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getListItems ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
 	public final fun getListLoaded ()Lio/github/vupoint/cokit/client/CodexRpcMethod;
@@ -1586,19 +1629,119 @@ public final class io/github/vupoint/cokit/client/GranularApprovalPolicy$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/GuardianAssessmentOutcome {
+	public static final field Companion Lio/github/vupoint/cokit/client/GuardianAssessmentOutcome$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/GuardianAssessmentOutcome;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/GuardianAssessmentOutcome$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/GuardianAssessmentOutcome$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-A2dp5iA (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-GbxZ9-Q (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/GuardianAssessmentOutcome$Companion {
+	public final fun getAllow-WALPyxQ ()Ljava/lang/String;
+	public final fun getDeny-WALPyxQ ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/GuardianRiskLevel {
+	public static final field Companion Lio/github/vupoint/cokit/client/GuardianRiskLevel$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/GuardianRiskLevel;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/GuardianRiskLevel$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/GuardianRiskLevel$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-Vck4a0I (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-1DGuTpM (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/GuardianRiskLevel$Companion {
+	public final fun getCritical-9L5DvVE ()Ljava/lang/String;
+	public final fun getHigh-9L5DvVE ()Ljava/lang/String;
+	public final fun getLow-9L5DvVE ()Ljava/lang/String;
+	public final fun getMedium-9L5DvVE ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/GuardianUserAuthorization {
+	public static final field Companion Lio/github/vupoint/cokit/client/GuardianUserAuthorization$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/GuardianUserAuthorization;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/GuardianUserAuthorization$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/GuardianUserAuthorization$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-nrmEGK4 (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-p8ieeGU (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/GuardianUserAuthorization$Companion {
+	public final fun getHigh-BYloJf4 ()Ljava/lang/String;
+	public final fun getLow-BYloJf4 ()Ljava/lang/String;
+	public final fun getMedium-BYloJf4 ()Ljava/lang/String;
+	public final fun getUnknown-BYloJf4 ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/InitializeCapabilities {
 	public static final field Companion Lio/github/vupoint/cokit/client/InitializeCapabilities$Companion;
-	public fun <init> ()V
-	public fun <init> (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;)V
-	public synthetic fun <init> (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/RequiredHumanApproval;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/RequiredHumanApproval;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Z
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Z
 	public final fun component5 ()Ljava/util/Map;
 	public final fun component6 ()Ljava/lang/Boolean;
-	public final fun copy (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/InitializeCapabilities;
-	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/InitializeCapabilities;ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/InitializeCapabilities;
+	public final fun component7-NR-SYp8 ()Lio/github/vupoint/cokit/client/RequiredHumanApproval;
+	public final fun copy-0j8aFoo (ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/RequiredHumanApproval;)Lio/github/vupoint/cokit/client/InitializeCapabilities;
+	public static synthetic fun copy-0j8aFoo$default (Lio/github/vupoint/cokit/client/InitializeCapabilities;ZLjava/lang/Boolean;Ljava/util/List;ZLjava/util/Map;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/RequiredHumanApproval;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/InitializeCapabilities;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getExperimentalApi ()Z
 	public final fun getExplicitGatewayOauth ()Ljava/lang/Boolean;
@@ -1606,6 +1749,7 @@ public final class io/github/vupoint/cokit/client/InitializeCapabilities {
 	public final fun getMcpServerOpenaiFormElicitation ()Ljava/lang/Boolean;
 	public final fun getOptOutNotificationMethods ()Ljava/util/List;
 	public final fun getRequestAttestation ()Z
+	public final fun getRequiredHumanApproval-NR-SYp8 ()Lio/github/vupoint/cokit/client/RequiredHumanApproval;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -2508,6 +2652,36 @@ public final class io/github/vupoint/cokit/client/ReasoningSummary$Companion {
 	public final fun getConcise-nryZPgg ()Ljava/lang/String;
 	public final fun getDetailed-nryZPgg ()Ljava/lang/String;
 	public final fun getNone-nryZPgg ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/RequiredHumanApproval {
+	public static final field Companion Lio/github/vupoint/cokit/client/RequiredHumanApproval$Companion;
+	public static final synthetic fun box-impl (Z)Lio/github/vupoint/cokit/client/RequiredHumanApproval;
+	public static fun constructor-impl (Z)Z
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ZLjava/lang/Object;)Z
+	public static final fun equals-impl0 (ZZ)Z
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Z)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Z)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Z
+}
+
+public final synthetic class io/github/vupoint/cokit/client/RequiredHumanApproval$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/RequiredHumanApproval$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-OBsnkmI (Lkotlinx/serialization/encoding/Decoder;)Z
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-rXM23is (Lkotlinx/serialization/encoding/Encoder;Z)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/RequiredHumanApproval$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -4108,6 +4282,96 @@ public final class io/github/vupoint/cokit/client/ThreadGoalStatus$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/ThreadGuardianAssessment {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadGuardianAssessment$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-WALPyxQ ()Ljava/lang/String;
+	public final fun component2-9L5DvVE ()Ljava/lang/String;
+	public final fun component3-BYloJf4 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy-dClL7Ac (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;
+	public static synthetic fun copy-dClL7Ac$default (Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOutcome-WALPyxQ ()Ljava/lang/String;
+	public final fun getRationale ()Ljava/lang/String;
+	public final fun getRiskLevel-9L5DvVE ()Ljava/lang/String;
+	public final fun getUserAuthorization-BYloJf4 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadGuardianAssessment$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadGuardianAssessment$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadGuardianAssessment$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadGuardianReviewParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ND13_qQ ()Ljava/lang/String;
+	public final fun copy-yN270bQ (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams;
+	public static synthetic fun copy-yN270bQ$default (Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadGuardianReviewParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadGuardianReviewParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadGuardianReviewParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadGuardianReviewResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;
+	public final fun copy (Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult;Ljava/lang/String;Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssessment ()Lio/github/vupoint/cokit/client/ThreadGuardianAssessment;
+	public final fun getCallId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/ThreadGuardianReviewResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/ThreadGuardianReviewResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/ThreadGuardianReviewResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/ThreadHistoryMode {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadHistoryMode$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadHistoryMode;
@@ -4206,8 +4470,8 @@ public final class io/github/vupoint/cokit/client/ThreadItemEntry$Companion {
 
 public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadItemSummary$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-V5UzJTE ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/lang/Integer;
@@ -4222,6 +4486,8 @@ public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public final fun component2-a5JpuFg ()Ljava/lang/String;
 	public final fun component20-QW4I_Q0 ()Ljava/lang/String;
 	public final fun component21-vJbbHHU ()Ljava/lang/String;
+	public final fun component22 ()Ljava/lang/Long;
+	public final fun component23 ()Ljava/lang/Long;
 	public final fun component3-AO2s5XM ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
@@ -4229,12 +4495,13 @@ public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8-rulvwug ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy-mnFLLHo (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
-	public static synthetic fun copy-mnFLLHo$default (Lio/github/vupoint/cokit/client/ThreadItemSummary;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
+	public final fun copy-7meVIeo (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
+	public static synthetic fun copy-7meVIeo$default (Lio/github/vupoint/cokit/client/ThreadItemSummary;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/CodexJsonPayload;Ljava/util/List;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/mcp/McpAppUi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadItemSummary;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAggregatedOutput ()Ljava/lang/String;
 	public final fun getArguments ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
 	public final fun getCommand ()Ljava/lang/String;
+	public final fun getCompletedAtMs ()Ljava/lang/Long;
 	public final fun getContentItems ()Ljava/util/List;
 	public final fun getCwd-rulvwug ()Ljava/lang/String;
 	public final fun getDurationMs ()Ljava/lang/Long;
@@ -4248,6 +4515,7 @@ public final class io/github/vupoint/cokit/client/ThreadItemSummary {
 	public final fun getQuery ()Ljava/lang/String;
 	public final fun getReasoningEffort-vJbbHHU ()Ljava/lang/String;
 	public final fun getReview ()Ljava/lang/String;
+	public final fun getStartedAtMs ()Ljava/lang/Long;
 	public final fun getStatus-AO2s5XM ()Ljava/lang/String;
 	public final fun getSuccess ()Ljava/lang/Boolean;
 	public final fun getText ()Ljava/lang/String;
@@ -5634,8 +5902,8 @@ public final class io/github/vupoint/cokit/client/ThreadSampleCancelParams$Compa
 
 public final class io/github/vupoint/cokit/client/ThreadSampleParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/ThreadSampleParams$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-ND13_qQ ()Ljava/lang/String;
 	public final fun component2-XuLNRMQ ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
@@ -5644,12 +5912,14 @@ public final class io/github/vupoint/cokit/client/ThreadSampleParams {
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7 ()Ljava/util/Map;
 	public final fun component8 ()Ljava/lang/Boolean;
-	public final fun copy-r4p41Fk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
-	public static synthetic fun copy-r4p41Fk$default (Lio/github/vupoint/cokit/client/ThreadSampleParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
+	public final fun component9 ()Ljava/lang/Boolean;
+	public final fun copy-8QapWXw (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
+	public static synthetic fun copy-8QapWXw$default (Lio/github/vupoint/cokit/client/ThreadSampleParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/ThreadSampleParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDisableMcp ()Ljava/lang/Boolean;
 	public final fun getEffort-vJbbHHU ()Ljava/lang/String;
 	public final fun getExpectedTurnId-XuLNRMQ ()Ljava/lang/String;
+	public final fun getInterruptOnCancel ()Ljava/lang/Boolean;
 	public final fun getPrompt ()Ljava/lang/String;
 	public final fun getResponsesapiClientMetadata ()Ljava/util/Map;
 	public final fun getThreadId-ND13_qQ ()Ljava/lang/String;
@@ -7712,6 +7982,7 @@ public final synthetic class io/github/vupoint/cokit/client/approvals/CommandApp
 
 public final class io/github/vupoint/cokit/client/approvals/CommandApprovalKind$Companion {
 	public final fun getCommand-4210ziw ()Ljava/lang/String;
+	public final fun getHumanCommand-4210ziw ()Ljava/lang/String;
 	public final fun getWriteStdin-4210ziw ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
@@ -8711,6 +8982,296 @@ public final class io/github/vupoint/cokit/client/auth/AccountReadResult$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/auth/AccountSession {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSession$Companion;
+	public synthetic fun <init> (Ljava/lang/String;ZJLjava/util/List;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;ZJLjava/util/List;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-nwCCczA ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun component3 ()J
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Lio/github/vupoint/cokit/client/auth/AccountEmail;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9-9Jt-FoQ ()Ljava/lang/String;
+	public final fun copy-0_uN_Us (Ljava/lang/String;ZJLjava/util/List;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSession;
+	public static synthetic fun copy-0_uN_Us$default (Lio/github/vupoint/cokit/client/auth/AccountSession;Ljava/lang/String;ZJLjava/util/List;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSession;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getEmail ()Lio/github/vupoint/cokit/client/auth/AccountEmail;
+	public final fun getImageUrl ()Ljava/lang/String;
+	public final fun getLastUsedAt ()J
+	public final fun getSelectedWorkspaceAccountId-9Jt-FoQ ()Ljava/lang/String;
+	public final fun getSessionId-nwCCczA ()Ljava/lang/String;
+	public final fun getUserId ()Ljava/lang/String;
+	public final fun getWorkspaces ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isActive ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSession$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSession$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSession;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSession;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSession$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionId {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSessionId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionId$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-5fUT7ic (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-_1MvWlQ (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionId$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionListParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionListParams$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Boolean;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Boolean;
+	public final fun copy (Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/auth/AccountSessionListParams;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/auth/AccountSessionListParams;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionListParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRefreshWorkspaceMetadata ()Ljava/lang/Boolean;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionListParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionListParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSessionListParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSessionListParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionListParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionListResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionListResult$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-bjqld0I ()Ljava/lang/String;
+	public final fun copy-7GhqB60 (Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;
+	public static synthetic fun copy-7GhqB60$default (Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActiveSessionId-bjqld0I ()Ljava/lang/String;
+	public final fun getSessions ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionListResult$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionListResult$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionListResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-nwCCczA ()Ljava/lang/String;
+	public final fun component2-i7P87CQ ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun copy-_xWxkRE (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams;
+	public static synthetic fun copy-_xWxkRE$default (Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccountId-i7P87CQ ()Ljava/lang/String;
+	public final fun getAllowBrowserLogin ()Ljava/lang/Boolean;
+	public final fun getSessionId-nwCCczA ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionSwitchParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchParams$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Companion;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin : io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-sCx-Kj8 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy-nKPd2us (Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin;
+	public static synthetic fun copy-nKPd2us$default (Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthUrl ()Ljava/lang/String;
+	public final fun getLoginId-sCx-Kj8 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$BrowserLogin$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Switched : io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult {
+	public fun <init> (Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;
+	public final fun copy (Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Switched;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Switched;Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Switched;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSnapshot ()Lio/github/vupoint/cokit/client/auth/AccountSessionListResult;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Unknown : io/github/vupoint/cokit/client/auth/AccountSessionSwitchResult {
+	public fun <init> (Lio/github/vupoint/cokit/client/CodexJsonPayload;)V
+	public final fun component1 ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public final fun copy (Lio/github/vupoint/cokit/client/CodexJsonPayload;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Unknown;
+	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Unknown;Lio/github/vupoint/cokit/client/CodexJsonPayload;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionSwitchResult$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPayload ()Lio/github/vupoint/cokit/client/CodexJsonPayload;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionWorkspace {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-i7P87CQ ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4-aL8e2pg ()Ljava/lang/String;
+	public final fun copy-fgavABk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace;
+	public static synthetic fun copy-fgavABk$default (Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccountId-i7P87CQ ()Ljava/lang/String;
+	public final fun getImageUrl ()Ljava/lang/String;
+	public final fun getKind-aL8e2pg ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionWorkspace$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspace;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionWorkspace$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-E-YjdUo (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-o65c_BA (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountSessionWorkspaceKind$Companion {
+	public final fun getPersonal-xqWcjhQ ()Ljava/lang/String;
+	public final fun getWorkspace-xqWcjhQ ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/auth/AccountSpendControlLimitSnapshot {
 	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountSpendControlLimitSnapshot$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;IJ)V
@@ -8845,6 +9406,36 @@ public final synthetic class io/github/vupoint/cokit/client/auth/AccountUsageRes
 }
 
 public final class io/github/vupoint/cokit/client/auth/AccountUsageResult$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountWorkspaceId {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/AccountWorkspaceId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/AccountWorkspaceId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/AccountWorkspaceId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/AccountWorkspaceId$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-Bps4dXc (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-LQRg7gs (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/AccountWorkspaceId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -9086,14 +9677,17 @@ public final class io/github/vupoint/cokit/client/auth/CodexAccount$ApiKey : io/
 
 public final class io/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt : io/github/vupoint/cokit/client/auth/CodexAccount {
 	public static final field Companion Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt$Companion;
-	public synthetic fun <init> (Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/vupoint/cokit/client/auth/AccountEmail;
 	public final fun component2-lSO-_9g ()Ljava/lang/String;
-	public final fun copy-pw4r-T4 (Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;
-	public static synthetic fun copy-pw4r-T4$default (Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy-ioZbvgg (Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;
+	public static synthetic fun copy-ioZbvgg$default (Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;Lio/github/vupoint/cokit/client/auth/AccountEmail;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/CodexAccount$ChatGpt;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEmail ()Lio/github/vupoint/cokit/client/auth/AccountEmail;
 	public final fun getPlanType-lSO-_9g ()Ljava/lang/String;
+	public final fun getWorkspaceName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -9283,6 +9877,38 @@ public final class io/github/vupoint/cokit/client/auth/GatewayOAuthStatus$Compan
 	public final fun getNotReady-ekIcJ-M ()Ljava/lang/String;
 	public final fun getStarted-ekIcJ-M ()Ljava/lang/String;
 	public final fun getSucceeded-ekIcJ-M ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GcpSetupParams {
+	public static final field Companion Lio/github/vupoint/cokit/client/auth/GcpSetupParams$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3-rulvwug ()Ljava/lang/String;
+	public final fun copy--ECtvKo (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/auth/GcpSetupParams;
+	public static synthetic fun copy--ECtvKo$default (Lio/github/vupoint/cokit/client/auth/GcpSetupParams;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/auth/GcpSetupParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCredentialFile-rulvwug ()Ljava/lang/String;
+	public final fun getLocation ()Ljava/lang/String;
+	public final fun getProjectId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/auth/GcpSetupParams$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/auth/GcpSetupParams$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/vupoint/cokit/client/auth/GcpSetupParams;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/vupoint/cokit/client/auth/GcpSetupParams;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/auth/GcpSetupParams$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -11307,8 +11933,8 @@ public final class io/github/vupoint/cokit/client/extensions/HookHandlerType$Com
 
 public final class io/github/vupoint/cokit/client/extensions/HookMetadata {
 	public static final field Companion Lio/github/vupoint/cokit/client/extensions/HookMetadata$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()J
 	public final fun component11 ()Z
@@ -11316,6 +11942,7 @@ public final class io/github/vupoint/cokit/client/extensions/HookMetadata {
 	public final fun component13 ()Ljava/lang/String;
 	public final fun component14 ()Ljava/lang/String;
 	public final fun component15 ()Ljava/lang/String;
+	public final fun component16-Sa_zFns ()Ljava/lang/String;
 	public final fun component2-XQyxMMg ()Ljava/lang/String;
 	public final fun component3-YIHivew ()Ljava/lang/String;
 	public final fun component4-bqOMaiE ()Ljava/lang/String;
@@ -11324,13 +11951,14 @@ public final class io/github/vupoint/cokit/client/extensions/HookMetadata {
 	public final fun component7 ()J
 	public final fun component8-7VZsvvI ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy-dSWmUDA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/extensions/HookMetadata;
-	public static synthetic fun copy-dSWmUDA$default (Lio/github/vupoint/cokit/client/extensions/HookMetadata;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/extensions/HookMetadata;
+	public final fun copy-v101GBk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/vupoint/cokit/client/extensions/HookMetadata;
+	public static synthetic fun copy-v101GBk$default (Lio/github/vupoint/cokit/client/extensions/HookMetadata;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJLjava/lang/String;Ljava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/extensions/HookMetadata;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCommand ()Ljava/lang/String;
 	public final fun getCurrentHash ()Ljava/lang/String;
 	public final fun getDisplayOrder ()J
 	public final fun getEnabled ()Z
+	public final fun getEnvironmentId-Sa_zFns ()Ljava/lang/String;
 	public final fun getEventName-XQyxMMg ()Ljava/lang/String;
 	public final fun getHandlerType-YIHivew ()Ljava/lang/String;
 	public final fun getKey ()Ljava/lang/String;
@@ -11472,14 +12100,15 @@ public final class io/github/vupoint/cokit/client/extensions/HooksListEntry$Comp
 
 public final class io/github/vupoint/cokit/client/extensions/HooksListParams {
 	public static final field Companion Lio/github/vupoint/cokit/client/extensions/HooksListParams$Companion;
-	public fun <init> ()V
-	public fun <init> (Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
-	public final fun copy (Ljava/util/List;)Lio/github/vupoint/cokit/client/extensions/HooksListParams;
-	public static synthetic fun copy$default (Lio/github/vupoint/cokit/client/extensions/HooksListParams;Ljava/util/List;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/extensions/HooksListParams;
+	public final fun component2-8aMyzWk ()Ljava/lang/String;
+	public final fun copy-wfKNx2c (Ljava/util/List;Ljava/lang/String;)Lio/github/vupoint/cokit/client/extensions/HooksListParams;
+	public static synthetic fun copy-wfKNx2c$default (Lio/github/vupoint/cokit/client/extensions/HooksListParams;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/extensions/HooksListParams;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCwds ()Ljava/util/List;
+	public final fun getThreadId-8aMyzWk ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -15659,6 +16288,36 @@ public final class io/github/vupoint/cokit/client/policy/ManagedNewThreadModelDe
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/vupoint/cokit/client/policy/ManagedOtelRequirements {
+	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedOtelRequirements$Companion;
+	public static final synthetic fun box-impl (Ljava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedOtelRequirements;
+	public static fun constructor-impl (Ljava/util/Map;)Ljava/util/Map;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/util/Map;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/util/Map;Ljava/util/Map;)Z
+	public final fun getSettings ()Ljava/util/Map;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/util/Map;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/util/Map;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/util/Map;
+}
+
+public final synthetic class io/github/vupoint/cokit/client/policy/ManagedOtelRequirements$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedOtelRequirements$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-zlDB-Ho (Lkotlinx/serialization/encoding/Decoder;)Ljava/util/Map;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-x0Ip6EM (Lkotlinx/serialization/encoding/Encoder;Ljava/util/Map;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/vupoint/cokit/client/policy/ManagedOtelRequirements$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/vupoint/cokit/client/policy/ManagedPolicyReadParams {
 	public static final field INSTANCE Lio/github/vupoint/cokit/client/policy/ManagedPolicyReadParams;
 	public fun equals (Ljava/lang/Object;)Z
@@ -15700,8 +16359,8 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyReadResult
 
 public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequirements {
 	public static final field Companion Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements$Companion;
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Ljava/util/Map;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Ljava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
 	public final fun component10 ()Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;
 	public final fun component11 ()Ljava/util/Map;
@@ -15728,14 +16387,15 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequiremen
 	public final fun component30 ()Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;
 	public final fun component31 ()Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;
 	public final fun component32-_sRWajg ()Ljava/util/Map;
+	public final fun component33-xtE9IUw ()Ljava/util/Map;
 	public final fun component4 ()Ljava/util/Map;
 	public final fun component5-zAsfJ88 ()Ljava/lang/String;
 	public final fun component6 ()Ljava/util/List;
 	public final fun component7 ()Ljava/lang/Boolean;
 	public final fun component8 ()Ljava/lang/Boolean;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy-LPKvV6k (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
-	public static synthetic fun copy-LPKvV6k$default (Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;ILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
+	public final fun copy-pQwixzk (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Ljava/util/Map;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
+	public static synthetic fun copy-pQwixzk$default (Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedComputerUseRequirements;Ljava/util/Map;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;Ljava/util/List;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedAutoReviewRequirements;Lio/github/vupoint/cokit/client/policy/ManagedBrowserUseRequirements;Lio/github/vupoint/cokit/client/policy/ManagedInAppBrowserRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/github/vupoint/cokit/client/policy/ManagedFeedbackRequirements;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;Lio/github/vupoint/cokit/client/policy/ManagedApplicationRequirements;Ljava/util/Map;Ljava/util/Map;IILjava/lang/Object;)Lio/github/vupoint/cokit/client/policy/ManagedPolicyRequirements;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAdditionalDeveloperInstructions ()Ljava/lang/String;
 	public final fun getAllowAppshots ()Ljava/lang/Boolean;
@@ -15768,6 +16428,7 @@ public final class io/github/vupoint/cokit/client/policy/ManagedPolicyRequiremen
 	public final fun getModelProviders ()Ljava/util/Map;
 	public final fun getModels ()Lio/github/vupoint/cokit/client/policy/ManagedModelsRequirements;
 	public final fun getNetwork ()Lio/github/vupoint/cokit/client/policy/ManagedNetworkRequirements;
+	public final fun getOtel-xtE9IUw ()Ljava/util/Map;
 	public final fun getSqliteHome ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

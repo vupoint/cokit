@@ -234,6 +234,7 @@ class RemoteControlRpcTest {
                     transport = transport,
                     clientInfo = ClientInfo("cokit_test", "CoKit Test", "0.1.0"),
                     scope = scope,
+                    capabilities = InitializeCapabilities(experimentalApi = true),
                 ),
             )
         }

@@ -104,6 +104,8 @@ sealed interface CodexAccount {
     data class ChatGpt(
         val email: AccountEmail,
         val planType: AccountPlanType,
+        /** Private display name of the selected workspace, when reported. */
+        val workspaceName: String? = null,
     ) : CodexAccount {
         override fun toString(): String =
             "ChatGpt(email=<redacted>, planType=$planType)"

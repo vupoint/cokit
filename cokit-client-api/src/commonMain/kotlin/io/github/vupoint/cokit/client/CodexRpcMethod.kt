@@ -1,6 +1,11 @@
 package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.client.auth.AccountReadParams
+import io.github.vupoint.cokit.client.auth.AccountSessionListParams
+import io.github.vupoint.cokit.client.auth.AccountSessionListResult
+import io.github.vupoint.cokit.client.auth.AccountSessionSwitchParams
+import io.github.vupoint.cokit.client.auth.AccountSessionSwitchResult
+import io.github.vupoint.cokit.client.auth.GcpSetupParams
 import io.github.vupoint.cokit.client.auth.AccountReadResult
 import io.github.vupoint.cokit.client.auth.AccountRateLimitsReadParams
 import io.github.vupoint.cokit.client.auth.AccountRateLimitsResult
@@ -141,6 +146,39 @@ class CodexRpcMethod<P : Any, R : Any> internal constructor(
  * [CodexRpcMethod.requiresExperimentalApi] also require experimental initialization.
  */
 object CodexRpc {
+    /** Experimental login sessions and explicit workspace selection. */
+    @ExperimentalCodexApi
+    object AccountSession {
+        /** Lists logins and optionally refreshes workspace membership metadata. */
+        val List: CodexRpcMethod<AccountSessionListParams, AccountSessionListResult> = CodexRpcMethod(
+            method = "accountSession/list",
+            paramsSerializer = AccountSessionListParams.serializer(),
+            resultSerializer = AccountSessionListResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        /** Explicitly switches workspace, potentially stopping threads or requiring browser login. */
+        val Switch: CodexRpcMethod<AccountSessionSwitchParams, AccountSessionSwitchResult> = CodexRpcMethod(
+            method = "accountSession/switch",
+            paramsSerializer = AccountSessionSwitchParams.serializer(),
+            resultSerializer = AccountSessionSwitchResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+    }
+
+    /** Experimental Google Cloud Vertex AI configuration. */
+    @ExperimentalCodexApi
+    object Gcp {
+        /** Validates credentials and saves provider settings; no automatic login or retry is performed. */
+        val Setup: CodexRpcMethod<GcpSetupParams, CodexRpcUnit> = CodexRpcMethod(
+            method = "account/gcp/setup",
+            paramsSerializer = GcpSetupParams.serializer(),
+            resultSerializer = CodexRpcUnit.serializer(),
+            emptyResult = CodexRpcUnit,
+            requiresExperimentalApi = true,
+        )
+    }
+
     /** Explicit diagnostic archive operations on the app-server host. */
     object Feedback {
         /** Saves a local diagnostic ZIP; CoKit neither uploads nor retries it. */
@@ -366,6 +404,15 @@ object CodexRpc {
             method = "thread/sample",
             paramsSerializer = ThreadSampleParams.serializer(),
             resultSerializer = ThreadSampleResult.serializer(),
+            requiresExperimentalApi = true,
+        )
+
+        /** Reviews the final injected exec_command without execution; keeps the thread subscribed. */
+        @ExperimentalCodexApi
+        val GuardianReview: CodexRpcMethod<ThreadGuardianReviewParams, ThreadGuardianReviewResult> = CodexRpcMethod(
+            method = "thread/guardianReview",
+            paramsSerializer = ThreadGuardianReviewParams.serializer(),
+            resultSerializer = ThreadGuardianReviewResult.serializer(),
             requiresExperimentalApi = true,
         )
 
@@ -765,6 +812,7 @@ object CodexRpc {
          */
         val Spawn: CodexRpcMethod<ProcessSpawnParams, CodexRpcUnit> = CodexRpcMethod(
             method = "process/spawn",
+            requiresExperimentalApi = true,
             paramsSerializer = ProcessSpawnParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
@@ -773,6 +821,7 @@ object CodexRpc {
         /** Writes to or closes process stdin. */
         val WriteStdin: CodexRpcMethod<ProcessWriteStdinParams, CodexRpcUnit> = CodexRpcMethod(
             method = "process/writeStdin",
+            requiresExperimentalApi = true,
             paramsSerializer = ProcessWriteStdinParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
@@ -781,6 +830,7 @@ object CodexRpc {
         /** Kills an unsandboxed host process. */
         val Kill: CodexRpcMethod<ProcessKillParams, CodexRpcUnit> = CodexRpcMethod(
             method = "process/kill",
+            requiresExperimentalApi = true,
             paramsSerializer = ProcessKillParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
@@ -789,6 +839,7 @@ object CodexRpc {
         /** Resizes a process terminal. */
         val ResizePty: CodexRpcMethod<ProcessResizePtyParams, CodexRpcUnit> = CodexRpcMethod(
             method = "process/resizePty",
+            requiresExperimentalApi = true,
             paramsSerializer = ProcessResizePtyParams.serializer(),
             resultSerializer = CodexRpcUnit.serializer(),
             emptyResult = CodexRpcUnit,
@@ -1120,6 +1171,7 @@ object CodexRpc {
         val List: CodexRpcMethod<CollaborationModeListParams, CollaborationModeListResult> =
             CodexRpcMethod(
                 method = "collaborationMode/list",
+                requiresExperimentalApi = true,
                 paramsSerializer = CollaborationModeListParams.serializer(),
                 resultSerializer = CollaborationModeListResult.serializer(),
             )
@@ -1144,6 +1196,7 @@ object CodexRpc {
         /** Enables remote control. */
         val Enable: CodexRpcMethod<RemoteControlEnableParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
             method = "remoteControl/enable",
+            requiresExperimentalApi = true,
             paramsSerializer = RemoteControlEnableParams.serializer(),
             resultSerializer = RemoteControlStatusSnapshot.serializer(),
         )
@@ -1151,6 +1204,7 @@ object CodexRpc {
         /** Disables remote control. */
         val Disable: CodexRpcMethod<RemoteControlDisableParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
             method = "remoteControl/disable",
+            requiresExperimentalApi = true,
             paramsSerializer = RemoteControlDisableParams.serializer(),
             resultSerializer = RemoteControlStatusSnapshot.serializer(),
         )
@@ -1158,6 +1212,7 @@ object CodexRpc {
         /** Reads the remote-control status snapshot. */
         val ReadStatus: CodexRpcMethod<RemoteControlStatusReadParams, RemoteControlStatusSnapshot> = CodexRpcMethod(
             method = "remoteControl/status/read",
+            requiresExperimentalApi = true,
             paramsSerializer = null,
             resultSerializer = RemoteControlStatusSnapshot.serializer(),
         )
@@ -1167,6 +1222,7 @@ object CodexRpc {
             CodexRpcMethod<RemoteControlPairingStartParams, RemoteControlPairingStartResult> =
             CodexRpcMethod(
                 method = "remoteControl/pairing/start",
+                requiresExperimentalApi = true,
                 paramsSerializer = RemoteControlPairingStartParams.serializer(),
                 resultSerializer = RemoteControlPairingStartResult.serializer(),
             )
@@ -1176,6 +1232,7 @@ object CodexRpc {
             CodexRpcMethod<RemoteControlPairingStatusParams, RemoteControlPairingStatusResult> =
             CodexRpcMethod(
                 method = "remoteControl/pairing/status",
+                requiresExperimentalApi = true,
                 paramsSerializer = RemoteControlPairingStatusParams.serializer(),
                 resultSerializer = RemoteControlPairingStatusResult.serializer(),
             )
@@ -1184,6 +1241,7 @@ object CodexRpc {
         val ListClients: CodexRpcMethod<RemoteControlClientsListParams, RemoteControlClientsListResult> =
             CodexRpcMethod(
                 method = "remoteControl/client/list",
+                requiresExperimentalApi = true,
                 paramsSerializer = RemoteControlClientsListParams.serializer(),
                 resultSerializer = RemoteControlClientsListResult.serializer(),
             )
@@ -1193,6 +1251,7 @@ object CodexRpc {
             CodexRpcMethod<RemoteControlClientsRevokeParams, RemoteControlClientsRevokeResult> =
             CodexRpcMethod(
                 method = "remoteControl/client/revoke",
+                requiresExperimentalApi = true,
                 paramsSerializer = RemoteControlClientsRevokeParams.serializer(),
                 resultSerializer = RemoteControlClientsRevokeResult.serializer(),
             )

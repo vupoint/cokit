@@ -1,0 +1,270 @@
+[
+  {
+    "mode": "stable",
+    "schema": "GetAccountResponse",
+    "payload": {
+      "requiresOpenaiAuth": true,
+      "account": {
+        "type": "chatgpt",
+        "email": "example@example.invalid",
+        "planType": "team",
+        "workspaceName": "Example workspace"
+      }
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "HooksListParams",
+    "payload": {
+      "threadId": "thr_1"
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "HooksListResponse",
+    "payload": {
+      "data": [
+        {
+          "cwd": "/path/to/project",
+          "hooks": [
+            {
+              "key": "example",
+              "eventName": "preToolUse",
+              "handlerType": "command",
+              "source": "user",
+              "sourcePath": "/path/to/hooks.json",
+              "enabled": true,
+              "timeoutSec": 30,
+              "trustStatus": "trusted",
+              "currentHash": "example",
+              "displayOrder": 0,
+              "isManaged": false,
+              "environmentId": "env_1",
+              "command": "example-hook"
+            }
+          ],
+          "errors": [],
+          "warnings": []
+        }
+      ]
+    },
+    "encoded": {
+      "data": [
+        {
+          "cwd": "/path/to/project",
+          "hooks": [
+            {
+              "key": "example",
+              "eventName": "preToolUse",
+              "handlerType": "command",
+              "source": "user",
+              "sourcePath": "/path/to/hooks.json",
+              "enabled": true,
+              "timeoutSec": 30,
+              "trustStatus": "trusted",
+              "currentHash": "example",
+              "displayOrder": 0,
+              "isManaged": false,
+              "environmentId": "env_1",
+              "command": "example-hook"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ThreadSectionChangedNotification",
+    "payload": {
+      "threadId": "thr_1",
+      "sectionId": "section_1"
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ThreadSectionChangedNotification",
+    "payload": {
+      "threadId": "thr_1",
+      "sectionId": null
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ThreadItem",
+    "payload": {
+      "id": "item_1",
+      "type": "agentMessage",
+      "text": "Example",
+      "startedAtMs": 1700000000123,
+      "completedAtMs": 1700000000456
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ConfigRequirementsReadResponse",
+    "payload": {
+      "requirements": {
+        "otel": {
+          "environment": "example",
+          "exporter": "none",
+          "log_user_prompt": false,
+          "span_attributes": {
+            "example": "value"
+          },
+          "tracestate": {
+            "vendor": {
+              "tenant": "example"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "mode": "stable",
+    "schema": "ReviewStartParams",
+    "payload": {
+      "threadId": "thr_1",
+      "target": {
+        "type": "uncommittedChanges"
+      },
+      "delivery": "inline"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "AccountSessionsListParams",
+    "payload": {
+      "refreshWorkspaceMetadata": true
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "AccountSessionsResponse",
+    "payload": {
+      "activeSessionId": "session_1",
+      "sessions": [
+        {
+          "sessionId": "session_1",
+          "isActive": true,
+          "lastUsedAt": 1700000000,
+          "workspaces": [
+            {
+              "accountId": "workspace_1",
+              "name": "Example workspace",
+              "kind": "workspace",
+              "imageUrl": "https://example.invalid/image.png"
+            }
+          ],
+          "email": "example@example.invalid",
+          "userId": "user_1",
+          "displayName": "Example",
+          "imageUrl": "https://example.invalid/profile.png",
+          "selectedWorkspaceAccountId": "workspace_1"
+        }
+      ]
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "AccountSessionsSwitchParams",
+    "payload": {
+      "sessionId": "session_1",
+      "accountId": "workspace_1",
+      "allowBrowserLogin": true
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "AccountSessionsSwitchResponse",
+    "payload": {
+      "activeSessionId": "session_1",
+      "sessions": [
+        {
+          "sessionId": "session_1",
+          "isActive": true,
+          "lastUsedAt": 1700000000,
+          "workspaces": [
+            {
+              "accountId": "workspace_1",
+              "name": "Example workspace",
+              "kind": "workspace",
+              "imageUrl": "https://example.invalid/image.png"
+            }
+          ],
+          "email": "example@example.invalid",
+          "userId": "user_1",
+          "displayName": "Example",
+          "imageUrl": "https://example.invalid/profile.png",
+          "selectedWorkspaceAccountId": "workspace_1"
+        }
+      ]
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "AccountSessionsSwitchResponse",
+    "payload": {
+      "login_id": "login_1",
+      "auth_url": "https://example.invalid/authorize"
+    },
+    "encoded": {
+      "loginId": "login_1",
+      "authUrl": "https://example.invalid/authorize"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "GcpSetupParams",
+    "payload": {
+      "projectId": "example-project",
+      "location": "global",
+      "credentialFile": "/path/to/credentials.json"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "GcpSetupParams",
+    "payload": {
+      "projectId": "example-project"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadGuardianReviewParams",
+    "payload": {
+      "threadId": "thr_1"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadGuardianReviewResponse",
+    "payload": {
+      "callId": "call_1",
+      "assessment": {
+        "outcome": "deny",
+        "riskLevel": "high",
+        "userAuthorization": "low",
+        "rationale": "Example reason"
+      }
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadGuardianReviewResponse",
+    "payload": {
+      "callId": "call_2"
+    }
+  },
+  {
+    "mode": "experimental",
+    "schema": "ThreadSampleParams",
+    "payload": {
+      "threadId": "thr_1",
+      "expectedTurnId": "turn_1",
+      "prompt": "Example",
+      "interruptOnCancel": false
+    }
+  }
+]
