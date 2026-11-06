@@ -1,59 +1,7 @@
 package io.github.vupoint.cokit.client
 
-import io.github.vupoint.cokit.protocol.JsonRpcId
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
-import io.github.vupoint.cokit.rpc.JsonRpcSession
-import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
-
-internal inline fun <reified T> JsonElement?.decodeResult(): T {
-    val element = requireNotNull(this) { "Expected a JSON-RPC result payload" }
-    return CodexProtocolJson.decodeFromJsonElement(element)
-}
-
-internal fun <T> JsonElement?.decodeResult(
-    deserializer: DeserializationStrategy<T>,
-): T {
-    val element = requireNotNull(this) { "Expected a JSON-RPC result payload" }
-    return CodexProtocolJson.decodeFromJsonElement(deserializer, element)
-}
-
-internal fun <T : Any> JsonElement?.decodeResult(
-    method: CodexRpcMethod<*, T>,
-): T {
-    if (this == null) {
-        return requireNotNull(method.emptyResult) {
-            "Expected a JSON-RPC result payload"
-        }
-    }
-    return CodexProtocolJson.decodeFromJsonElement(method.resultSerializer, this)
-}
-
-internal suspend fun <P : Any, R : Any> JsonRpcSession.request(
-    method: CodexRpcMethod<P, R>,
-    params: P,
-    onRequestId: (CodexRequestId) -> Unit = {},
-): R {
-    val requestParams = method.paramsSerializer?.let { serializer ->
-        CodexProtocolJson.encodeToJsonElement(serializer, params)
-    }
-    val result = request(
-        method = method.method,
-        params = requestParams,
-        onRequestId = { id ->
-            onRequestId(when (id) {
-                is JsonRpcId.Number -> CodexRequestId.Number(id.value)
-                is JsonRpcId.StringId -> CodexRequestId.StringId(id.value)
-            })
-        },
-    )
-    return result.decodeResult(method)
-}
-
-internal fun JsonElement.toCodexPayload(): CodexJsonPayload =
-    CodexJsonPayload.parse(CodexProtocolJson.encodeToString(JsonElement.serializer(), this))
 
 internal fun CodexJsonPayload?.toJsonElement(): JsonElement? =
     this?.let { CodexProtocolJson.parseToJsonElement(it.toJsonString()) }

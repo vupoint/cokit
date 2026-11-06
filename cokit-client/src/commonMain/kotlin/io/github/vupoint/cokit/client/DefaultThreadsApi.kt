@@ -2,37 +2,31 @@
 
 package io.github.vupoint.cokit.client
 
-import io.github.vupoint.cokit.rpc.JsonRpcSession
-
 internal class DefaultThreadsApi(
-    private val rpc: JsonRpcSession,
-    private val experimentalApi: Boolean = false,
+    private val requests: ClientRequestExecutor,
 ) : ThreadsApi {
     override suspend fun start(request: StartThreadRequest): Thread {
         val params = request.toRpcParams()
-        params.requireDynamicToolsOptIn(experimentalApi)
-        return rpc.request(CodexRpc.Thread.Start, params).thread
+        return requests.request(CodexRpc.Thread.Start, params).thread
     }
 
     override suspend fun resume(request: ResumeThreadRequest): Thread {
-        return rpc.request(CodexRpc.Thread.Resume, request.toRpcParams()).thread
+        return requests.request(CodexRpc.Thread.Resume, request.toRpcParams()).thread
     }
 
     override suspend fun fork(request: ForkThreadRequest): Thread {
         val params = request.toRpcParams()
-        params.requireExperimentalForkOptIn(experimentalApi)
-        return rpc.request(CodexRpc.Thread.Fork, params).thread
+        return requests.request(CodexRpc.Thread.Fork, params).thread
     }
 
     override suspend fun list(request: ListThreadsRequest): ThreadList {
         val params = request.toRpcParams()
-        params.requireAttachedThreadsOptIn(experimentalApi)
-        val decoded = rpc.request(CodexRpc.Thread.List, params)
+        val decoded = requests.request(CodexRpc.Thread.List, params)
         return ThreadList(decoded.threads, decoded.nextCursor, decoded.backwardsCursor, decoded.readStates)
     }
 
     override suspend fun listLoaded(request: ListLoadedThreadsRequest): LoadedThreadList {
-        val decoded = rpc.request(
+        val decoded = requests.request(
             CodexRpc.Thread.ListLoaded,
             ThreadLoadedListParams(request.cursor, request.limit),
         )
@@ -40,23 +34,23 @@ internal class DefaultThreadsApi(
     }
 
     override suspend fun read(request: ReadThreadRequest): Thread {
-        return rpc.request(CodexRpc.Thread.Read, request.toRpcParams()).thread
+        return requests.request(CodexRpc.Thread.Read, request.toRpcParams()).thread
     }
 
     override suspend fun archive(threadId: ThreadId) {
-        rpc.request(CodexRpc.Thread.Archive, ThreadArchiveParams(threadId))
+        requests.request(CodexRpc.Thread.Archive, ThreadArchiveParams(threadId))
     }
 
     override suspend fun unarchive(threadId: ThreadId): Thread {
-        return rpc.request(CodexRpc.Thread.Unarchive, ThreadUnarchiveParams(threadId)).thread
+        return requests.request(CodexRpc.Thread.Unarchive, ThreadUnarchiveParams(threadId)).thread
     }
 
     override suspend fun unsubscribe(threadId: ThreadId) {
-        rpc.request(CodexRpc.Thread.Unsubscribe, ThreadUnsubscribeParams(threadId))
+        requests.request(CodexRpc.Thread.Unsubscribe, ThreadUnsubscribeParams(threadId))
     }
 
     override suspend fun setName(request: SetThreadNameRequest) {
-        rpc.request(CodexRpc.Thread.SetName, request.toRpcParams())
+        requests.request(CodexRpc.Thread.SetName, request.toRpcParams())
     }
 }
 
@@ -116,12 +110,6 @@ private fun ForkThreadRequest.toRpcParams(): ThreadForkParams = ThreadForkParams
     experimentalDisablePredictionMcp = experimentalDisablePredictionMcp,
 )
 
-internal fun ThreadForkParams.requireExperimentalForkOptIn(experimentalApi: Boolean) {
-    require((experimentalPredictionMode == null && attachToSource == null && experimentalDisablePredictionMcp == null) || experimentalApi) {
-        "Experimental fork options require InitializeCapabilities(experimentalApi = true)"
-    }
-}
-
 private fun ListThreadsRequest.toRpcParams(): ThreadListParams = ThreadListParams(
     sourceKinds = sourceKinds,
     archived = archived,
@@ -148,9 +136,3 @@ private fun SetThreadNameRequest.toRpcParams(): ThreadSetNameParams = ThreadSetN
     threadId = threadId,
     name = name,
 )
-
-internal fun ThreadListParams.requireAttachedThreadsOptIn(experimentalApi: Boolean) {
-    require(attachedToThreadId == null || experimentalApi) {
-        "Attached thread filters require InitializeCapabilities(experimentalApi = true)"
-    }
-}

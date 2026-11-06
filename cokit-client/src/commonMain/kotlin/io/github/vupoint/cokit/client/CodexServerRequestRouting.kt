@@ -19,6 +19,7 @@ import io.github.vupoint.cokit.client.tools.DynamicToolCallResponse
 import io.github.vupoint.cokit.protocol.CodexProtocolJson
 import io.github.vupoint.cokit.protocol.JsonRpcErrorObject
 import io.github.vupoint.cokit.protocol.JsonRpcRequest
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -130,16 +131,13 @@ internal fun JsonRpcRequest.decodeDynamicToolCallRequest(): DynamicToolCallReque
         requireNotNull(params) { "Expected dynamic tool call params" },
     )
 
-internal fun DynamicToolCallResponse.toProtocolPayload(): CodexJsonPayload =
-    CodexProtocolJson.encodeToJsonElement(DynamicToolCallResponse.serializer(), this).toCodexPayload()
+internal fun DynamicToolCallResponse.toProtocolJson(): JsonElement =
+    // Detach opaque tool content from handler-owned JSON before sending.
+    CodexProtocolJson.parseToJsonElement(
+        CodexProtocolJson.encodeToString(DynamicToolCallResponse.serializer(), this),
+    )
 
-internal fun ThreadStartParams.requireDynamicToolsOptIn(experimentalApi: Boolean) {
-    require(dynamicTools == null || experimentalApi) {
-        "Dynamic tools require InitializeCapabilities(experimentalApi = true)"
-    }
-}
-
-internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
+internal fun ApprovalDecision.toProtocolJson(): JsonElement {
     val value = when (this) {
         ApprovalDecision.Accept -> "accept"
         ApprovalDecision.AcceptForSession -> "acceptForSession"
@@ -148,21 +146,21 @@ internal fun ApprovalDecision.toProtocolPayload(): CodexJsonPayload {
     }
     return buildJsonObject {
         put("decision", value)
-    }.toCodexPayload()
+    }
 }
 
-internal fun PermissionApprovalResponse.toProtocolPayload(): CodexJsonPayload {
+internal fun PermissionApprovalResponse.toProtocolJson(): JsonElement {
     return CodexProtocolJson.encodeToJsonElement(
         PermissionApprovalResponse.serializer(),
         this,
-    ).toCodexPayload()
+    )
 }
 
-internal fun UserInputResponse.toProtocolPayload(): CodexJsonPayload {
+internal fun UserInputResponse.toProtocolJson(): JsonElement {
     return when (this) {
         UserInputResponse.Cancel -> buildJsonObject {
             put("decision", "cancel")
-        }.toCodexPayload()
+        }
         is UserInputResponse.Answers -> buildJsonObject {
             putJsonObject("answers") {
                 answers.forEach { (questionId, answer) ->
@@ -173,47 +171,47 @@ internal fun UserInputResponse.toProtocolPayload(): CodexJsonPayload {
                     }
                 }
             }
-        }.toCodexPayload()
+        }
     }
 }
 
-internal fun McpElicitationResponse.toProtocolPayload(): CodexJsonPayload {
+internal fun McpElicitationResponse.toProtocolJson(): JsonElement {
     return when (this) {
         is McpElicitationResponse.Accept -> buildJsonObject {
             put("action", "accept")
             put("content", content.toJsonElement() ?: JsonNull)
             meta?.let { put("_meta", it.toJsonElement() ?: JsonNull) }
-        }.toCodexPayload()
+        }
         McpElicitationResponse.Decline -> mcpElicitationTerminalPayload("decline")
         McpElicitationResponse.Cancel -> mcpElicitationTerminalPayload("cancel")
     }
 }
 
-private fun mcpElicitationTerminalPayload(action: String): CodexJsonPayload {
+private fun mcpElicitationTerminalPayload(action: String): JsonElement {
     return buildJsonObject {
         put("action", action)
         put("content", JsonNull)
-    }.toCodexPayload()
+    }
 }
 
-internal fun AttestationGenerateResponse.toProtocolPayload(): CodexJsonPayload {
+internal fun AttestationGenerateResponse.toProtocolJson(): JsonElement {
     return CodexProtocolJson.encodeToJsonElement(
         AttestationGenerateResponse.serializer(),
         this,
-    ).toCodexPayload()
+    )
 }
 
-internal fun defaultServerRequestResult(method: String): CodexJsonPayload? {
+internal fun defaultServerRequestResult(method: String): JsonElement? {
     return when (method) {
         COMMAND_APPROVAL_METHOD,
         FILE_CHANGE_APPROVAL_METHOD,
-        -> buildJsonObject { put("decision", "decline") }.toCodexPayload()
+        -> buildJsonObject { put("decision", "decline") }
 
-        "item/tool/call" -> DynamicToolCallResponse(emptyList(), false).toProtocolPayload()
-        PERMISSION_APPROVAL_METHOD -> PermissionApprovalResponse.Decline.toProtocolPayload()
-        USER_INPUT_REQUEST_METHOD -> UserInputResponse.Cancel.toProtocolPayload()
-        MCP_ELICITATION_REQUEST_METHOD -> McpElicitationResponse.Decline.toProtocolPayload()
-        ATTESTATION_GENERATE_METHOD -> buildJsonObject { put("status", "unsupported") }.toCodexPayload()
+        "item/tool/call" -> DynamicToolCallResponse(emptyList(), false).toProtocolJson()
+        PERMISSION_APPROVAL_METHOD -> PermissionApprovalResponse.Decline.toProtocolJson()
+        USER_INPUT_REQUEST_METHOD -> UserInputResponse.Cancel.toProtocolJson()
+        MCP_ELICITATION_REQUEST_METHOD -> McpElicitationResponse.Decline.toProtocolJson()
+        ATTESTATION_GENERATE_METHOD -> buildJsonObject { put("status", "unsupported") }
         else -> null
     }
 }

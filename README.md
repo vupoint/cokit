@@ -50,7 +50,9 @@ Published artifacts use the `io.github.vupoint.cokit` group and include:
 - `cokit-client-api`: public client contracts, typed request descriptors,
   notifications, server-request models, and shared option/value models.
 - `cokit-client`: default `CodexClient` implementation and `CodexClients`
-  factory. The raw JSON-RPC session stays internal.
+  factory. The raw JSON-RPC session stays internal. See
+  [Client implementation boundaries](docs/architecture.md) for request execution
+  and server-request handling ownership.
 - `cokit-transport-stdio`: JVM stdio transport for the local Codex app-server.
 - `cokit-transport-websocket`: experimental WebSocket transport placeholder.
 - `cokit-testing`: fake transports and protocol test helpers for consumers and
