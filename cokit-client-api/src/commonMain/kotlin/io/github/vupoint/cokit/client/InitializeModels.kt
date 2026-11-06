@@ -33,7 +33,14 @@ data class InitializeCapabilities(
     val extensions: Map<String, CodexJsonPayload>? = null,
     /** Opts this server runtime into explicit gateway OAuth; later connections cannot undo it. */
     val explicitGatewayOauth: Boolean? = null,
+    /** Declares support for fresh human command decisions; requires experimental initialization. */
+    val requiredHumanApproval: RequiredHumanApproval? = null,
 )
+
+/** Advertises human-checkpoint support without granting approval or registering a handler. */
+@Serializable
+@JvmInline
+value class RequiredHumanApproval @ExperimentalCodexApi constructor(val enabled: Boolean)
 
 /**
  * Payload for `initialize`, sent before normal requests and the `initialized` notification.

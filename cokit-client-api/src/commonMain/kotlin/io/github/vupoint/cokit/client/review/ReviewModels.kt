@@ -5,12 +5,13 @@ import io.github.vupoint.cokit.client.Turn
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** Server review placement: inline in the source thread or detached into another review thread; unknown strings are retained. */
+/** Server review placement. Codex 0.167.0 accepts only inline; unknown strings remain readable. */
 @Serializable
 @JvmInline
 value class ReviewDelivery(val value: String) {
     companion object {
         val Inline = ReviewDelivery("inline")
+        @Deprecated("Removed in Codex 0.167.0; start a separate thread, then review it inline")
         val Detached = ReviewDelivery("detached")
     }
 }
@@ -46,7 +47,7 @@ sealed interface ReviewTarget {
     ) : ReviewTarget
 }
 
-/** Starts a review turn in a thread with optional inline or detached delivery; null [delivery] uses the server default. */
+/** Starts a review on the supplied thread; omit [delivery] or select inline on Codex 0.167.0. */
 @Serializable
 data class ReviewStartParams(
     val threadId: ThreadId,

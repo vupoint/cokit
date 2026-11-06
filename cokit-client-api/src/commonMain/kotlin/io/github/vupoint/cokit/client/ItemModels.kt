@@ -83,4 +83,8 @@ data class ThreadItemSummary(
     val model: ModelName? = null,
     /** Effective reasoning effort reported for subagent activity. */
     val reasoningEffort: ReasoningEffort? = null,
+    /** Server-recorded start time in Unix milliseconds; older items may omit it. */
+    val startedAtMs: Long? = null,
+    /** Server-recorded completion time in Unix milliseconds; null does not imply completion. */
+    val completedAtMs: Long? = null,
 )

@@ -3,6 +3,7 @@ package io.github.vupoint.cokit.client.extensions
 import io.github.vupoint.cokit.client.CodexCursor
 import io.github.vupoint.cokit.client.CodexHostPath
 import io.github.vupoint.cokit.client.ThreadId
+import io.github.vupoint.cokit.client.environment.EnvironmentId
 import kotlinx.serialization.Serializable
 
 /** Server hook trigger name; unknown event names remain readable as catalog metadata. */
@@ -71,6 +72,8 @@ value class HookTrustStatus(val value: String) {
 @Serializable
 data class HooksListParams(
     val cwds: List<CodexHostPath> = emptyList(),
+    /** Lists a loaded thread's hooks and selected environments; omit [cwds] in this mode. */
+    val threadId: ThreadId? = null,
 )
 
 /** Hook discovery grouped by the working directories evaluated by app-server. */
@@ -120,6 +123,8 @@ data class HookMetadata(
     val matcher: String? = null,
     val pluginId: String? = null,
     val statusMessage: String? = null,
+    /** Execution environment whose requirements supplied this hook. */
+    val environmentId: EnvironmentId? = null,
 )
 
 /** Server app or connector identifier used by catalogs and plugin app summaries. */

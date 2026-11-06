@@ -79,6 +79,17 @@ interface CodexClient : AutoCloseable {
     /** Replaces the command-approval handler; unhandled command approvals are declined. */
     fun registerCommandApprovalHandler(handler: CommandApprovalHandler)
 
+    /**
+     * Registers a separate handler for managed human command checkpoints.
+     *
+     * Requires experimental initialization and [InitializeCapabilities.requiredHumanApproval].
+     * The handler must present each request to a person and obtain a fresh decision, including
+     * replayed prompts. Accept-for-session decisions are converted to decline. Ordinary command
+     * handlers never receive these requests; without this handler they are declined.
+     */
+    @ExperimentalCodexApi
+    fun registerHumanCommandApprovalHandler(handler: CommandApprovalHandler)
+
     /** Replaces the file-change handler; unhandled file changes are declined. */
     fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler)
 

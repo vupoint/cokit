@@ -2,6 +2,7 @@ package io.github.vupoint.cokit.client.approvals
 
 import io.github.vupoint.cokit.client.CodexHostPath
 import io.github.vupoint.cokit.client.CodexJsonPayload
+import io.github.vupoint.cokit.client.ExperimentalCodexApi
 import io.github.vupoint.cokit.client.ItemId
 import io.github.vupoint.cokit.client.ThreadId
 import io.github.vupoint.cokit.client.TurnId
@@ -73,6 +74,9 @@ value class CommandApprovalKind(val value: String) {
     companion object {
         val Command = CommandApprovalKind("command")
         val WriteStdin = CommandApprovalKind("writeStdin")
+        /** Managed checkpoint requiring a fresh human decision, never a session approval. */
+        @ExperimentalCodexApi
+        val HumanCommand = CommandApprovalKind("humanCommand")
     }
 }
 

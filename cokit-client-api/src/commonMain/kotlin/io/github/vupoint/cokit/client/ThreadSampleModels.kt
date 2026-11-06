@@ -18,6 +18,8 @@ data class ThreadSampleParams(
     val turnTrigger: String? = null,
     val responsesapiClientMetadata: Map<String, String>? = null,
     val disableMcp: Boolean? = null,
+    /** Overrides upstream interruption when cancelling this sample; null inherits the parent. */
+    val interruptOnCancel: Boolean? = null,
 ) {
     override fun toString(): String = "ThreadSampleParams(<redacted>)"
 }

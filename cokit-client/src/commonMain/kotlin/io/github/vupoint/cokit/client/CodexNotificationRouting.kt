@@ -16,6 +16,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 @OptIn(ExperimentalCodexApi::class)
 internal fun JsonRpcNotification.toCodexNotification(): CodexNotification {
     return when (method) {
+        "thread/section/changed" -> params.decodeNotificationParams<CodexNotification.ThreadSectionChanged>() ?: CodexNotification.Unknown(method)
         "thread/readState/changed" -> params.decodeNotificationParams<CodexNotification.ThreadReadStateChanged>() ?: CodexNotification.Unknown(method)
         "thread/prediction/updated" -> params.decodeNotificationParams<CodexNotification.ThreadPredictionUpdated>() ?: CodexNotification.Unknown(method)
         "mcpServer/oauthLogin/completed" -> params.decodeNotificationParams<CodexNotification.McpServerOauthLoginCompleted>() ?: CodexNotification.Unknown(method)

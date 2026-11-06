@@ -2,9 +2,85 @@
 
 CoKit tracks `codex app-server` as an upstream JSON-RPC protocol.
 
-## Codex 0.165.0 alignment
+## Codex 0.167.0 alignment
 
-The baseline is Codex CLI 0.165.0, release commit
+The baseline is Codex CLI 0.167.0, release commit
+`086ccc833bc9cf01024ad2dd6af7dbd421b6bf9a`, reviewed on 2026-11-07.
+The official release archive digest was verified before generating both schema modes.
+The previous 0.165.0 bundles match their recorded hashes. The stable bundle still
+has 106 client requests and 10 server requests. The experimental bundle has 180
+client requests (four added) and 11 server requests. Both modes have 86 server
+notifications, including the new `thread/section/changed`. No methods were removed.
+
+Stable contract changes:
+
+- `CodexNotification.ThreadSectionChanged` carries the destination section or null
+  after a move, including reordering within the same section. Refresh ordering on
+  every event; missing or malformed section identifiers fall back to `Unknown`.
+- `ThreadItemSummary.startedAtMs` and `completedAtMs` retain Unix millisecond
+  timestamps. Null or missing fields remain readable from older servers.
+- `CodexAccount.ChatGpt.workspaceName`, `HooksListParams.threadId` and
+  `HookMetadata.environmentId` retain workspace and environment metadata.
+  Omit `cwds` when listing hooks for a loaded thread.
+- Managed `otel` settings use a redacted `ManagedOtelRequirements` snapshot that
+  preserves exporter settings and future fields. Reading it never starts an
+  exporter. Managed network constraints still arrive in `requirements.network`
+  experimentally; upstream now also reads them from `[permissions.network]`.
+- `review/start` now runs on the supplied thread. `ReviewDelivery.Detached` is
+  deprecated for older-server compatibility; 0.167.0 rejects that value. Create a
+  separate thread and review it inline, or fork and start a turn for custom reviews.
+- Provider mismatch, missing-provider and managed-policy errors retain their full
+  structured JSON in `JsonRpcRemoteException.error.data`, including unknown future
+  variants. No automatic provider switch, fallback or retry is added.
+
+Experimental additions require Kotlin opt-in and experimental initialization:
+
+- Existing process, remote-control and collaboration-mode descriptors now enforce
+  `InitializeCapabilities(experimentalApi = true)` before either request overload
+  sends anything. These 12 methods previously had only the Kotlin opt-in gate.
+- `CodexRpc.AccountSession.List` reads private login/workspace metadata; refreshing
+  memberships is explicit. `Switch` can stop loaded threads and replace credentials.
+  `Switched` contains the new snapshot; `BrowserLogin` requires the application to
+  open the URL and await `account/login/completed`, or cancel the returned login ID.
+  The generated schema uses `login_id`/`auth_url`, while the release Rust serializer
+  and README use `loginId`/`authUrl`. CoKit accepts both and serializes camelCase.
+  Unknown object outcomes are retained without treating them as successful switches.
+- `CodexRpc.Gcp.Setup` validates credentials before saving Vertex AI configuration.
+  Omitting `credentialFile` clears the active user override and selects ADC; an
+  inherited conflicting path fails without saving. CoKit does not authenticate,
+  open credential files, retry setup or verify model access.
+- `CodexRpc.Thread.GuardianReview` reviews the idle thread's final injected
+  `exec_command` without executing it. The connection remains subscribed until
+  explicit unsubscribe or disconnection. Unknown assessment categories remain data.
+- `ThreadSampleParams.interruptOnCancel` overrides upstream interruption behavior
+  for that sample; null inherits the parent. Explicit cancellation still uses the
+  original request ID; cancelling a Kotlin coroutine alone does not send it.
+- Managed `humanCommand` checkpoints require `RequiredHumanApproval(true)` at
+  initialization and `registerHumanCommandApprovalHandler`. Ordinary command
+  handlers never receive them. Missing handlers decline, and accept-for-session
+  decisions become decline. Each prompt, including replay, requires a fresh human
+  decision. The capability does not itself register a handler or authorize work.
+
+New audio `fileId` inputs continue through `TurnInput.Custom`; raw Responses
+`ContentItem` audio file references remain deferred. The separate function-call
+output schema still requires `audio_url`, so `ToolOutputContent.Audio` is unchanged.
+Image `generationId` and `policyCapacityUnavailable` errors survive existing opaque
+item/error payloads. Typed additional-context names, native per-thread USD usage,
+process output-drain timeout flags and hook-run legacy source paths remain deferred
+with their parent surfaces. They are not counted as new typed coverage.
+
+Main-only changes after this release, including `modelProvider/list`,
+`modelProvider/config/write` and provider-scoped Gateway OAuth, are excluded.
+The comparison used main commit `814347ecd21b49d25479f5499f168b9f7b7e1803`.
+Constructor changes and the added client handler method change JVM ABI; rebuild
+consumers and update custom `CodexClient` implementations. Exhaustive notification
+matches must handle `ThreadSectionChanged`. Versioned fixtures are checked against
+both 0.167.0 schema modes; the browser-login casing discrepancy is recorded in the
+[fixture notes](../cokit-client/src/jvmTest/resources/fixtures/README.md).
+
+## Previous alignment: Codex 0.165.0
+
+The previous baseline was Codex CLI 0.165.0, release commit
 `360319d8dee62d87e2d59fc0c21805d79519cfed`, reviewed on 2026-10-28.
 The independently regenerated 0.163.0 schemas match their recorded hashes.
 The new stable bundle has 106 client requests and 10 server requests;
@@ -135,7 +211,7 @@ The upgrade adds no automatic retries, approvals, authentication or resource del
 ## Dynamic Tools (Experimental)
 
 CoKit supports `thread/start.dynamicTools` through `StartThreadRequest` and
-`ThreadStartParams`. Definitions model the 0.165.0 experimental schema's
+`ThreadStartParams`. Definitions model the 0.167.0 experimental schema's
 `type: "function"` and `type: "namespace"` alternatives; namespaces contain
 function definitions only. Function definitions preserve `inputSchema` as
 `CodexJsonPayload` and expose optional `deferLoading` (false is omitted).
@@ -166,8 +242,8 @@ Malformed params return `-32602`, and handler exceptions return generic `-32000`
 Handlers own permissions and side effects; see [security](security.md#dynamic-tool-execution).
 
 The contract tests use literal payloads checked against the generated
-0.165.0 experimental schema. Its aggregate SHA-256 is
-`a2c0073b9b71598d435b953b163c6aa02a5bcef3bb3eedc52d4befa7e63fd44e`, matching
+0.167.0 experimental schema. Its aggregate SHA-256 is
+`be0242ebc5073532edc20ba394b73c4c144f905178c361bfd6d3245dd1d31497`, matching
 `cokit-protocol/src/commonMain/resources/codex-schema-provenance.properties`.
 Upstream persists tool definitions for resumed threads; the execution callback
 remains application-owned and must be registered on each new client connection.
@@ -211,7 +287,7 @@ The experimental schema is regenerated for provenance, not to enable new APIs;
 - Upstream removed `PluginSummary.extensions` and its supporting types. CoKit did
   not expose these fields, so no compatibility alias or replacement is added.
 
-The 0.165.0 alignment above supersedes the former exclusion of provider
+The 0.167.0 alignment above supersedes the former exclusion of provider
 `namespaceTools` removal, goal origins, OAuth login IDs, attachment-owner lookup
 and prediction APIs, which have now shipped upstream.
 
@@ -251,7 +327,7 @@ enable the matching upstream experimental capability before use.
 Remote-control descriptors are experimental. `CodexRpc.RemoteControl` and its
 status models require `@ExperimentalCodexApi`, and applications should enable
 the matching upstream experimental capability before use. Current local
-`codex-cli 0.165.0` generated schema exposes the enable/disable params and
+`codex-cli 0.167.0` generated schema exposes the enable/disable params and
 status-changed notification shape; the upstream README also documents the
 `remoteControl/enable`, `remoteControl/disable`, and
 `remoteControl/status/read` request methods.
@@ -323,9 +399,9 @@ remain deny-by-default unless a typed handler is registered.
 ## Upstream Coverage Snapshot
 
 This snapshot was reviewed against the upstream app-server README and generated
-`codex-cli 0.165.0` stable and experimental schemas on 2026-10-28:
+`codex-cli 0.167.0` stable and experimental schemas on 2026-11-07:
 
-https://github.com/openai/codex/blob/rust-v0.165.0/codex-rs/app-server/README.md
+https://github.com/openai/codex/blob/rust-v0.167.0/codex-rs/app-server/README.md
 
 The checked protocol inventory groups upstream request, notification, and
 server-request surfaces by current CoKit coverage:
@@ -343,23 +419,23 @@ request descriptor count is exact.
 <!-- codex-rpc-coverage:start -->
 | Inventory section | `modeled` | `partial` | `deferred` | `experimental` | Exact current coverage |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Request groups | 9 | 9 | 4 | 13 | 123 public `CodexRpc` request descriptors |
+| Request groups | 9 | 9 | 4 | 15 | 127 public `CodexRpc` request descriptors |
 | Notification groups | 6 | 6 | 6 | 9 | Not counted by this helper |
 | Server-request groups | 0 | 5 | 0 | 2 | Not counted by this helper |
 <!-- codex-rpc-coverage:end -->
 
 The pinned stable schema contains 106 client requests; CoKit exposes 85 of them
 as public descriptors and implements `initialize` internally (86/106, 81.1%).
-The experimental bundle contains 176 client requests, including stable methods;
-CoKit exposes 123 descriptors in total and implements `initialize` internally
-(124/176, 70.5%). These are method counts, not claims of complete field or event
+The experimental bundle contains 180 client requests, including stable methods;
+CoKit exposes 127 descriptors in total and implements `initialize` internally
+(128/180, 71.1%). These are method counts, not claims of complete field or event
 coverage. No current descriptor is absent from the pinned experimental bundle.
 
 Typed notification and server-request coverage is intentionally smaller than the
 upstream surface today:
 
 - Notifications: `CodexNotification.ThreadStarted`, `ThreadStatusChanged`,
-  `ThreadTokenUsageUpdated`, `TurnStarted`, `TurnCompleted`, `TurnFailed`,
+  `ThreadTokenUsageUpdated`, `ThreadSectionChanged`, `TurnStarted`, `TurnCompleted`, `TurnFailed`,
   `ItemStarted`, `ItemCompleted`, `AgentMessageDelta`,
   `ReasoningSummaryTextDelta`, `Warning`, `ConfigWarning`, `Error`,
   `ServerRequestResolved`, and `CommandExecOutputDelta` are modeled.
@@ -420,7 +496,7 @@ Permission profile and environment catalog APIs are modeled according to the
 current generated schema. `CodexRpc.PermissionProfile.List` reads server-defined
 permission profile ids and descriptions for an optional host cwd.
 `CodexRpc.CollaborationMode.List` and `CodexRpc.Environment.Add` are
-experimental and require `ExperimentalCodexApi`; current `codex-cli 0.165.0`
+experimental and require `ExperimentalCodexApi`; current `codex-cli 0.167.0`
 schema defines collaboration mode listing and environment registration, but not
 environment list/read or collaboration mode read descriptors.
 
@@ -429,7 +505,7 @@ Skills and hooks APIs are modeled as data-oriented protocol descriptors.
 declarations, and optional interface metadata without loading or executing skill
 content in CoKit. `CodexRpc.Skills.SetExtraRoots` updates the app-server skill
 search roots, and `CodexRpc.Skills.WriteConfig` changes a skill's enabled state
-by name or path. Current `codex-cli 0.165.0` schema defines
+by name or path. Current `codex-cli 0.167.0` schema defines
 `skills/config/write` but not a `skills/config/read` request.
 `CodexRpc.Hooks.List` returns per-cwd hook metadata, warnings, and parse errors
 without executing hook handlers in CoKit.
@@ -595,7 +671,7 @@ enough to observe side effects.
 - Add typed descriptors and models for filesystem read/write, directory,
   metadata, copy, remove, watch, and unwatch methods.
 - Add experimental typed descriptors for standalone process lifecycle APIs.
-- Add review-start support once review items and detached review threads are
+- Expand review support once remaining review item fields are
   modeled well enough for consumers to render results safely.
 
 Exit criteria:
@@ -692,8 +768,8 @@ Schema provenance is recorded in
 The file records the Codex CLI version, upstream Codex commit, stable schema
 command, experimental schema command, generation timestamp, and canonical
 SHA-256 digests for both schema modes. The current stable baseline is
-`codex-cli 0.165.0` at upstream release commit
-`360319d8dee62d87e2d59fc0c21805d79519cfed`.
+`codex-cli 0.167.0` at upstream release commit
+`086ccc833bc9cf01024ad2dd6af7dbd421b6bf9a`.
 
 Run:
 
@@ -720,7 +796,7 @@ schema fixtures or generated DTOs, update the provenance file with:
 
 ```bash
 codex --version
-git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.165.0^{}'
+git ls-remote https://github.com/openai/codex.git 'refs/tags/rust-v0.167.0^{}'
 ```
 
 Then update `generatedAt` to the refresh timestamp. The Gradle schema generation

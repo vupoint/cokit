@@ -29,6 +29,24 @@ Malformed params return JSON-RPC `-32602` and do not call the handler. Handler
 exceptions return JSON-RPC `-32000` with a generic failure message so exception
 text is not sent back to app-server.
 
+### Managed human command checkpoints
+
+Codex 0.167.0 adds experimental `kind: "humanCommand"` requests for managed
+`prompt-user` rules. These require a fresh human decision even when the thread
+normally uses automatic review. CoKit never routes them to the ordinary command
+handler. A client must initialize with `experimentalApi = true` and
+`requiredHumanApproval = RequiredHumanApproval(true)`, then explicitly register
+`registerHumanCommandApprovalHandler` to handle them. Declaring the capability
+alone leaves the default response as decline.
+
+The handler must present the command and obtain a fresh decision for every
+request, including replayed requests. CoKit permits accept, decline and cancel;
+an accept-for-session response becomes decline. It does not cache or reuse human
+decisions. The application is responsible for actually involving a person;
+CoKit cannot verify the origin of a callback's decision. Missing approval IDs or
+commands are malformed requests and never reach a handler. Initialization and
+Kotlin opt-in do not authorize command execution.
+
 File-change approval requests are deny-by-default. Without a registered
 file-change approval handler, CoKit responds with `{"decision":"decline"}`
 without approving the patch or granting write access. With a typed file-change
@@ -493,3 +511,39 @@ handlers and MCP tool-list metadata can contain private data. Hook diagnostics
 are redacted; applications must avoid logging arbitrary metadata or wire payloads.
 Approval defaults, request correlation, buffers, transports and process launch
 remain unchanged in this alignment.
+
+## Codex 0.167.0 contract boundaries
+
+All experimental-only request descriptors require experimental initialization
+before either request overload dispatches or exposes a request ID. This alignment
+closes missing runtime gates on 12 existing process, remote-control and
+collaboration-mode methods; Kotlin opt-in alone no longer enables them.
+
+Account session listing and switching require explicit experimental opt-in.
+Switching can unload threads and exchange credentials; it is never retried or
+initiated implicitly. The caller owns workspace selection, browser consent,
+login completion and cancellation. Session identifiers, workspace identities,
+profile data and browser-login URLs redact diagnostic output, but their public
+properties and serialized payloads remain sensitive. The browser URL is untrusted
+server data, not an instruction for CoKit to navigate or submit credentials.
+Unknown switch outcomes are preserved without being treated as successful login.
+
+GCP setup is an explicit configuration write on the app-server host. Omitting
+the credential-file field requests ADC and clears the active user override;
+upstream rejects conflicting inherited settings. CoKit forwards host paths
+without local resolution and does not read files, run `gcloud`, verify model
+access or retry credential failures. Params diagnostics redact project and path
+values. This alignment does not change process launch or inherited environments.
+
+Guardian review returns a server assessment without executing the injected
+command. It subscribes the connection to the thread until unsubscribe or
+disconnect. An allow outcome, unknown category or absent assessment is not an
+instruction for the library to execute or approve work. Rationale text is private
+and omitted from diagnostic output.
+
+Managed OpenTelemetry requirements are read-only, redacted snapshots. They can
+contain endpoints, header metadata and attributes; reading them does not start
+exporters or authorize telemetry. Unknown fields retain their JSON. Upstream
+redacts exporter header values, but applications must not rely on that behavior
+when logging arbitrary server payloads. Managed network requirements remain
+server-owned; CoKit does not migrate policy spelling or relax shared constraints.

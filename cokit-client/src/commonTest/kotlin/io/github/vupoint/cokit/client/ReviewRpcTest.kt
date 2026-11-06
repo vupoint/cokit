@@ -32,7 +32,7 @@ class ReviewRpcTest {
                 CodexRpc.Review.Start,
                 ReviewStartParams(
                     threadId = ThreadId("thr_main"),
-                    delivery = ReviewDelivery.Detached,
+                    delivery = ReviewDelivery.Inline,
                     target = ReviewTarget.Commit(
                         sha = "abc123",
                         title = "Add review descriptor",
@@ -46,7 +46,7 @@ class ReviewRpcTest {
         assertEquals("review/start", request.method)
         val params = request.params!!.jsonObject
         assertEquals("thr_main", params["threadId"]?.jsonPrimitive?.contentOrNull)
-        assertEquals("detached", params["delivery"]?.jsonPrimitive?.contentOrNull)
+        assertEquals("inline", params["delivery"]?.jsonPrimitive?.contentOrNull)
         val target = params["target"]!!.jsonObject
         assertEquals("commit", target["type"]?.jsonPrimitive?.contentOrNull)
         assertEquals("abc123", target["sha"]?.jsonPrimitive?.contentOrNull)
@@ -56,7 +56,7 @@ class ReviewRpcTest {
             JsonRpcResponse(
                 request.id,
                 result = buildJsonObject {
-                    put("reviewThreadId", "thr_review")
+                    put("reviewThreadId", "thr_main")
                     put(
                         "turn",
                         buildJsonObject {
@@ -70,7 +70,7 @@ class ReviewRpcTest {
         )
 
         val decoded = result.await()
-        assertEquals(ThreadId("thr_review"), decoded.reviewThreadId)
+        assertEquals(ThreadId("thr_main"), decoded.reviewThreadId)
         assertEquals(TurnId("turn_review"), decoded.turn.id)
         assertEquals(TurnStatus.InProgress, decoded.turn.status)
     }

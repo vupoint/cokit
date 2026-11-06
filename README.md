@@ -8,7 +8,7 @@ separate modules.
 
 ## Status
 
-CoKit is in early development and tracks Codex CLI **0.165.0**. The current codebase includes:
+CoKit is in early development and tracks Codex CLI **0.167.0**. The current codebase includes:
 
 - JSON-RPC protocol envelopes and serializers.
 - A coroutine JSON-RPC session with response correlation and notification flows.
@@ -25,6 +25,8 @@ CoKit is in early development and tracks Codex CLI **0.165.0**. The current code
 - Opt-in experimental projects, thread queues, local user verification, and
   client-executed dynamic tools, bounded item reads, read receipts, predictions
   and Bedrock GovCloud advisories.
+- Section-move notifications, item timestamps, workspace and environment-aware hook metadata.
+- Opt-in workspace switching, GCP setup, Guardian review, and separate fresh-human approval handlers.
 - JVM stdio JSONL transport.
 - Stable diagnostic archive saving with `CodexRpc.Feedback.Save`.
 - Experimental thread sampling, memory reads, attached forks and turn metadata patches with explicit opt-in.
@@ -194,6 +196,22 @@ Runtime tool replacement and tool-search orchestration are not provided.
 See [security](docs/security.md#dynamic-tool-execution) and
 [protocol compatibility](docs/protocol-compatibility.md#dynamic-tools-experimental)
 for policy, lifecycle and wire details.
+
+## Workspace sessions (experimental)
+
+For an explicit experimental workspace listing:
+
+```kotlin
+@OptIn(ExperimentalCodexApi::class)
+suspend fun listWorkspaces(client: CodexClient): AccountSessionListResult =
+    client.request(CodexRpc.AccountSession.List, AccountSessionListParams())
+```
+
+The account-session models live in `io.github.vupoint.cokit.client.auth`.
+Connect with `InitializeCapabilities(experimentalApi = true)` first. Workspace
+switching, browser login and GCP setup are explicit operations; reading metadata
+does not perform them. See [protocol compatibility](docs/protocol-compatibility.md#codex-01670-alignment)
+for the new APIs and [human approval boundaries](docs/security.md#managed-human-command-checkpoints).
 
 ## Sample CLI
 

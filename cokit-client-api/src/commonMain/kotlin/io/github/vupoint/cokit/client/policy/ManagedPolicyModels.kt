@@ -73,7 +73,16 @@ data class ManagedPolicyRequirements(
     /** Experimental hook configuration, retained without running any handler. */
     @ExperimentalCodexApi
     val hooks: ManagedHooks? = null,
+    /** Managed telemetry settings; reading these does not configure exporters or authorize logging. */
+    val otel: ManagedOtelRequirements? = null,
 )
+
+/** Opaque telemetry settings retain future exporter options and redact diagnostic output. */
+@Serializable
+@JvmInline
+value class ManagedOtelRequirements(val settings: Map<String, CodexJsonPayload>) {
+    override fun toString(): String = "ManagedOtelRequirements(<redacted>)"
+}
 
 /** Managed web-search mode selector; unknown wire strings are retained. */
 @Serializable

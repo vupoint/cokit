@@ -2,7 +2,9 @@
 
 package io.github.vupoint.cokit.client
 
+import io.github.vupoint.cokit.client.approvals.ApprovalDecision
 import io.github.vupoint.cokit.client.approvals.CommandApprovalHandler
+import io.github.vupoint.cokit.client.approvals.CommandApprovalKind
 import io.github.vupoint.cokit.client.approvals.FileChangeApprovalHandler
 import io.github.vupoint.cokit.client.approvals.PermissionApprovalHandler
 import io.github.vupoint.cokit.client.attestation.AttestationGenerateHandler
@@ -42,6 +44,9 @@ object CodexClients {
     suspend fun connect(connection: CodexClientConnection): CodexClient {
         val session = JsonRpcSession(connection.transport, connection.scope)
         return try {
+            require(connection.capabilities?.requiredHumanApproval == null || connection.capabilities?.experimentalApi == true) {
+                "Human approvals require InitializeCapabilities(experimentalApi = true)"
+            }
             val params = InitializeParams(
                 clientInfo = connection.clientInfo,
                 capabilities = connection.capabilities,
@@ -51,7 +56,12 @@ object CodexClients {
                 params = CodexProtocolJson.encodeToJsonElement(InitializeParams.serializer(), params),
             )
             session.notify("initialized")
-            DefaultCodexClient(session, connection.scope, connection.capabilities?.experimentalApi == true)
+            DefaultCodexClient(
+                rpc = session,
+                scope = connection.scope,
+                experimentalApi = connection.capabilities?.experimentalApi == true,
+                requiredHumanApproval = connection.capabilities?.requiredHumanApproval?.enabled == true,
+            )
         } catch (error: Throwable) {
             session.close()
             throw error
@@ -63,6 +73,7 @@ internal class DefaultCodexClient(
     private val rpc: JsonRpcSession,
     scope: CoroutineScope,
     private val experimentalApi: Boolean = false,
+    private val requiredHumanApproval: Boolean = false,
 ) : CodexClient {
     private val mutableServerRequests = MutableSharedFlow<CodexServerRequest>(
         extraBufferCapacity = 64,
@@ -73,6 +84,7 @@ internal class DefaultCodexClient(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     private var commandApprovalHandler: CommandApprovalHandler? = null
+    private var humanCommandApprovalHandler: CommandApprovalHandler? = null
     private var fileChangeApprovalHandler: FileChangeApprovalHandler? = null
     private var permissionApprovalHandler: PermissionApprovalHandler? = null
     private var userInputRequestHandler: UserInputRequestHandler? = null
@@ -122,6 +134,13 @@ internal class DefaultCodexClient(
         commandApprovalHandler = handler
     }
 
+    override fun registerHumanCommandApprovalHandler(handler: CommandApprovalHandler) {
+        require(experimentalApi && requiredHumanApproval) {
+            "Human approvals require experimentalApi and requiredHumanApproval initialization capabilities"
+        }
+        humanCommandApprovalHandler = handler
+    }
+
     override fun registerFileChangeApprovalHandler(handler: FileChangeApprovalHandler) {
         fileChangeApprovalHandler = handler
     }
@@ -169,8 +188,9 @@ internal class DefaultCodexClient(
             }
         }
 
-        val handler = commandApprovalHandler
-        if (request.method == "item/commandExecution/requestApproval" && handler != null) {
+        if (request.method == "item/commandExecution/requestApproval" &&
+            (commandApprovalHandler != null || humanCommandApprovalHandler != null)
+        ) {
             val commandRequest = try {
                 request.decodeCommandApprovalRequest()
             } catch (error: Throwable) {
@@ -180,11 +200,18 @@ internal class DefaultCodexClient(
                 )
             }
             return try {
+                val isHuman = commandRequest.kind == CommandApprovalKind.HumanCommand
+                val handler = if (isHuman) humanCommandApprovalHandler else commandApprovalHandler
+                val decision = handler?.decide(commandRequest) ?: ApprovalDecision.Decline
+                val oneTimeDecision = if (isHuman && decision == ApprovalDecision.AcceptForSession) {
+                    ApprovalDecision.Decline
+                } else decision
                 JsonRpcResponse(
                     id = request.id,
-                    result = handler.decide(commandRequest).toProtocolPayload().toJsonElement(),
+                    result = oneTimeDecision.toProtocolPayload().toJsonElement(),
                 )
             } catch (error: Throwable) {
+                currentCoroutineContext().ensureActive()
                 JsonRpcResponse(
                     id = request.id,
                     error = serverRequestHandlerError(),

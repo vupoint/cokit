@@ -17,6 +17,15 @@ import kotlinx.serialization.Serializable
 sealed interface CodexNotification {
     val method: String
 
+    /** Move into, within, or out of a section; refresh ordering even when [sectionId] is unchanged. */
+    @Serializable
+    data class ThreadSectionChanged(
+        val threadId: ThreadId,
+        val sectionId: ThreadSectionId?,
+    ) : CodexNotification {
+        override val method: String get() = "thread/section/changed"
+    }
+
     /** Experimental receipt change; refresh on conflicting revisions instead of ordering them. */
     @ExperimentalCodexApi
     @Serializable

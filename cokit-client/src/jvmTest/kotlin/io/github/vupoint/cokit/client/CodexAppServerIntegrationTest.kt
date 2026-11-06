@@ -2,6 +2,8 @@ package io.github.vupoint.cokit.client
 
 import io.github.vupoint.cokit.transport.stdio.StdioCodexTransport
 import io.github.vupoint.cokit.client.models.ModelProviderCapabilitiesReadParams
+import io.github.vupoint.cokit.client.auth.AccountSessionListParams
+import io.github.vupoint.cokit.client.extensions.HooksListParams
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,14 +12,48 @@ import kotlin.test.assertFailsWith
 import io.github.vupoint.cokit.rpc.JsonRpcRemoteException
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 
 class CodexAppServerIntegrationTest {
+    @OptIn(ExperimentalCodexApi::class)
+    @Test
+    fun readsRelease167ContractsAndSectionEventsFromAnIsolatedRealAppServerWhenEnabled() = runTest {
+        if (System.getenv("COKIT_CODEX_INTEGRATION") != "1") return@runTest
+        val directory = Files.createTempDirectory("cokit-release-167-").toFile()
+        try {
+            directory.resolve("codex-home").mkdirs()
+            StdioCodexTransport(env = mapOf("CODEX_HOME" to directory.resolve("codex-home").absolutePath)).use { transport ->
+                val client = CodexClients.connect(CodexClientConnection(
+                    transport, ClientInfo("cokit_integration", "CoKit Integration", "0.1.0"), backgroundScope,
+                    InitializeCapabilities(experimentalApi = true, requiredHumanApproval = RequiredHumanApproval(true)),
+                ))
+                val sessions = client.request(CodexRpc.AccountSession.List, AccountSessionListParams())
+                assertEquals(emptyList(), sessions.sessions)
+                val thread = client.threads.start(StartThreadRequest(cwd = CodexHostPath(directory.absolutePath)))
+                assertNotNull(client.request(CodexRpc.Hooks.List, HooksListParams(threadId = thread.id)))
+                val section = client.request(CodexRpc.ThreadSection.Create, ThreadSectionCreateParams("Example section")).section
+                for (destination in listOf(section.id, section.id, null)) {
+                    val event = async(start = CoroutineStart.UNDISPATCHED) {
+                        client.notifications.filterIsInstance<CodexNotification.ThreadSectionChanged>().first()
+                    }
+                    client.request(CodexRpc.Thread.MoveToSection, ThreadSectionMoveParams(thread.id, destination))
+                    assertEquals(CodexNotification.ThreadSectionChanged(thread.id, destination), event.await())
+                }
+            }
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
     @OptIn(ExperimentalCodexApi::class)
     @Test
     fun readsRelease165ContractsAndSavesFeedbackFromAnIsolatedRealAppServerWhenEnabled() = runTest {
         if (System.getenv("COKIT_CODEX_INTEGRATION") != "1") return@runTest
         val version = ProcessBuilder("codex", "--version").start().inputStream.bufferedReader().use { it.readText().trim() }
-        assertEquals("codex-cli 0.165.0", version)
+        assertEquals("codex-cli 0.167.0", version)
         val directory = Files.createTempDirectory("cokit-release-165-").toFile()
         try {
             directory.resolve("codex-home").mkdirs()
