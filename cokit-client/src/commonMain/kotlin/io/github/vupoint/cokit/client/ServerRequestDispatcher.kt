@@ -75,7 +75,7 @@ internal class ServerRequestDispatcher(
             }
             return try {
                 val result = if (experimentalApi) dynamicToolCallHandler?.call(call) else null
-                JsonRpcResponse(request.id, result = (result ?: DynamicToolCallResponse(emptyList(), false)).toProtocolPayload().toJsonElement())
+                JsonRpcResponse(request.id, result = (result ?: DynamicToolCallResponse(emptyList(), false)).toProtocolJson())
             } catch (_: Exception) {
                 currentCoroutineContext().ensureActive()
                 JsonRpcResponse(request.id, error = serverRequestHandlerError())
@@ -102,7 +102,7 @@ internal class ServerRequestDispatcher(
                 } else decision
                 JsonRpcResponse(
                     id = request.id,
-                    result = oneTimeDecision.toProtocolPayload().toJsonElement(),
+                    result = oneTimeDecision.toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 currentCoroutineContext().ensureActive()
@@ -126,7 +126,7 @@ internal class ServerRequestDispatcher(
             return try {
                 JsonRpcResponse(
                     id = request.id,
-                    result = fileChangeHandler.decide(fileChangeRequest).toProtocolPayload().toJsonElement(),
+                    result = fileChangeHandler.decide(fileChangeRequest).toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
@@ -149,7 +149,7 @@ internal class ServerRequestDispatcher(
             return try {
                 JsonRpcResponse(
                     id = request.id,
-                    result = permissionHandler.decide(permissionRequest).toProtocolPayload().toJsonElement(),
+                    result = permissionHandler.decide(permissionRequest).toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
@@ -172,7 +172,7 @@ internal class ServerRequestDispatcher(
             return try {
                 JsonRpcResponse(
                     id = request.id,
-                    result = userInputHandler.respond(userInputRequest).toProtocolPayload().toJsonElement(),
+                    result = userInputHandler.respond(userInputRequest).toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
@@ -195,7 +195,7 @@ internal class ServerRequestDispatcher(
             return try {
                 JsonRpcResponse(
                     id = request.id,
-                    result = mcpHandler.respond(mcpRequest).toProtocolPayload().toJsonElement(),
+                    result = mcpHandler.respond(mcpRequest).toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
@@ -218,7 +218,7 @@ internal class ServerRequestDispatcher(
             return try {
                 JsonRpcResponse(
                     id = request.id,
-                    result = attestationHandler.generate(attestationRequest).toProtocolPayload().toJsonElement(),
+                    result = attestationHandler.generate(attestationRequest).toProtocolJson(),
                 )
             } catch (error: Throwable) {
                 JsonRpcResponse(
@@ -230,7 +230,7 @@ internal class ServerRequestDispatcher(
 
         val defaultResult = defaultServerRequestResult(request.method)
         return if (defaultResult != null) {
-            JsonRpcResponse(id = request.id, result = defaultResult.toJsonElement())
+            JsonRpcResponse(id = request.id, result = defaultResult)
         } else {
             JsonRpcResponse(id = request.id, error = noHandlerError(request.method))
         }
